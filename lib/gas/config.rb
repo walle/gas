@@ -1,7 +1,7 @@
 module Gas
 
   # Class that keeps track of users
-  class Configuration
+  class Config
     attr_reader :users
 
     # Parses [User]s from a string of the config file
@@ -13,7 +13,7 @@ module Gas
         users << User.new(name, email, nickname)
       end
 
-      Configuration.new users
+      Config.new users
     end
 
     # Can parse out the current user from the gitconfig

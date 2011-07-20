@@ -2,7 +2,7 @@ require 'fileutils'
 
 require 'gas/version'
 require 'gas/user'
-require 'gas/configuration'
+require 'gas/config'
 
 # TODO: Refactor this file
 
@@ -18,7 +18,7 @@ module Gas
     end
 
     config = File.read(@config)
-    configuration = Configuration.parse config
+    configuration = Config.parse config
     puts 'Available users:'
     puts configuration
 
@@ -28,7 +28,7 @@ module Gas
   # Shows the current user
   def self.show
     gitconfig = File.read(@gitconfig)
-    user = Gas::Configuration.current_user gitconfig
+    user = Gas::Config.current_user gitconfig
     puts 'Current user:'
     puts "#{user.name} <#{user.email}>"
   end
@@ -41,7 +41,7 @@ module Gas
     end
 
     config = File.read(@config)
-    configuration = Configuration.parse config
+    configuration = Config.parse config
 
     if !configuration.exists? nickname
       puts "Nickname #{nickname} does not exist"
@@ -66,7 +66,7 @@ module Gas
   # @param [String] email The email of the author
   def self.add(nickname, name, email)
     config = File.read(@config)
-    configuration = Configuration.parse config
+    configuration = Config.parse config
 
     if configuration.exists? nickname
       puts "Nickname #{nickname} does already exist"
@@ -87,7 +87,7 @@ module Gas
   # @param [String] nickname The nickname of the author
   def self.delete(nickname)
     config = File.read(@config)
-    configuration = Configuration.parse config
+    configuration = Config.parse config
 
     if !configuration.exists? nickname
       puts "Nickname #{nickname} does not exist"
@@ -104,7 +104,7 @@ module Gas
 
   # Prints the current version
   def self.version
-    puts Gas::Version
+    puts Gas::VERSION
   end
 
 end
