@@ -20,7 +20,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'thor', '~> 0.14.6'
 
   s.add_development_dependency 'rspec'
-  s.add_development_dependency 'rr'
   s.add_development_dependency 'bundler'
 
   s.files = Dir.glob("{bin,lib,spec,config}/**/*") + ['LICENSE', 'README.textile']
