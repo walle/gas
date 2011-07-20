@@ -2,6 +2,7 @@
 
 require 'gas/version'
 require 'gas/user'
+require 'gas/configuration'
 
 module Gas
 
