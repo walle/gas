@@ -5,7 +5,7 @@ require 'gas'
 
 class GasRunner < Thor
 
-  default_task :show
+  default_task :list
 
   desc "list", "Lists your authors"
   def list
@@ -20,6 +20,16 @@ class GasRunner < Thor
   desc "use AUTHOR", "Uses author"
   def use(nickname)
     Gas.use nickname
+  end
+
+  desc "add NICKNAME NAME EMAIL", "Adds author to gasconfig"
+  def add(nickname, name, email)
+    Gas.add nickname, name, email
+  end
+
+  desc "delete AUTHOR", "Deletes author"
+  def delete(nickname)
+    Gas.delete nickname
   end
 
   desc "version", "Prints Gas's version"
