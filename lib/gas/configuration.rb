@@ -56,6 +56,20 @@ module Gas
       get nickname
     end
 
+    # Adds a user
+    # @param [User]
+    def add(user)
+      @users << user
+    end
+
+    # Deletes a user by nickname
+    # @param [String] nickname The nickname of the user to delete
+    def delete(nickname)
+      @users.delete_if do |user|
+        user.nickname == nickname
+      end
+    end
+
     # @param [Array<User>] users
     def initialize(users)
       @users = users

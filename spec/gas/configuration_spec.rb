@@ -54,5 +54,27 @@ describe Gas::Configuration do
     config[:walle].should == user1
     config[:user2].should == user2
   end
+
+  it 'should be able to add users' do
+    user1 = Gas::User.new 'Fredrik Wallgren', 'fredrik.wallgren@gmail.com', 'walle'
+    user2 = Gas::User.new 'foo', 'bar', 'user2'
+    users = [user1]
+    config = Gas::Configuration.new users
+    config.users.count.should == 1
+    config.add user2
+    config.users.count.should == 2
+  end
+
+  it 'should be able to delete users by nickname' do
+    user1 = Gas::User.new 'Fredrik Wallgren', 'fredrik.wallgren@gmail.com', 'walle'
+    user2 = Gas::User.new 'foo', 'bar', 'user2'
+    users = [user1, user2]
+    config = Gas::Configuration.new users
+    config.users.count.should == 2
+    config.delete 'walle'
+    config.users.count.should == 1
+    config.delete 'user2'
+    config.users.count.should == 0
+  end
 end
 
