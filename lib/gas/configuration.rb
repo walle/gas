@@ -23,6 +23,19 @@ module Gas
       User.parse gitconfig
     end
 
+    # Checks if a user with _nickname_ exists
+    # @param [String] nickname
+    # @return [Boolean]
+    def exists?(nickname)
+      @users.each do |user|
+        if user.nickname == nickname
+          return true;
+        end
+      end
+
+      false
+    end
+
     # @param [Array<User>] users
     def initialize(users)
       @users = users

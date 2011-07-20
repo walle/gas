@@ -31,5 +31,15 @@ describe Gas::Configuration do
     config = Gas::Configuration.new users
     config.to_s.should == "[walle]\n  name = Fredrik Wallgren\n  email = fredrik.wallgren@gmail.com\n[user2]\n  name = foo\n  email = bar"
   end
+
+  it 'should be able to tell if a nickname exists' do
+    user1 = Gas::User.new 'Fredrik Wallgren', 'fredrik.wallgren@gmail.com', 'walle'
+    user2 = Gas::User.new 'foo', 'bar', 'user2'
+    users = [user1, user2]
+    config = Gas::Configuration.new users
+    config.exists?('walle').should be_true
+    config.exists?('foo').should be_false
+    config.exists?('user2').should be_true
+  end
 end
 
