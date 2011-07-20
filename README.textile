@@ -3,6 +3,7 @@ h1. gas - manage your git author accounts
 "!http://travis-ci.org/walle/gas.png!":http://travis-ci.org/walle/gas
 
 h2. Description
+Gas is a utility to keep track of your git authors. Add them to gas and switch at any time. Great if you use one author at work and one at home for instance.
 
 h2. Installation
 
@@ -18,3 +19,24 @@ $ rake install
 
 h2. Running
 
+Default task is to list authors
+
+bc. $ gas
+
+bc. $ gas list
+
+This lists the authors that are set up.
+
+To add a author use, add
+
+bc. $ gas add walle "Fredrik Wallgren" fredrik.wallgren@gmail.com
+
+And the main usage, use
+
+bc. $ gas use walle
+
+To delete it again use, delete
+
+bc. $ gas delete walle
+
+View @gas -h@ to see all options.

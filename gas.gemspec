@@ -9,8 +9,8 @@ Gem::Specification.new do |s|
   s.authors = "Fredrik Wallgren"
   s.email = "fredrik.wallgren@gmail.com"
   s.homepage = "https://github.com/walle/gas"
-  s.summary = ""
-  s.description = "..."
+  s.summary = "Manage your git author accounts"
+  s.description = "Gas is a utility to keep track of your git authors. Add them to gas and switch at any time. Great if you use one author at work and one at home for instance."
 
   s.rubyforge_project = s.name
 
