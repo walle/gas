@@ -36,6 +36,26 @@ module Gas
       false
     end
 
+    # Returns the user with nickname nil if no such user exists
+    # @param [String|Symbol] nickname
+    # @return [User|nil]
+    def get(nickname)
+      @users.each do |user|
+        if user.nickname == nickname.to_s
+          return user
+        end
+      end
+
+      nil
+    end
+
+    # Override [] to get hash style acces to users
+    # @param [String|Symbol] nickname
+    # @return [User|nil]
+    def [](nickname)
+      get nickname
+    end
+
     # @param [Array<User>] users
     def initialize(users)
       @users = users

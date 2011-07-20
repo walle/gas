@@ -41,5 +41,18 @@ describe Gas::Configuration do
     config.exists?('foo').should be_false
     config.exists?('user2').should be_true
   end
+
+  it 'should be able to get a user from a nickname' do
+    user1 = Gas::User.new 'Fredrik Wallgren', 'fredrik.wallgren@gmail.com', 'walle'
+    user2 = Gas::User.new 'foo', 'bar', 'user2'
+    users = [user1, user2]
+    config = Gas::Configuration.new users
+    config.get('walle').should == user1
+    config.get('user2').should == user2
+    config['walle'].should == user1
+    config['user2'].should == user2
+    config[:walle].should == user1
+    config[:user2].should == user2
+  end
 end
 
