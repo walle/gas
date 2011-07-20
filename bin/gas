@@ -1,20 +1,33 @@
 #!/usr/bin/env ruby
 
 require 'thor'
+require 'gas'
 
 class GasRunner < Thor
 
   default_task :show
 
-  desc "show", "Shows your authors"
-  def show
-    puts 'authors'
+  desc "list", "Lists your authors"
+  def list
+    Gas.list
   end
 
-  desc 'help', 'Prints help'
-  def help
-    puts 'Help'
+  desc "show", "Shows your current user"
+  def show
+    Gas.show
   end
+
+  desc "use AUTHOR", "Uses author"
+  def use(nickname)
+    Gas.use nickname
+  end
+
+  desc "version", "Prints Gas's version"
+  def version
+    Gas.version
+  end
+  map %w(-v --version) => :version
+
 end
 
 GasRunner.start
