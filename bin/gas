@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+require 'thor'
+
+class GasRunner < Thor
+
+  default_task :show
+
+  desc "show", "Shows your authors"
+  def show
+    puts 'authors'
+  end
+
+  desc 'help', 'Prints help'
+  def help
+    puts 'Help'
+  end
+end
+
+GasRunner.start

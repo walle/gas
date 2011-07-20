@@ -1,0 +1,20 @@
+h1. gas - manage your git author accounts
+
+"!http://travis-ci.org/walle/gas.png!":http://travis-ci.org/walle/gas
+
+h2. Description
+
+h2. Installation
+
+The best way to install gas is with RubyGems:
+
+bc. $ [sudo] gem install gas
+
+You can install from source:
+
+bc. $ cd gas/
+$ bundle
+$ rake install
+
+h2. Running
+
