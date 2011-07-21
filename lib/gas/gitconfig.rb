@@ -7,7 +7,7 @@ module Gas
       @gitconfig_file = File.expand_path('~/.gitconfig')
       @gitconfig = ''
 
-      if gitconfig.nil?
+      if gitconfig.nil? && File.exists? @gitconfig_file
         @gitconfig = File.read(@gitconfig_file)
       else
         @gitconfig = gitconfig
