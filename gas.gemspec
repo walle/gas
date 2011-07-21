@@ -5,7 +5,7 @@ require "gas/version"
 
 Gem::Specification.new do |s|
   s.name = "gas"
-  s.version = Gas::Version
+  s.version = Gas::VERSION
   s.authors = "Fredrik Wallgren"
   s.email = "fredrik.wallgren@gmail.com"
   s.homepage = "https://github.com/walle/gas"

@@ -1,26 +1,36 @@
+require 'fileutils'
+
 module Gas
 
   # Class that keeps track of users
-  class Configuration
+  class Config
     attr_reader :users
 
-    # Parses [User]s from a string of the config file
-    # @param [String] config The configuration file
-    # @return [Configuration]
-    def self.parse(config)
-      users = []
-      config.scan(/\[(.+)\]\s+name = (.+)\s+email = (.+)/) do |nickname, name, email|
-        users << User.new(name, email, nickname)
+    # Initializes the object. If no users are supplied we look for a config file, if none then create it, and parse it to load users
+    # @param [Array<User>] users The override users
+    # @param [String] config The override config
+    def initialize(users = nil, config = nil)
+      @config_file = File.expand_path('~/.gas')
+      @config = ''
+
+      if config.nil?
+        if !File.exists? @config_file
+          FileUtils.touch @config_file
+        end
+
+        @config = File.read(@config_file)
+      else
+        @config = config
       end
 
-      Configuration.new users
-    end
-
-    # Can parse out the current user from the gitconfig
-    # @param [String] gitconfig The git configuration
-    # @return [User] The current user
-    def self.current_user(gitconfig)
-      User.parse gitconfig
+      if users.nil?
+        @users = []
+        @config.scan(/\[(.+)\]\s+name = (.+)\s+email = (.+)/) do |nickname, name, email|
+          @users << User.new(name, email, nickname)
+        end
+      else
+        @users = users
+      end
     end
 
     # Checks if a user with _nickname_ exists
@@ -70,9 +80,11 @@ module Gas
       end
     end
 
-    # @param [Array<User>] users
-    def initialize(users)
-      @users = users
+    # Saves the current users to the config file
+    def save!
+      File.open @config_file, 'w' do |file|
+        file.write @config
+      end
     end
 
     # Override to_s to output correct format
