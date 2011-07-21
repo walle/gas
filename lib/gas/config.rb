@@ -83,7 +83,7 @@ module Gas
     # Saves the current users to the config file
     def save!
       File.open @config_file, 'w' do |file|
-        file.write @config
+        file.write self
       end
     end
 
