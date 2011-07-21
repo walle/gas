@@ -7,7 +7,7 @@ module Gas
       @gitconfig_file = File.expand_path('~/.gitconfig')
       @gitconfig = ''
 
-      if gitconfig.nil?
+      if gitconfig.nil? && File.exists? @gitconfig_file
         @gitconfig = File.read(@gitconfig_file)
       else
         @gitconfig = gitconfig
@@ -29,8 +29,8 @@ module Gas
     # @param [String] name The new name
     # @param [String] email The new email
     def change_user(name, email)
-      @gitconfig.gsub! /name\s?=\s?.+/, "name = #{name}"
-      @gitconfig.gsub! /email\s?=\s?.+/, "email = #{email}"
+      @gitconfig.gsub! /^\s*name\s?=\s?.+/, "  name = #{name}"
+      @gitconfig.gsub! /^\s*email\s?=\s?.+/, "  email = #{email}"
     end
 
     # Saves the gitconfig
