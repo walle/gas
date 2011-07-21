@@ -1,27 +1,17 @@
-require 'fileutils'
-
 require 'gas/version'
 require 'gas/user'
 require 'gas/config'
 require 'gas/gitconfig'
 
-# TODO: Refactor this file
-
 module Gas
 
-  @config = File.expand_path('~/.gas')
+  @config = Config.new
   @gitconfig = Gitconfig.new
 
   # Lists all authors
   def self.list
-    if !File.exists? @config
-      FileUtils.touch @config
-    end
-
-    config = File.read(@config)
-    configuration = Config.parse config
     puts 'Available users:'
-    puts configuration
+    puts @config
 
     self.show
   end
@@ -36,19 +26,8 @@ module Gas
   # Sets _nickname_ as current user
   # @param [String] nickname The nickname to use
   def self.use(nickname)
-    if !File.exists? @config
-      FileUtils.touch @config
-    end
-
-    config = File.read(@config)
-    configuration = Config.parse config
-
-    if !configuration.exists? nickname
-      puts "Nickname #{nickname} does not exist"
-      return
-    end
-
-    user = configuration[nickname]
+    self.no_user? nickname
+    user = @config[nickname]
 
     @gitconfig.change_user user.name, user.email
     @gitconfig.save!
@@ -61,19 +40,10 @@ module Gas
   # @param [String] name The name of the author
   # @param [String] email The email of the author
   def self.add(nickname, name, email)
-    config = File.read(@config)
-    configuration = Config.parse config
-
-    if configuration.exists? nickname
-      puts "Nickname #{nickname} does already exist"
-      return
-    end
-
+    self.has_user? nickname
     user = User.new name, email, nickname
-    configuration.add user
-    File.open @config, 'w' do |file|
-      file.write configuration
-    end
+    @config.add user
+    @config.save!
 
     puts 'Added author'
     puts user
@@ -82,18 +52,9 @@ module Gas
   # Deletes a author from the config using nickname
   # @param [String] nickname The nickname of the author
   def self.delete(nickname)
-    config = File.read(@config)
-    configuration = Config.parse config
-
-    if !configuration.exists? nickname
-      puts "Nickname #{nickname} does not exist"
-      return
-    end
-
-    configuration.delete nickname
-    File.open @config, 'w' do |file|
-      file.write configuration
-    end
+    self.no_user? nickname
+    @config.delete nickname
+    @config.save!
 
     puts "Deleted author #{nickname}"
   end
@@ -101,6 +62,24 @@ module Gas
   # Prints the current version
   def self.version
     puts Gas::VERSION
+  end
+
+  # Checks if the user exists and gives error and exit if not
+  # @param [String] nickname
+  def self.no_user?(nickname)
+    if !@config.exists? nickname
+      puts "Nickname #{nickname} does not exist"
+      exit
+    end
+  end
+
+  # Checks if the user exists and gives error and exit if so
+  # @param [String] nickname
+  def self.has_user?(nickname)
+    if @config.exists? nickname
+      puts "Nickname #{nickname} does already exist"
+      exit
+    end
   end
 
 end

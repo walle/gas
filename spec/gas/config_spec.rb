@@ -3,16 +3,20 @@ require './spec/spec_helper'
 require './lib/gas'
 
 describe Gas::Config do
+
+  before :each do
+    @name = 'Fredrik Wallgren'
+    @email = 'fredrik.wallgren@gmail.com'
+    @nickname = 'walle'
+    config = "[#{@nickname}]\n  name = #{@name}\n  email = #{@email}\n\n[user2]\n  name = foo\n  email = bar"
+    @config = Gas::Config.new nil, config
+  end
+
   it 'should be able to parse users from config format' do
-    name = 'Fredrik Wallgren'
-    email = 'fredrik.wallgren@gmail.com'
-    nickname = 'walle'
-    config = "[#{nickname}]\n  name = #{name}\n  email = #{email}\n\n[user2]\n  name = foo\n  email = bar"
-    config = Gas::Config.parse config
-    config.users.count.should == 2
-    config.users[0].name.should == name
-    config.users[0].email.should == email
-    config.users[0].nickname.should == nickname
+    @config.users.count.should == 2
+    @config.users[0].name.should == @name
+    @config.users[0].email.should == @email
+    @config.users[0].nickname.should == @nickname
   end
 
   it 'should output the users in the correct format' do
