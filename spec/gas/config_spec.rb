@@ -15,15 +15,6 @@ describe Gas::Config do
     config.users[0].nickname.should == nickname
   end
 
-  it 'should be able to get current user from gitconfig' do
-    name = 'Fredrik Wallgren'
-    email = 'fredrik.wallgren@gmail.com'
-    gitconfig = "[other stuff]\n  foo = bar\n\n[user]\n  name = #{name}\n  email = #{email}\n\n[foo]\n  bar = foo"
-    user = Gas::Config.current_user gitconfig
-    user.name.should == name
-    user.email.should == email
-  end
-
   it 'should output the users in the correct format' do
     user1 = Gas::User.new 'Fredrik Wallgren', 'fredrik.wallgren@gmail.com', 'walle'
     user2 = Gas::User.new 'foo', 'bar', 'user2'

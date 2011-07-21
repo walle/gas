@@ -4,16 +4,6 @@ module Gas
   class User
     attr_reader :name, :email, :nickname
 
-    # Static function to parse out the data from a git config string
-    # @param [String] gitconfig
-    # @return [User] a new user
-    def self.parse(gitconfig)
-      regex = /\[user\]\s+name = (.+)\s+email = (.+)/
-      matches = regex.match gitconfig
-
-      User.new matches[1], matches[2]
-    end
-
     # @param [String] name The name of the user
     # @param [String] email The email of the user
     # @param [String] nickname A nickname for the user, not used when parsing from gitconfig

@@ -3,13 +3,14 @@ require 'fileutils'
 require 'gas/version'
 require 'gas/user'
 require 'gas/config'
+require 'gas/gitconfig'
 
 # TODO: Refactor this file
 
 module Gas
 
   @config = File.expand_path('~/.gas')
-  @gitconfig = File.expand_path('~/.gitconfig')
+  @gitconfig = Gitconfig.new
 
   # Lists all authors
   def self.list
@@ -27,8 +28,7 @@ module Gas
 
   # Shows the current user
   def self.show
-    gitconfig = File.read(@gitconfig)
-    user = Gas::Config.current_user gitconfig
+    user = @gitconfig.current_user
     puts 'Current user:'
     puts "#{user.name} <#{user.email}>"
   end
@@ -50,12 +50,8 @@ module Gas
 
     user = configuration[nickname]
 
-    gitconfig = File.read(@gitconfig)
-    gitconfig.gsub! /name\s?=\s?.+/, "name = #{user.name}"
-    gitconfig.gsub! /email\s?=\s?.+/, "email = #{user.email}"
-    File.open @gitconfig, 'w' do |file|
-      file.write gitconfig
-    end
+    @gitconfig.change_user user.name, user.email
+    @gitconfig.save!
 
     self.show
   end
