@@ -29,8 +29,8 @@ module Gas
     # @param [String] name The new name
     # @param [String] email The new email
     def change_user(name, email)
-      @gitconfig.gsub! /name\s?=\s?.+/, "name = #{name}"
-      @gitconfig.gsub! /email\s?=\s?.+/, "email = #{email}"
+      @gitconfig.gsub! /^\s*name\s?=\s?.+/, "  name = #{name}"
+      @gitconfig.gsub! /^\s*email\s?=\s?.+/, "  email = #{email}"
     end
 
     # Saves the gitconfig
