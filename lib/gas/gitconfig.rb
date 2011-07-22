@@ -9,7 +9,7 @@ module Gas
 
       if gitconfig.nil? && File.exists?(@gitconfig_file)
         @gitconfig = File.read(@gitconfig_file)
-      else
+      elsif !gitconfig.nil?
         @gitconfig = gitconfig
       end
     end
@@ -17,10 +17,12 @@ module Gas
     # Parse out the current user from the gitconfig
     # TODO: Error handling
     # @param [String] gitconfig The git configuration
-    # @return [User] The current user
+    # @return [User] The current user or nil if not present
     def current_user
       regex = /\[user\]\s+name = (.+)\s+email = (.+)/
       matches = regex.match @gitconfig
+
+      return nil if matches.nil?
 
       User.new matches[1], matches[2]
     end
@@ -29,8 +31,32 @@ module Gas
     # @param [String] name The new name
     # @param [String] email The new email
     def change_user(name, email)
-      @gitconfig.gsub! /^\s*name\s?=\s?.+/, "  name = #{name}"
-      @gitconfig.gsub! /^\s*email\s?=\s?.+/, "  email = #{email}"
+      if current_user_present?
+        @gitconfig.gsub! /^\s*name\s?=\s?.+/, "  name = #{name}"
+        @gitconfig.gsub! /^\s*email\s?=\s?.+/, "  email = #{email}"
+      else
+        create_user(name, email)
+      end
+    end
+
+    # Create a user section
+    # @param [String] name The new name
+    # @param [String] email The new email
+    def create_user(name, email)
+      return if current_user_present?
+
+      @gitconfig << <<-EOS
+
+# Those lines are added by gas, feel free to change them.
+[user]
+  name = #{name}
+  email = #{email}
+      EOS
+    end
+
+    # Check if user section is present in gitconfig
+    def current_user_present?
+      !current_user.nil?
     end
 
     # Saves the gitconfig

@@ -19,8 +19,13 @@ module Gas
   # Shows the current user
   def self.show
     user = @gitconfig.current_user
-    puts 'Current user:'
-    puts "#{user.name} <#{user.email}>"
+
+    if user
+      puts 'Current user:'
+      puts "#{user.name} <#{user.email}>"
+    else
+      puts 'No current user in gitconfig'
+    end
   end
 
   # Sets _nickname_ as current user
