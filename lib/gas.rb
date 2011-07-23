@@ -54,6 +54,23 @@ module Gas
     puts user
   end
 
+  def self.import(nickname)
+    self.has_user? nickname
+    user = @gitconfig.current_user
+
+    if user
+      user = User.new user.name, user.email, nickname
+
+      @config.add user
+      @config.save!
+
+      puts 'Added author'
+      puts user
+    else
+      puts 'No current user to import'
+    end
+  end
+
   # Deletes a author from the config using nickname
   # @param [String] nickname The nickname of the author
   def self.delete(nickname)
