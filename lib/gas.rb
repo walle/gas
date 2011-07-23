@@ -19,8 +19,13 @@ module Gas
   # Shows the current user
   def self.show
     user = @gitconfig.current_user
-    puts 'Current user:'
-    puts "#{user.name} <#{user.email}>"
+
+    if user
+      puts 'Current user:'
+      puts "#{user.name} <#{user.email}>"
+    else
+      puts 'No current user in gitconfig'
+    end
   end
 
   # Sets _nickname_ as current user
@@ -47,6 +52,25 @@ module Gas
 
     puts 'Added author'
     puts user
+  end
+
+  # Imports current user from .gitconfig to .gas
+  # @param [String] nickname The nickname to give to the new user
+  def self.import(nickname)
+    self.has_user? nickname
+    user = @gitconfig.current_user
+
+    if user
+      user = User.new user.name, user.email, nickname
+
+      @config.add user
+      @config.save!
+
+      puts 'Added author'
+      puts user
+    else
+      puts 'No current user to import'
+    end
   end
 
   # Deletes a author from the config using nickname
