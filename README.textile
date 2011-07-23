@@ -28,6 +28,10 @@ bc. $ gas list
 
 This lists the authors that are set up.
 
+You can import your current user by giving it a nickname
+
+bc. $ gas import current_user
+
 To add a author use, add
 
 bc. $ gas add walle "Fredrik Wallgren" fredrik.wallgren@gmail.com
