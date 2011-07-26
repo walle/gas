@@ -15,7 +15,6 @@ module Gas
     end
 
     # Parse out the current user from the gitconfig
-    # TODO: Error handling
     # @param [String] gitconfig The git configuration
     # @return [User] The current user or nil if not present
     def current_user
