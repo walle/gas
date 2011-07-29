@@ -7,50 +7,39 @@ describe Gas::Gitconfig do
   before :each do
     @name = 'Fredrik Wallgren'
     @email = 'fredrik.wallgren@gmail.com'
-    gitconfig = "[other stuff]\n  foo = bar\n\n[user]\n  name = #{@name}\n  email = #{@email}\n\n[foo]\n  bar = foo"
-    @gitconfig = Gas::Gitconfig.new gitconfig
-    @empty_gitconfig = Gas::Gitconfig.new ''
+    @gitconfig = Gas::Gitconfig.new
   end
 
   it 'should be able to get current user from gitconfig' do
+    # To be able to mock ` (http://blog.astrails.com/2010/7/5/how-to-mock-backticks-operator-in-your-test-specs-using-rr)
+    mock(@gitconfig).__double_definition_create__.call(:`, 'git config --global --get user.name') { @name }
+    mock(@gitconfig).__double_definition_create__.call(:`, 'git config --global --get user.email') { @email }
+
     user = @gitconfig.current_user
     user.name.should == @name
     user.email.should == @email
   end
 
   it 'should return nil if no current user is present in gitconfig' do
-    @empty_gitconfig.current_user.should == nil
+    mock(@gitconfig).__double_definition_create__.call(:`, 'git config --global --get user.name') { nil }
+    mock(@gitconfig).__double_definition_create__.call(:`, 'git config --global --get user.email') { nil }
+
+    @gitconfig.current_user.should == nil
   end
 
   it 'should be able to change the current user' do
     name = 'Test Testsson'
     email = 'test@testsson.com'
+
+    mock(@gitconfig).__double_definition_create__.call(:`, "git config --global user.name #{name}") { nil }
+    mock(@gitconfig).__double_definition_create__.call(:`, "git config --global user.email #{email}") { nil }
+    mock(@gitconfig).__double_definition_create__.call(:`, 'git config --global --get user.name') { name }
+    mock(@gitconfig).__double_definition_create__.call(:`, 'git config --global --get user.email') { email }
+
     @gitconfig.change_user name, email
 
     user = @gitconfig.current_user
     user.name.should == name
     user.email.should == email
-  end
-
-  it 'should add a new user if no user section exists in gitconfig' do
-    name = 'Test Testsson'
-    email = 'test@testsson.com'
-    @empty_gitconfig.change_user name, email
-
-    user = @empty_gitconfig.current_user
-    user.name.should == name
-    user.email.should == email
-  end
-
-  it 'should not blow up if no gitconfig exists (use empty string instead)' do
-    # Stub out File#exists?
-    class File
-      def self.exists?(path)
-        false
-      end
-    end
-
-    gitconfig_file_absent = Gas::Gitconfig.new
-    gitconfig_file_absent.instance_variable_get(:@gitconfig).should == ''
   end
 end
