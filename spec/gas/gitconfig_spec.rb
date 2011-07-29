@@ -11,8 +11,8 @@ describe Gas::Gitconfig do
   end
 
   it 'should be able to get current user from gitconfig' do
-    mock_cli_call(@gitconfig, 'git config --global --get user.name') { @name }
-    mock_cli_call(@gitconfig, 'git config --global --get user.email') { @email }
+    mock_cli_call(@gitconfig, 'git config --global --get user.name') { @name + "\n" }
+    mock_cli_call(@gitconfig, 'git config --global --get user.email') { @email + "\n" }
 
     user = @gitconfig.current_user
     user.name.should == @name
@@ -30,10 +30,10 @@ describe Gas::Gitconfig do
     name = 'Test Testsson'
     email = 'test@testsson.com'
 
-    mock_cli_call(@gitconfig, "git config --global user.name #{name}") { nil }
-    mock_cli_call(@gitconfig, "git config --global user.email #{email}") { nil }
-    mock_cli_call(@gitconfig, 'git config --global --get user.name') { name }
-    mock_cli_call(@gitconfig, 'git config --global --get user.email') { email }
+    mock_cli_call(@gitconfig, "git config --global user.name \"#{name}\"") { nil }
+    mock_cli_call(@gitconfig, "git config --global user.email \"#{email}\"") { nil }
+    mock_cli_call(@gitconfig, 'git config --global --get user.name') { name + "\n" }
+    mock_cli_call(@gitconfig, 'git config --global --get user.email') { email + "\n" }
 
     @gitconfig.change_user name, email
 

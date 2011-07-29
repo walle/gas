@@ -12,15 +12,15 @@ module Gas
 
       return nil if name.nil? && email.nil?
 
-      User.new name, email
+      User.new name.delete("\n"), email.delete("\n") # git cli returns the name and email with \n at the end
     end
 
     # Changes the user
     # @param [String] name The new name
     # @param [String] email The new email
     def change_user(name, email)
-      `git config --global user.name #{name}`
-      `git config --global user.email #{email}`
+      `git config --global user.name "#{name}"`
+      `git config --global user.email "#{email}"`
     end
 
   end
