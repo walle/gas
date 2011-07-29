@@ -35,7 +35,6 @@ module Gas
     user = @config[nickname]
 
     @gitconfig.change_user user.name, user.email
-    @gitconfig.save!
 
     self.show
   end
