@@ -11,6 +11,24 @@ module Gas
       @name = name
       @email = email
       @nickname = nickname
+      
+      # TODO ##################################################
+      #  Notes:  Check and see if i need to "require" ssh-keygen or something like that.  
+      #
+      # 1)  Prompt user if they would like gas to juggle SSH keys for them
+      #       <Assume yes>
+      #
+      # 2)  Check for a current id_rsa file, if yes, "Do you want to use the current id_rsa file to be used as your key?"
+      #       <Assume yes>
+      #
+      
+      # Generate sshkey
+      puts "Generating ssh new ssh key"
+      
+      # ssh-keygen -f ~/id_rsa -t rsa -C "INSERT@EMAIL.COM"
+      # 
+      #   
+      
     end
 
     # Returns the git format of user
