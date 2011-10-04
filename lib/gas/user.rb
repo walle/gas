@@ -21,7 +21,9 @@ module Gas
       # 2)  Check for a current id_rsa file, if yes, "Do you want to use the current id_rsa file to be used as your key?"
       #       <Assume yes>
       #
-      
+      #   2.1 Check if id_rsa is a clone of another stored id_rsa and prompt user to make sure they're aware
+      #      and want to proceed anyway, or if they'd like to generate a new id_rsa
+      #
       # Generate sshkey
       puts "Generating ssh new ssh key"
       
