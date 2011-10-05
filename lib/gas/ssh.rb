@@ -1,4 +1,4 @@
-module gas
+module Gas
   
   # This is for checking if a .gas/rsa file already exists for a nickname which is being registered
   # If the rsa exists, then we're goona need to ask if we should use it, or if we should delete it
