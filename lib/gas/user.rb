@@ -12,24 +12,13 @@ module Gas
       @email = email
       @nickname = nickname
       
-      # TODO ##################################################
-      #  Notes:  Check and see if i need to "require" ssh-keygen or something like that.  
-      #
-      # 1)  Prompt user if they would like gas to juggle SSH keys for them
-      #       <Assume yes>
-      #
-      # 2)  Check for a current id_rsa file, if yes, "Do you want to use the current id_rsa file to be used as your key?"
-      #       <Assume yes>
-      #
-      #   2.1 Check if id_rsa is a clone of another stored id_rsa and prompt user to make sure they're aware
-      #      and want to proceed anyway, or if they'd like to generate a new id_rsa
-      #
-      # Generate sshkey
-      puts "Generating ssh new ssh key"
       
-      # ssh-keygen -f ~/id_rsa -t rsa -C "INSERT@EMAIL.COM"
-      # 
-      #   
+      setup_ssh_keys
+      
+      output_sshkey_to_paste_to_github
+      
+      
+      #  TODO Gas can automatically install this ssh key into the github account of your choice.  Would you like gas to do this for you?  (requires github username/pass)
       
     end
 
