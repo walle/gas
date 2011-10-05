@@ -9,7 +9,7 @@ module Gas
   # at least warn the user that there bidding could not be carried out.  
   def id_rsa_already_in_gas_dir?
     if corresponding_rsa_files_exist?
-      puts "Gas has detected a key in its archive directory ~/.gas/#{nickname}_id_rsa.  Should gas use this key or overwrite this key with a brand new one?"
+      puts "Gas has detected a key in its archive directory ~/.gas/#{@nickname}_id_rsa.  Should gas use this key or overwrite this key with a brand new one?"
       puts "Keep current key? [y/n]"
       keep_current_file = gets
           
@@ -24,7 +24,6 @@ module Gas
   
   
   def corresponding_rsa_files_exist?
-    @nickname = "tim"
     return true if exists? "#{@nickname}_id_rsa" and exists? "#{@nickname}_id_rsa.pub"
     false
   end
