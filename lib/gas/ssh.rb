@@ -25,7 +25,7 @@ module Gas
   
   def corresponding_rsa_files_exist?
     @nickname = "tim"
-    return true if exists? "#{@nickname}_id_rsa" && exists? "#{@nickname}_id_rsa.pub"
+    return true if exists? "#{@nickname}_id_rsa" and exists? "#{@nickname}_id_rsa.pub"
     false
   end
   
