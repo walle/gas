@@ -1,5 +1,4 @@
 module Gas
-  @nickname = "tim"
   # This is for checking if a .gas/rsa file already exists for a nickname which is being registered
   # If the rsa exists, then we're goona need to ask if we should use it, or if we should delete it
   #
@@ -25,6 +24,7 @@ module Gas
   
   
   def corresponding_rsa_files_exist?
+    @nickname = "tim"
     return true if exists? "#{@nickname}_id_rsa" && exists? "#{@nickname}_id_rsa.pub"
     false
   end
