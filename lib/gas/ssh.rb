@@ -25,7 +25,7 @@ module Gas
   
   
   def corresponding_rsa_files_exist?
-    return true if exists? "#{nickname}_id_rsa" && exists? "#{nickname}_id_rsa.pub"
+    return true if exists? "#{@nickname}_id_rsa" && exists? "#{@nickname}_id_rsa.pub"
     false
   end
   
@@ -63,8 +63,8 @@ module Gas
     
     return false if check_uniqueness_of_rsa  # TODO, this would return if the
     
-    cmd_result = `cp ~/.ssh/id_rsa ~/.gas/#{nickname}_id_rsa`
-    cmd_result = `cp ~/.ssh/id_rsa.pub ~/.gas/#{nickname}_id_rsa.pub`
+    cmd_result = `cp ~/.ssh/id_rsa ~/.gas/#{@nickname}_id_rsa`
+    cmd_result = `cp ~/.ssh/id_rsa.pub ~/.gas/#{@nickname}_id_rsa.pub`
   end
   
   
@@ -137,12 +137,12 @@ module Gas
       # check if ~/.gas/rsa exists, if it does, promt the user
       if corresponding_rsa_files_exist? #in ~/.gas/
         
-        puts "Well... there's already a ~/.gas/#{nickname}_id_rsa configured and ready to go.  Are you sure you don't want gas to handle rsa switching?  (Clicking no will delete the key from the gas directory)"
+        puts "Well... there's already a ~/.gas/#{@nickname}_id_rsa configured and ready to go.  Are you sure you don't want gas to handle rsa switching?  (Clicking no will delete the key from the gas directory)"
         puts "Just let gas handle ssh key for this user? [y/n]"
         keep_file = gets
         
         if keep_file == "n"
-          delete "~/.gas/#{nickname}_id_rsa", "~/.gas/#{nickname}_id_rsa.pub"
+          delete "~/.gas/#{@nickname}_id_rsa", "~/.gas/#{@nickname}_id_rsa.pub"
         end
       end
     end
