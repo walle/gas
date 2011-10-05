@@ -145,9 +145,9 @@ module Gas
         end
       end
     end
-    
+  
+  end  
     
      
   
-  end
-        
+end
