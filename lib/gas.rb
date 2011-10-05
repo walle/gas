@@ -2,6 +2,7 @@ require 'gas/version'
 require 'gas/user'
 require 'gas/config'
 require 'gas/gitconfig'
+require 'gas/ssh'
 
 module Gas
 
