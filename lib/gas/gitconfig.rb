@@ -22,6 +22,11 @@ module Gas
       `git config --global user.name "#{name}"`
       `git config --global user.email "#{email}"`
       
+      # confirm that this user has a
+      return true if Ssh.!user_has_ssh?
+      
+      
+      
       # Verify that the current id_rsa is backed up elsewhere in ~/.gas/
       # If not, prompt the user "The current id_rsa could not be found in the .gas directory."
       # "Are you sure you would like to Overright the current rsa keys?"

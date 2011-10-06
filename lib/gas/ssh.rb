@@ -158,6 +158,12 @@ module Gas
       end
     
     end
+    
+    def user_has_ssh?
+      #i todo f File.exists? @gitconfig...sleepy =(
+      return false
+    end
+    
   end
   
 end
