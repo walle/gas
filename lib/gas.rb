@@ -1,3 +1,6 @@
+GAS_DIRECTORY = File.expand_path('~/.gas')
+SSH_DIRECTORY = File.expand_path('~/.ssh')
+
 require 'gas/version'
 require 'gas/ssh'
 require 'gas/user'
@@ -25,6 +28,12 @@ module Gas
     if user
       puts 'Current user:'
       puts "#{user.name} <#{user.email}>"
+      
+      if Ssh.corresponding_rsa_files_exist?
+        puts "This user's id_rsa key is:"
+        puts `cat #{GAS_DIRECTORY}/#{user.nickname}_id_rsa.pub`
+      end
+      
     else
       puts 'No current user in gitconfig'
     end
@@ -35,9 +44,9 @@ module Gas
   def self.use(nickname)
     self.no_user? nickname
     user = @config[nickname]
-
-    @gitconfig.change_user user.name, user.email
-
+    
+    @gitconfig.change_user user        # daring change made here!  Heads up Walle
+    
     self.show
   end
 
@@ -51,12 +60,10 @@ module Gas
     @config.add user
     @config.save!
     
-    @uid = nickname
-    @uid = name if @uid.nil?
     
     
-    Ssh.setup_ssh_keys @uid
-    # TODO:  output_sshkey_to_paste_to_github
+    
+    Ssh.setup_ssh_keys user
     
     #  TODO Gas can automatically install this ssh key into the github account of your choice.  Would you like gas to do this for you?  (requires github username/pass)
     
