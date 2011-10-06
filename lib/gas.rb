@@ -1,8 +1,9 @@
 require 'gas/version'
+require 'gas/ssh'
 require 'gas/user'
 require 'gas/config'
 require 'gas/gitconfig'
-require 'gas/ssh'
+
 
 module Gas
 
@@ -49,6 +50,16 @@ module Gas
     user = User.new name, email, nickname
     @config.add user
     @config.save!
+    
+    @uid = nickname
+    @uid = name if @uid.nil?
+    
+    
+    Ssh.setup_ssh_keys @uid
+    # TODO:  output_sshkey_to_paste_to_github
+    
+    #  TODO Gas can automatically install this ssh key into the github account of your choice.  Would you like gas to do this for you?  (requires github username/pass)
+    
 
     puts 'Added author'
     puts user

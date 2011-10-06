@@ -5,16 +5,44 @@ module Gas
   # Class that keeps track of users
   class Config
     attr_reader :users
+    
+    # This function checks for a ~/.gas FILE and if it exists, it puts it into memory and deletes it from the HDD
+    # then it creates the ~/.gas FOLDER and saves the old .gas file as ~/git.conf
+    #
+    def migrate_to_gas_dir!
+      old_config_file = File.expand_path('~/.gas')
+      config_dir = File.expand_path('~/.gas')
+      new_config_file = File.expand_path('~/.gas') + "/gas.authors"
+      
+      if File.file? old_config_file
+        file = File.open(old_config_file, "rb")
+        contents = file.read
+        file.close
+        
+        File.delete old_config_file
+        
+        Dir::mkdir(config_dir)
+        
+        file = File.new(new_config_file, "w") 
+        file.puts contents
+        file.close
+      end
+      
+    end
+  
 
     # Initializes the object. If no users are supplied we look for a config file, if none then create it, and parse it to load users
     # @param [Array<User>] users The override users
     # @param [String] config The override config
     def initialize(users = nil, config = nil)
-      @config_file = File.expand_path('~/.gas')
+      migrate_to_gas_dir! # Migrates old users to the new configuration file location, how thoughtful of me, I know
+      @config_file = File.expand_path('~/.gas/gas.authors')
+      @gas_dir = File.expand_path('~/.gas')
       @config = ''
 
       if config.nil?
         if !File.exists? @config_file
+          Dir::mkdir(@gas_dir)
           FileUtils.touch @config_file
         end
 

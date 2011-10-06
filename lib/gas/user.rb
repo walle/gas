@@ -12,13 +12,8 @@ module Gas
       @email = email
       @nickname = nickname
       
+      # TODO: Place id_rsa appropriately?
       
-      setup_ssh_keys
-      
-      output_sshkey_to_paste_to_github
-      
-      
-      #  TODO Gas can automatically install this ssh key into the github account of your choice.  Would you like gas to do this for you?  (requires github username/pass)
       
     end
 
