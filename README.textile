@@ -44,4 +44,10 @@ To delete it again use, delete
 
 bc. $ gas delete walle
 
+Gas can also juggle your id_rsa ssh keys, which is helpful for uploading to github between multiple accounts.  Indespensible for teachers who need to instruct their students on how to use github!
+
+bc. $ gas add Njax NotarySojac no@mail.com
+bc. Do you want gas to handle switching rsa keys for this user?
+bc. [y/n]
+
 View @gas -h@ to see all options.
