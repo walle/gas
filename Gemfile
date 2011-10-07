@@ -1,6 +1,8 @@
 source :rubygems
 gemspec
 
+#gem 'sshkey' ~> '1.2.2'
+
 group :test do
   gem 'yard'
   gem 'guard'

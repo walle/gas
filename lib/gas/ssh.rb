@@ -104,7 +104,22 @@ module Gas
       puts "Generating new ssh key..."
       # TODO: Prompt user if they'd like to use a more secure password if physical security to their computer is not possible (dumb imo)
       
-      puts `ssh-keygen -f ~/.gas/#{@uid}_id_rsa -t rsa -C "#{@email}" -N ""`
+      #puts `ssh-keygen -f ~/.gas/#{@uid}_id_rsa -t rsa -C "#{@email}" -N ""`
+      
+      # XXX use sshkey gem instead of command line utilitie
+      k = SSHKey.generate(:comment => "#{@email}")
+      
+      publ = k.ssh_public_key + " #{@email}"
+      privl = k.private_key
+      
+      my_file_privl = File.open(GAS_DIRECTORY + "/#{@uid}_id_rsa",'w')
+      my_file_privl.write(privl)
+      my_file_privl.close
+      
+      my_file_publ = File.open(GAS_DIRECTORY + "/#{@uid}_id_rsa.pub",'w')
+      my_file_publ.write(publ)
+      my_file_publ.close
+      
     end
     
     
@@ -166,14 +181,6 @@ module Gas
     
     end
     
-    def self.user_has_ssh?
-      #i todo f File.exists? @gitconfig...sleepy =(
-      #  TODO: what's the best way to get @gitconfig into this method?
-      if File.exists? "/bluemoon"
-        return true
-      end
-      return false
-    end
     
     # This huge method handles the swapping of id_rsa files
     # 
@@ -253,45 +260,47 @@ module Gas
     def self.get_md5_hash(file_path)
       return Digest::MD5.hexdigest(File.open(file_path, "rb").read)
     end
-  end
   
-  
-  # TODO:  Uploads the public key to github
-  def self.upload_public_key_to_github(user)
-    puts "Gas can automatically install this ssh key into the github account of your choice.  Would you like gas to do this for you?"
-    puts "[y/n]"
     
-    while true
-      upload_key = STDIN.gets.strip
-      case upload_key
-      when "y"
-        key_installation_routine
-      when "n"
-        return false
-      else
-        puts "Plz respond 'y' or 'n'"
+    # TODO:  Uploads the public key to github
+    def self.upload_public_key_to_github(user)
+      return "Impliment me plz!"
+      puts "Gas can automatically install this ssh key into the github account of your choice.  Would you like gas to do this for you?"
+      puts "[y/n]"
+      
+      while true
+        upload_key = STDIN.gets.strip
+        case upload_key
+        when "y"
+          key_installation_routine
+        when "n"
+          return false
+        else
+          puts "Plz respond 'y' or 'n'"
+        end
       end
     end
-  end
-  
-  def self.key_installation_routine
     
-    credentials = get_username_and_password_and_authenticate
+    def self.key_installation_routine
+      
+      credentials = get_username_and_password_and_authenticate
+      
+      post_details = log_in_and_figure_out_where_to_post_to
+      
+      server_response = post_key!
+      
+    end
     
-    post_details = log_in_and_figure_out_where_to_post_to
+    def get_username_and_password_and_authenticate
+    end
     
-    server_response = post_key!
+    def log_in_and_figure_out_where_to_post_to
+    end
     
-  end
+    def post_key!
+    end
   
-  def get_username_and_password_and_authenticate
   end
-  
-  def log_in_and_figure_out_where_to_post_to
-  end
-  
-  def post_key!
-  end
-  
 end
+
 
