@@ -3,7 +3,8 @@ module Gas
   class Ssh
     
     
-    
+    # This is a little missleading... it's actually a prompt too...  If the user says 'f', the system will
+    #   report that there isn't an id_rsa already in gas.  This causes a new key to overwrite automatically down the road.  
     # This is for checking if a .gas/rsa file already exists for a nickname which is being registered
     # If the rsa exists, then we're goona need to ask if we should use it, or if we should delete it
     #
@@ -16,10 +17,19 @@ module Gas
       if corresponding_rsa_files_exist?
         puts "Gas has detected a key in its archive directory ~/.gas/#{@uid}_id_rsa.  Should gas use this key or overwrite this key with a brand new one?"
         puts "Keep current key? [y/n]"
-        keep_current_file = STDIN.gets
-            
-        if keep_current_file == "y"
-          return true # keep the files already in .gas, skip making key.  
+        
+        while true
+          keep_current_file = STDIN.gets.strip
+          
+          case keep_current_file
+          
+          when "y"
+            return true # keep the files already in .gas, skip making key.  
+          when "n"
+            return false
+          else
+            puts "please respond 'y' or 'n'"
+          end
         end
       
       else # no need to do anything if files don't exist
@@ -34,7 +44,7 @@ module Gas
     end
     
     
-    def self.gas_dir_exists?
+    def self.gas_dir_exists?        # TODO:  Wipe this function out, I don't think it's needed
       gas_dir = Dir::pwd + "/" + ".gas"
       
       return "this function not needed... I think"
@@ -49,26 +59,8 @@ module Gas
       
     end
     
-    #   Check if id_rsa is a clone of another stored id_rsa and prompt user to make sure they're aware
-    #   and want to proceed anyway, or if they'd like to generate a new id_rsa
-    #   TODO:  returns false if the id_rsa file isn't unique and the user changes his mind and wants a new key
-    #     generated
-    #
-    def self.rsa_unique?
-      #  TODO
-      
-      #  loop through each NICKNAME_id_rsa file in ~/.gas/ and make sure it isn't identical to any of the others
-      #  If it is identical...  Alert the user and ask them if they're sure they want to use id
-      
-      return true
-    end
-    
     
     def self.use_current_rsa_files_for_this_user
-      gas_dir_exists?  # create if it doesn't
-      
-      return false if !rsa_unique?  # this would return false if it found out that key was already in use for another git author... but what if the user wants this...
-      
       cmd_result = `cp ~/.ssh/id_rsa ~/.gas/#{@uid}_id_rsa`           # TODO: make this into ruby code so its faster I guess?
       cmd_result = `cp ~/.ssh/id_rsa.pub ~/.gas/#{@uid}_id_rsa.pub`   # TODO: Handle permission errors
       return true
@@ -85,7 +77,6 @@ module Gas
     #  
     def self.id_rsa_already_in_ssh_directory?
       return false unless ssh_dir_contains_rsa?
-      
       
       puts "Gas has detected that an ~/.ssh/id_rsa file already exists.  Would you like to use this as your ssh key to connect with github?  Otherwise a new key will be generated and stored in ~/.gas (no overwrite concerns until you 'gas use nickname')"
       puts "[y/n]"
@@ -125,12 +116,9 @@ module Gas
       @uid = user.name if @uid.nil?
       
       @email = user.email
-    # TODO ##################################################
-      #  Notes:  Check and see if i need to "require" ssh-keygen or something like that.  
-      #
-      # 1)  Prompt user if they would like gas to juggle SSH keys for them
-      #       <Assume yes>
-      #
+      # TODO ##################################################
+      #    Check and see if i need to "require" ssh-keygen or something like that.  
+      
       puts "Do you want gas to handle switching rsa keys for this user?"
       puts "[y/n]"
       
@@ -265,6 +253,44 @@ module Gas
     def self.get_md5_hash(file_path)
       return Digest::MD5.hexdigest(File.open(file_path, "rb").read)
     end
+  end
+  
+  
+  # TODO:  Uploads the public key to github
+  def self.upload_public_key_to_github(user)
+    puts "Gas can automatically install this ssh key into the github account of your choice.  Would you like gas to do this for you?"
+    puts "[y/n]"
+    
+    while true
+      upload_key = STDIN.gets.strip
+      case upload_key
+      when "y"
+        key_installation_routine
+      when "n"
+        return false
+      else
+        puts "Plz respond 'y' or 'n'"
+      end
+    end
+  end
+  
+  def self.key_installation_routine
+    
+    credentials = get_username_and_password_and_authenticate
+    
+    post_details = log_in_and_figure_out_where_to_post_to
+    
+    server_response = post_key!
+    
+  end
+  
+  def get_username_and_password_and_authenticate
+  end
+  
+  def log_in_and_figure_out_where_to_post_to
+  end
+  
+  def post_key!
   end
   
 end

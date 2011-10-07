@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+
+
 RSpec.configure do |config|
   config.mock_with :rr
 end
@@ -12,3 +14,4 @@ def mock_cli_call(mock_object, command)
   # To be able to mock ` (http://blog.astrails.com/2010/7/5/how-to-mock-backticks-operator-in-your-test-specs-using-rr)
   mock(mock_object).__double_definition_create__.call(:`, command) { yield }
 end
+

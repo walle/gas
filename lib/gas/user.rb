@@ -12,9 +12,6 @@ module Gas
       @email = email
       @nickname = nickname
       
-      # TODO: Place id_rsa appropriately?
-      
-      
     end
 
     # Returns the git format of user

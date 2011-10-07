@@ -2,6 +2,7 @@ source :rubygems
 gemspec
 
 group :test do
+  #gem 'mocha'
   gem 'yard'
   gem 'guard'
   gem 'guard-rspec'

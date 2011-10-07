@@ -24,19 +24,13 @@ module Gas
       name = user.name
       email = user.email
       
-      
       `git config --global user.name "#{name}"`
       `git config --global user.email "#{email}"`
+      
       
       # confirm that this user has an ssh and if so, swap it in safely
       Ssh.swap_in_rsa nickname
       
-      
-      # Verify that the current id_rsa is backed up elsewhere in ~/.gas/
-      # If not, prompt the user "The current id_rsa could not be found in the .gas directory."
-      # "Are you sure you would like to Overright the current rsa keys?"
-      
-      # rename the name_id_rsa and name_id_rsa.pub to id_rsa and id_rsa.pub
     end
 
   end
