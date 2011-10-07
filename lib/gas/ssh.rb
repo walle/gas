@@ -13,7 +13,7 @@ module Gas
     #
     # TODO should report an error if there is a write protection problem which prevents gas from deleting the file, or 
     # at least warn the user that there bidding could not be carried out.  
-    def self.id_rsa_already_in_gas_dir?
+    def self.id_rsa_already_in_gas_dir_for_use?
       if corresponding_rsa_files_exist?
         puts "Gas has detected a key in its archive directory ~/.gas/#{@uid}_id_rsa.  Should gas use this key or overwrite this key with a brand new one?"
         puts "Keep current key? [y/n]"
@@ -128,7 +128,7 @@ module Gas
         case handle_rsa
         when "y"
           puts
-          return true if id_rsa_already_in_gas_dir? # No more work needs to be done if the files already exists
+          return true if id_rsa_already_in_gas_dir_for_use? # No more work needs to be done if the files already exists
           
           #  Check ~/.ssh for a current id_rsa file, if yes, "Do you want to use the current id_rsa file to be used as your key?"
           return true if id_rsa_already_in_ssh_directory?  # copies the keys instead of generating new keys if desired/possible
