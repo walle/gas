@@ -4,7 +4,7 @@ h1. gas - manage your git author accounts
 
 h2. Description
 
-Gas is a utility to keep track of your git authors. Add them to gas and switch at any time. Great if you use one author at work and one at home or if you are doing pair programming.
+Gas is a mighty utility that helps you keep track of your multiple git authors.  Add them to gas and switch between them instantly!  Great if you use one author at work and one at home or if you are doing pair programming.  
 
 h2. Installation
 
@@ -20,19 +20,19 @@ $ rake install
 
 h2. Running
 
-Default task is to list authors
+The default task is to list authors
 
 bc. $ gas
 
 bc. $ gas list
 
-This lists the authors that are set up.
+This lists the authors that are set up in the ~/.gas/gas.authors file.
 
 You can import your current user by giving it a nickname
 
 bc. $ gas import current_user
 
-To add a author use, add
+To add an author use, add
 
 bc. $ gas add walle "Fredrik Wallgren" fredrik.wallgren@gmail.com
 
@@ -43,5 +43,11 @@ bc. $ gas use walle
 To delete it again use, delete
 
 bc. $ gas delete walle
+
+Gas can also juggle your id_rsa ssh keys, which is helpful for uploading to github between multiple accounts.  Indespensible for teachers who need to instruct their students on how to use github!
+
+bc. $ gas add Njax NotarySojac no@mail.com
+Do you want gas to handle switching rsa keys for this user?
+[y/n]
 
 View @gas -h@ to see all options.
