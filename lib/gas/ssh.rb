@@ -54,7 +54,6 @@ module Gas
         Dir::mkdir(directory_name)
       rescue
         puts "Failed to create .gas directory!  SSH keys juggling can't work without this!"
-        # TODO do something to terminate the process or something?
       end
       
     end
@@ -134,8 +133,7 @@ module Gas
       @uid = user.name if @uid.nil?
       
       @email = user.email
-      # TODO ##################################################
-      #    Check and see if i need to "require" ssh-keygen or something like that.  
+      # TODO   Check and see if i need to "require" ssh-keygen and ssh-add or something like that.  
       
       puts "Do you want gas to handle switching rsa keys for this user?"
       puts "[y/n]"
@@ -193,12 +191,8 @@ module Gas
                        #  Have the dumb information from the last time it registered a new git author?
       
       if Ssh.corresponding_rsa_files_exist?
-        # TODO: run ssh-add -d to delte the current id_rsa before doing the transfer, otherwise it may linger in system memory??
         
         if ssh_dir_contains_rsa?
-          # TODO: File compare if the file in ~/.ssh is the same one as ~/.gas/nick, and if it is, there's no need for prompt
-          # TODO: File compare to see if the file in ~/.ssh is already backed up in ~/.gas/ and if it is, no need for prompt
-          # 
           if current_key_already_backed_up?
             write_to_ssh_dir!
           else
@@ -243,7 +237,6 @@ module Gas
     # dir_to_scan        The target directory you'd like to scan
     # file_to_compare    The file's path that you're expecting to find 
     def self.scan_for_file_match(file_to_compare, dir_to_scan)
-      # TODO:  Make this
       require 'digest/md5'
       
       pattern = get_md5_hash(file_to_compare)
@@ -276,7 +269,7 @@ module Gas
       puts "You can paste this key into your git hub account:"
       puts File.open("#{GAS_DIRECTORY}/#{user.nickname}_id_rsa.pub", "rb").read
       return "Impliment me plz!"
-      puts "Gas can automatically install this ssh key into the github account of your choice.  Would you like gas to do this for you?"
+      puts "Gas can automatically install this ssh key into the github account of your choice.  Would you like gas to do this for you?  (Requires inputting github username and password)"
       puts "[y/n]"
       
       while true

@@ -62,13 +62,8 @@ module Gas
     @config.add user
     @config.save!
     
-    
-    
-
-     
     Ssh.setup_ssh_keys user
     
-    #  TODO Gas can automatically install this ssh key into the github account of your choice.  Would you like gas to do this for you?  (requires github username/pass)
     Ssh.upload_public_key_to_github user
     
     puts 'Added author'
