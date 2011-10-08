@@ -59,7 +59,8 @@ module Gas
       
     end
     
-    
+    # Copies a key pair from ~/.ssh to .gas/Nickname*
+    # TODO: return false if a problem occured?  Also convert it to ruby code
     def self.use_current_rsa_files_for_this_user
       cmd_result = `cp ~/.ssh/id_rsa ~/.gas/#{@uid}_id_rsa`           # TODO: make this into ruby code so its faster I guess?
       cmd_result = `cp ~/.ssh/id_rsa.pub ~/.gas/#{@uid}_id_rsa.pub`   # TODO: Handle permission errors
@@ -78,20 +79,17 @@ module Gas
     def self.id_rsa_already_in_ssh_directory?
       return false unless ssh_dir_contains_rsa?
       
-      puts "Gas has detected that an ~/.ssh/id_rsa file already exists.  Would you like to use this as your ssh key to connect with github?  Otherwise a new key will be generated and stored in ~/.gas (no overwrite concerns until you 'gas use nickname')"
+      #puts "Gas has detected that an ~/.ssh/id_rsa file already exists.  Would you like to use this as your ssh key to connect with github?  Otherwise a new key will be generated and stored in ~/.gas (no overwrite concerns until you 'gas use nickname')"
+      puts "Generate a brand new ssh key pair?"
       puts "[y/n]"
       
       while true
-        use_current_rsa_files = STDIN.gets.strip
-        case use_current_rsa_files
+        generate_new_rsa = STDIN.gets.strip
+        case generate_new_rsa
           when "y"
-            if use_current_rsa_files_for_this_user
-              return true # return true if 
-            else
-              return false
-            end
-          when "n"
             return false
+          when "n"
+            return use_current_rsa_files_for_this_user # return true if we aren't generating a new key
           else
             puts "plz answer 'y' or 'n'"
         end
@@ -104,21 +102,28 @@ module Gas
       puts "Generating new ssh key..."
       # TODO: Prompt user if they'd like to use a more secure password if physical security to their computer is not possible (dumb imo)
       
-      #puts `ssh-keygen -f ~/.gas/#{@uid}_id_rsa -t rsa -C "#{@email}" -N ""`
+      if false  # ssh-keygen style key creation
+        puts `ssh-keygen -f ~/.gas/#{@uid}_id_rsa -t rsa -C "#{@email}" -N ""`
+      end
       
-      # XXX use sshkey gem instead of command line utilitie
-      k = SSHKey.generate(:comment => "#{@email}")
       
-      publ = k.ssh_public_key + " #{@email}"
-      privl = k.private_key
+      if true  # new sshkey gem method...
+        # XXX use sshkey gem instead of command line utilitie
+        k = SSHKey.generate(:comment => "#{@email}")
+        
+        publ = k.ssh_public_key
+        privl = k.private_key
+        
+        my_file_privl = File.open(GAS_DIRECTORY + "/#{@uid}_id_rsa",'w')
+        my_file_privl.write(privl)
+        my_file_privl.close
+        
+        my_file_publ = File.open(GAS_DIRECTORY + "/#{@uid}_id_rsa.pub",'w')
+        my_file_publ.write(publ)
+        my_file_publ.close
+      end
       
-      my_file_privl = File.open(GAS_DIRECTORY + "/#{@uid}_id_rsa",'w')
-      my_file_privl.write(privl)
-      my_file_privl.close
       
-      my_file_publ = File.open(GAS_DIRECTORY + "/#{@uid}_id_rsa.pub",'w')
-      my_file_publ.write(publ)
-      my_file_publ.close
       
     end
     
@@ -190,6 +195,7 @@ module Gas
                        #  Have the dumb information from the last time it registered a new git author?
       
       if Ssh.corresponding_rsa_files_exist?
+        # TODO: run ssh-add -d to delte the current id_rsa before doing the transfer, otherwise it may linger in system memory??
         
         if ssh_dir_contains_rsa?
           # TODO: File compare if the file in ~/.ssh is the same one as ~/.gas/nick, and if it is, there's no need for prompt
@@ -222,6 +228,8 @@ module Gas
         end
         
       end
+      
+      puts `ssh-add ~/.ssh/id_rsa`   # TODO: you need to run this command to get the private key to be set to active on unix based machines.  Not sure what to do for windows yet... 
       
     end
     
