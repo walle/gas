@@ -102,9 +102,7 @@ module Gas
       puts "Generating new ssh key..."
       # TODO: Prompt user if they'd like to use a more secure password if physical security to their computer is not possible (dumb imo)
       
-      if false  # ssh-keygen style key creation
-        puts `ssh-keygen -f ~/.gas/#{@uid}_id_rsa -t rsa -C "#{@email}" -N ""`
-      end
+      # puts `ssh-keygen -f ~/.gas/#{@uid}_id_rsa -t rsa -C "#{@email}" -N ""`    # ssh-keygen style key creation
       
       
       if true  # new sshkey gem method...
@@ -229,13 +227,16 @@ module Gas
         
       end
       
-      puts `ssh-add ~/.ssh/id_rsa`   # TODO: you need to run this command to get the private key to be set to active on unix based machines.  Not sure what to do for windows yet... 
       
     end
     
     def self.write_to_ssh_dir!
+      `ssh-add -d ~/.ssh/id_rsa`     # remove the current key from the ssh-agent session (key will no longer be used with github)
+      
       `cp ~/.gas/#{@uid}_id_rsa ~/.ssh/id_rsa`
       `cp ~/.gas/#{@uid}_id_rsa.pub ~/.ssh/id_rsa.pub`
+      
+      `ssh-add ~/.ssh/id_rsa`   # TODO: you need to run this command to get the private key to be set to active on unix based machines.  Not sure what to do for windows yet... 
     end
     
     # This function scans each file in a directory to check to see if it is the same file which it's being compared against
@@ -272,6 +273,8 @@ module Gas
     
     # TODO:  Uploads the public key to github
     def self.upload_public_key_to_github(user)
+      puts "You can paste this key into your git hub account:"
+      puts File.open("#{GAS_DIRECTORY}/#{user.nickname}_id_rsa.pub", "rb").read
       return "Impliment me plz!"
       puts "Gas can automatically install this ssh key into the github account of your choice.  Would you like gas to do this for you?"
       puts "[y/n]"
