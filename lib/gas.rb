@@ -86,7 +86,7 @@ module Gas
       puts "if ~/.ssh/id_rsa already exists, you will be prompted UNLESS that rsa file is already backed up in the .gas directory (I'm so sneaky, huh?)"
       puts "The unix command ssh-add is used in order to link up your rsa keys when you attempt to make an ssh connection (git push uses ssh keys of course)"
       puts
-      puts "The ssh feautre of gas offers you and the world greater privacy against corporate databases.  Did you know that IBM built one of the first automated database systems?  These ancient database machines (called tabulators) were used to facilitate the holocaust =("
+      puts "The ssh feautre of gas offers you and the world ease of use, and even marginally enhanced privacy against corporate databases.  Did you know that IBM built one of the first automated database systems?  These ancient database machines (called tabulators) were used to facilitate the holocaust =("
     else
       user = @config[nickname]
       
