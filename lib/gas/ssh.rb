@@ -3,7 +3,34 @@ module Gas
   class Ssh
     
     
-    # This is a little missleading... it's actually a prompt too...  If the user says 'f', the system will
+
+    #  TODO: remove me, obsolete after "Impliment the below form..." refactor is complete
+    def self.id_rsa_already_in_gas_dir_for_use?
+      if corresponding_rsa_files_exist?
+        puts "Gas has detected a key in its archive directory ~/.gas/#{@uid}_id_rsa.  Should gas use this key or overwrite this key with a brand new one?"
+        puts "Keep current key? [y/n]"
+        
+        while true
+          keep_current_file = STDIN.gets.strip
+          
+          case keep_current_file
+          
+          when "y"
+            return true # keep the files already in .gas, skip making key.  
+          when "n"
+            return false
+          else
+            puts "please respond 'y' or 'n'"
+          end
+        end
+      
+      else # no need to do anything if files don't exist
+        return false 
+      end
+    end
+    
+    
+    # If the user says 'f', the system will
     #   report that there isn't an id_rsa already in gas.  This causes a new key to overwrite automatically down the road.  
     # This is for checking if a .gas/rsa file already exists for a nickname which is being registered
     # If the rsa exists, then we're goona need to ask if we should use it, or if we should delete it
@@ -13,7 +40,7 @@ module Gas
     #
     # TODO should report an error if there is a write protection problem which prevents gas from deleting the file, or 
     # at least warn the user that there bidding could not be carried out.  
-    def self.id_rsa_already_in_gas_dir_for_use?
+    def self.user_wants_to_use_key_already_in_gas?
       if corresponding_rsa_files_exist?
         puts "Gas has detected a key in its archive directory ~/.gas/#{@uid}_id_rsa.  Should gas use this key or overwrite this key with a brand new one?"
         puts "Keep current key? [y/n]"
@@ -63,6 +90,7 @@ module Gas
     def self.use_current_rsa_files_for_this_user
       cmd_result = `cp ~/.ssh/id_rsa ~/.gas/#{@uid}_id_rsa`           # TODO: make this into ruby code so its faster I guess?
       cmd_result = `cp ~/.ssh/id_rsa.pub ~/.gas/#{@uid}_id_rsa.pub`   # TODO: Handle permission errors
+      puts "This is for checking the test...  #{@uid}"
       return true
     end
     
@@ -75,6 +103,7 @@ module Gas
     #  Checks if the ~/.ssh directroy contains id_rsa and id_rsa.pub
     #  if it does, it asks the user if they would like to use that as their ssh key, instead of generating a new key pair.  
     #  
+    #  TODO: remove me, obsolete after "Impliment the below form..." refactor is complete
     def self.id_rsa_already_in_ssh_directory?
       return false unless ssh_dir_contains_rsa?
       
@@ -95,30 +124,54 @@ module Gas
       end
     end
     
+    #  Checks if the ~/.ssh directroy contains id_rsa and id_rsa.pub
+    #  if it does, it asks the user if they would like to use that as their ssh key, instead of generating a new key pair.  
+    #  
+    def self.user_wants_to_use_key_already_in_ssh?
+      return false unless ssh_dir_contains_rsa?
+      
+      #puts "Gas has detected that an ~/.ssh/id_rsa file already exists.  Would you like to use this as your ssh key to connect with github?  Otherwise a new key will be generated and stored in ~/.gas (no overwrite concerns until you 'gas use nickname')"
+      puts "Generate a brand new ssh key pair?"
+      puts "[y/n]"
+      
+      while true
+        generate_new_rsa = STDIN.gets.strip
+        case generate_new_rsa
+          when "y"
+            return false
+          when "n"
+            return true # return true if we aren't generating a new key
+          else
+            puts "plz answer 'y' or 'n'"
+        end
+      end
+    end
+    
+    
     
     # Generates a new sshkey putting it in ~/.gas/nickname_id_rsa
     def self.generate_new_rsa_keys_in_gas_dir
       puts "Generating new ssh key..."
       # TODO: Prompt user if they'd like to use a more secure password if physical security to their computer is not possible (dumb imo)
       
+      # Old ssh key method (relies on unix environment)
       # puts `ssh-keygen -f ~/.gas/#{@uid}_id_rsa -t rsa -C "#{@email}" -N ""`    # ssh-keygen style key creation
       
       
-      if true  # new sshkey gem method...
-        # XXX use sshkey gem instead of command line utilitie
-        k = SSHKey.generate(:comment => "#{@email}")
-        
-        publ = k.ssh_public_key
-        privl = k.private_key
-        
-        my_file_privl = File.open(GAS_DIRECTORY + "/#{@uid}_id_rsa",'w')
-        my_file_privl.write(privl)
-        my_file_privl.close
-        
-        my_file_publ = File.open(GAS_DIRECTORY + "/#{@uid}_id_rsa.pub",'w')
-        my_file_publ.write(publ)
-        my_file_publ.close
-      end
+      # new sshkey gem method...
+      # XXX use sshkey gem instead of command line utilitie
+      k = SSHKey.generate(:comment => "#{@email}")
+      
+      publ = k.ssh_public_key
+      privl = k.private_key
+      
+      my_file_privl = File.open(GAS_DIRECTORY + "/#{@uid}_id_rsa",'w',0700)
+      my_file_privl.write(privl)
+      my_file_privl.close
+      
+      my_file_publ = File.open(GAS_DIRECTORY + "/#{@uid}_id_rsa.pub",'w',0700)
+      my_file_publ.write(publ)
+      my_file_publ.close
       
       
       
@@ -131,9 +184,7 @@ module Gas
     def self.setup_ssh_keys(user)
       @uid = user.nickname                 # TODO: question:  are nicknames allowed to be nil?  If not, this coding can be reduced to one line of code
       @uid = user.name if @uid.nil?
-      
       @email = user.email
-      # TODO   Check and see if i need to "require" ssh-keygen and ssh-add or something like that.  
       
       puts "Do you want gas to handle switching rsa keys for this user?"
       puts "[y/n]"
@@ -144,12 +195,23 @@ module Gas
         case handle_rsa
         when "y"
           puts
-          return true if id_rsa_already_in_gas_dir_for_use? # No more work needs to be done if the files already exists
+          # return true if id_rsa_already_in_gas_dir_for_use? # No more work needs to be done if the files already exists
           
-          #  Check ~/.ssh for a current id_rsa file, if yes, "Do you want to use the current id_rsa file to be used as your key?"
-          return true if id_rsa_already_in_ssh_directory?  # copies the keys instead of generating new keys if desired/possible
+          # TODO: Impliment the below formatting so it's easier to test and easier to read my own code
+          #
+          if user_wants_to_use_key_already_in_gas?
+            return true  # because gas directory is already setup
+          elsif user_wants_to_use_key_already_in_ssh?   #  Check ~/.ssh for a current id_rsa file, if yes, "Do you want to use the current id_rsa file to be used as your key?"
+            use_current_rsa_files_for_this_user    # copies the keys from ~/.ssh instead of generating new keys if desired/possible
+            return true
+          else
+            return generate_new_rsa_keys_in_gas_dir
+          end
           
-          return generate_new_rsa_keys_in_gas_dir
+          #return true if id_rsa_already_in_ssh_directory?  
+          
+          
+          # return generate_new_rsa_keys_in_gas_dir
           
         when "n"
           puts
@@ -225,12 +287,16 @@ module Gas
     end
     
     def self.write_to_ssh_dir!
-      `ssh-add -d ~/.ssh/id_rsa`     # remove the current key from the ssh-agent session (key will no longer be used with github)
+      `ssh-add -d ~/.ssh/id_rsa` if is_ssh_agent_there?    # remove the current key from the ssh-agent session (key will no longer be used with github)
       
-      `cp ~/.gas/#{@uid}_id_rsa ~/.ssh/id_rsa`
-      `cp ~/.gas/#{@uid}_id_rsa.pub ~/.ssh/id_rsa.pub`
+      FileUtils.cp(GAS_DIRECTORY + "/#{@uid}_id_rsa", SSH_DIRECTORY + "/id_rsa") 
+      FileUtils.cp(GAS_DIRECTORY + "/#{@uid}_id_rsa.pub", SSH_DIRECTORY + "/id_rsa.pub")  
       
-      `ssh-add ~/.ssh/id_rsa`   # TODO: you need to run this command to get the private key to be set to active on unix based machines.  Not sure what to do for windows yet... 
+      if is_ssh_agent_there?
+        `ssh-add ~/.ssh/id_rsa`  # TODO: you need to run this command to get the private key to be set to active on unix based machines.  Not sure what to do for windows yet...
+      else
+        puts "Slight Error:  The key should now be in ~/.ssh so that's good, BUT ssh-add could not be found.  If you're using windows, you'll need to use git bash or cygwin to emulate this unix command and actually do uploads."
+      end
     end
     
     # This function scans each file in a directory to check to see if it is the same file which it's being compared against
@@ -260,7 +326,10 @@ module Gas
     end
     
     def self.get_md5_hash(file_path)
-      return Digest::MD5.hexdigest(File.open(file_path, "rb").read)
+      if File.exists? file_path
+        return Digest::MD5.hexdigest(File.open(file_path, "rb").read)
+      end
+      return nil
     end
   
     
@@ -302,6 +371,43 @@ module Gas
     end
     
     def post_key!
+    end
+    
+    # Cross-platform way of finding an executable in the $PATH.
+    # returns nil if command not present
+    #
+    #   which('ruby') #=> /usr/bin/ruby
+    def self.which(cmd)
+      exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+      ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+        exts.each { |ext|
+          exe = "#{path}/#{cmd}#{ext}"
+          return exe if File.executable? exe
+        }
+      end
+      return nil
+    end
+    
+    def self.is_ssh_agent_there?
+      return false if which("ssh-add").nil?
+      return true
+    end
+    
+    # deletes the ssh keys associated with a user
+    def self.delete(nickname)
+      # XXX: check if this user's key is also in ~/.ssh
+      ssh_file = get_md5_hash("#{SSH_DIRECTORY}/id_rsa")
+      gas_file = get_md5_hash("#{GAS_DIRECTORY}/#{nickname}_id_rsa")
+      
+      return false if gas_file.nil?       # if the gas file doesn't exist, return from this function safely
+      
+      if ssh_file == gas_file
+        File.delete("#{SSH_DIRECTORY}/id_rsa")
+        File.delete("#{SSH_DIRECTORY}/id_rsa.pub")
+      end
+      
+      File.delete("#{GAS_DIRECTORY}/#{nickname}_id_rsa")
+      File.delete("#{GAS_DIRECTORY}/#{nickname}_id_rsa.pub")
     end
   
   end

@@ -69,6 +69,38 @@ module Gas
     puts 'Added author'
     puts user
   end
+  
+  
+  # Adds an ssh key for the specified user
+  def self.ssh(nickname)
+    p @config
+    if nickname.nil?
+      puts "Oh, so you'd like an elaborate explanation on how ssh key juggling works?  Well pull up a chair!"
+      puts
+      puts "Gas can juggle ssh keys for you.  It works best in a unix based environment (so at least use git bash or cygwin on a windows platform)."
+      puts "You will be prompted if you would like to handle SSH keys when you create a new user."
+      puts "If you are a long time user of gas, you can add ssh to an author by the command..."
+      puts "\$  gas ssh NICKNAME"
+      puts "Your ssh keys will be stored in ~/.gas/NICKNAME_id_rsa and automatically copied to ~/.ssh/id_rsa when you use the command..."
+      puts "\$  gas use NICKNAME"
+      puts "if ~/.ssh/id_rsa already exists, you will be prompted UNLESS that rsa file is already backed up in the .gas directory (I'm so sneaky, huh?)"
+      puts "The unix command ssh-add is used in order to link up your rsa keys when you attempt to make an ssh connection (git push uses ssh keys of course)"
+      puts
+      puts "The ssh feautre of gas offers you and the world greater privacy against corporate databases.  Did you know that IBM built one of the first automated database systems?  These ancient database machines (called tabulators) were used to facilitate the holocaust =("
+    else
+      user = @config[nickname]
+      
+      Ssh.setup_ssh_keys user
+          
+      Ssh.upload_public_key_to_github user
+    end
+  end
+  
+
+    
+  
+  
+  
 
   # Imports current user from .gitconfig to .gas
   # @param [String] nickname The nickname to give to the new user
@@ -89,14 +121,19 @@ module Gas
     end
   end
 
-  # Deletes a author from the config using nickname
+  # Deletes an author from the config using nickname
   # @param [String] nickname The nickname of the author
   def self.delete(nickname)
-    self.no_user? nickname
+    Ssh.delete nickname
+    return false unless self.no_user? nickname        # I re-engineered this section so I could use Gas.delete in a test even when that author didn't exist
+                                                      # TODO: The name no_user? is now very confusing.  It should be changed to something like "is_user?" now maybe?
     @config.delete nickname
     @config.save!
+    
+    Ssh.delete nickname
 
     puts "Deleted author #{nickname}"
+    return true
   end
 
   # Prints the current version
@@ -109,8 +146,9 @@ module Gas
   def self.no_user?(nickname)
     if !@config.exists? nickname
       puts "Nickname #{nickname} does not exist"
-      exit
+      return false
     end
+    return true
   end
 
   # Checks if the user exists and gives error and exit if so
