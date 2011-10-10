@@ -62,9 +62,9 @@ module Gas
     @config.add user
     @config.save!
     
-    Ssh.setup_ssh_keys user
+    using_ssh = Ssh.setup_ssh_keys user
     
-    Ssh.upload_public_key_to_github user
+    Ssh.upload_public_key_to_github(user) if using_ssh
     
     puts 'Added author'
     puts user

@@ -178,14 +178,8 @@ module Gas
     end
     
     
-    # This function creates the ssh keys if needed and puts them in ~/.gas/NICKNAME_id_rsa and ...rsa.pub
-    # 
-    # 
-    def self.setup_ssh_keys(user)
-      @uid = user.nickname                 # TODO: question:  are nicknames allowed to be nil?  If not, this coding can be reduced to one line of code
-      @uid = user.name if @uid.nil?
-      @email = user.email
-      
+    
+    def self.user_wants_gas_to_handle_rsa_keys?
       puts "Do you want gas to handle switching rsa keys for this user?"
       puts "[y/n]"
       
@@ -194,25 +188,7 @@ module Gas
         
         case handle_rsa
         when "y"
-          puts
-          # return true if id_rsa_already_in_gas_dir_for_use? # No more work needs to be done if the files already exists
-          
-          # TODO: Impliment the below formatting so it's easier to test and easier to read my own code
-          #
-          if user_wants_to_use_key_already_in_gas?
-            return true  # because gas directory is already setup
-          elsif user_wants_to_use_key_already_in_ssh?   #  Check ~/.ssh for a current id_rsa file, if yes, "Do you want to use the current id_rsa file to be used as your key?"
-            use_current_rsa_files_for_this_user    # copies the keys from ~/.ssh instead of generating new keys if desired/possible
-            return true
-          else
-            return generate_new_rsa_keys_in_gas_dir
-          end
-          
-          #return true if id_rsa_already_in_ssh_directory?  
-          
-          
-          # return generate_new_rsa_keys_in_gas_dir
-          
+          return true
         when "n"
           puts
           # check if ~/.gas/rsa exists, if it does, promt the user
@@ -230,7 +206,7 @@ module Gas
                 return false
               when "y"
                 puts "Excelent!  Gas will handle rsa keys for this user."
-                return true
+                return nil
               else
                 puts "Please use 'y' or 'n'"
               end
@@ -241,11 +217,40 @@ module Gas
           puts "Please use 'y' or 'n'"
         end
       end
+      
+      
+    end
+    
+    # This function creates the ssh keys if needed and puts them in ~/.gas/NICKNAME_id_rsa and ...rsa.pub
+    # 
+    # 
+    def self.setup_ssh_keys(user)
+      @uid = user.nickname                 # TODO: question:  are nicknames allowed to be nil?  If not, this coding can be reduced to one line of code
+      @uid = user.name if @uid.nil?
+      @email = user.email
+      
+      if user_wants_gas_to_handle_rsa_keys?
+        puts
+        
+        if user_wants_to_use_key_already_in_gas?
+          return true  # because gas directory is already setup
+        elsif user_wants_to_use_key_already_in_ssh?   #  Check ~/.ssh for a current id_rsa file, if yes, "Do you want to use the current id_rsa file to be used as your key?"
+          use_current_rsa_files_for_this_user    # copies the keys from ~/.ssh instead of generating new keys if desired/possible
+          return true
+        else
+          return generate_new_rsa_keys_in_gas_dir
+        end
+        
+      elsif user_wants_gas_to_handle_rsa_keys?.nil?
+        return true  # if user_wants_gas_to_handle_rsa_keys? returns nill that means the user actually had ssh keys already in .gas, and they would like to use those.  
+      else
+        return false # if user doesn't want gas to use ssh keys, that's fine too.  
+      end
     
     end
     
     
-    # This huge method handles the swapping of id_rsa files
+    # This huge method handles the swapping of id_rsa files on the hdd
     # 
     def self.swap_in_rsa(nickname)
       @uid = nickname  # woah, this is extremely sloppy I think... in order to use any other class methods, 
@@ -282,9 +287,8 @@ module Gas
         end
         
       end
-      
-      
     end
+    
     
     def self.write_to_ssh_dir!
       `ssh-add -d ~/.ssh/id_rsa` if is_ssh_agent_there?    # remove the current key from the ssh-agent session (key will no longer be used with github)
@@ -372,6 +376,7 @@ module Gas
     
     def post_key!
     end
+    
     
     # Cross-platform way of finding an executable in the $PATH.
     # returns nil if command not present
