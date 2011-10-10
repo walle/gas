@@ -296,6 +296,9 @@ module Gas
       FileUtils.cp(GAS_DIRECTORY + "/#{@uid}_id_rsa", SSH_DIRECTORY + "/id_rsa") 
       FileUtils.cp(GAS_DIRECTORY + "/#{@uid}_id_rsa.pub", SSH_DIRECTORY + "/id_rsa.pub")  
       
+      FileUtils.chmod(0700, SSH_DIRECTORY + "/id_rsa")
+      FileUtils.chmod(0700, SSH_DIRECTORY + "/id_rsa.pub")
+      
       if is_ssh_agent_there?
         `ssh-add ~/.ssh/id_rsa`  # TODO: you need to run this command to get the private key to be set to active on unix based machines.  Not sure what to do for windows yet...
       else
