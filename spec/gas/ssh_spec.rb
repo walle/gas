@@ -238,6 +238,7 @@ rake spec SPEC=spec/gas/ssh_spec.rb \
 
     bundle exec rspec spec/gas/ssh_spec.rb -e 'should add ssh keys to github when user is created, and delete them when destroyed'
     
+bundle exec rspec spec/gas/ssh_spec.rb -e 'UTILITY:  should be able to insert a new key into github and conversly remove that key'
 =end
     
     it "should add ssh keys to github when user is created, and delete them when destroyed" do

@@ -6,7 +6,6 @@ module Gas
     require 'json'
     
     
-    
     # If the user says 'f', the system will
     #   report that there isn't an id_rsa already in gas.  This causes a new key to overwrite automatically down the road.  
     # This is for checking if a .gas/rsa file already exists for a nickname which is being registered
@@ -14,9 +13,6 @@ module Gas
     #
     # Returns true to indicate that the user would like to use the rsa file already in .gas ()  
     # Returns false when there is no naming conflicts.
-    #
-    # TODO should report an error if there is a write protection problem which prevents gas from deleting the file, or 
-    # at least warn the user that there bidding could not be carried out.  
     def self.user_wants_to_use_key_already_in_gas?
       if corresponding_rsa_files_exist?
         puts "Gas has detected a key in its archive directory ~/.gas/#{@uid}_id_rsa.  Should gas use this key or overwrite this key with a brand new one?"
@@ -44,24 +40,10 @@ module Gas
     
     def self.corresponding_rsa_files_exist?(nickname = '')
       nickname = @uid if nickname  == ''
-      return true if File.exists? "#{GAS_DIRECTORY}/#{nickname}_id_rsa" and File.exists? "#{GAS_DIRECTORY}/#{nickname}_id_rsa.pub"   # TODO: Unit test me
+      return true if File.exists? "#{GAS_DIRECTORY}/#{nickname}_id_rsa" and File.exists? "#{GAS_DIRECTORY}/#{nickname}_id_rsa.pub"
       false
     end
     
-    
-    def self.gas_dir_exists?        # TODO:  Wipe this function out, I don't think it's needed
-      gas_dir = Dir::pwd + "/" + ".gas"
-      
-      return "this function not needed... I think"
-      
-      return if FileTest::directory?(directory_name)
-      begin
-        Dir::mkdir(directory_name)
-      rescue
-        puts "Failed to create .gas directory!  SSH keys juggling can't work without this!"
-      end
-      
-    end
     
     # Copies a key pair from ~/.ssh to .gas/Nickname*
     def self.use_current_rsa_files_for_this_user(test = nil)
@@ -163,7 +145,7 @@ module Gas
               
               case keep_file
               when "n"
-                delete "~/.gas/#{@uid}_id_rsa", "~/.gas/#{@uid}_id_rsa.pub"    # TODO:  Test me
+                delete "~/.gas/#{@uid}_id_rsa", "~/.gas/#{@uid}_id_rsa.pub"
                 return false
               when "y"
                 puts "Excelent!  Gas will handle rsa keys for this user."
@@ -187,8 +169,7 @@ module Gas
     # 
     # 
     def self.setup_ssh_keys(user)
-      @uid = user.nickname                 # TODO: question:  are nicknames allowed to be nil?  If not, this coding can be reduced to one line of code
-      @uid = user.name if @uid.nil?
+      @uid = user.nickname
       @email = user.email
       
       wants_gas_handling_keys = user_wants_gas_to_handle_rsa_keys?
@@ -286,7 +267,7 @@ module Gas
       
       @files = Dir.glob(dir_to_scan + "/*" + file_to_compare.split(//).last(1).to_s)
       
-      @files.each do |file|                              # TODO: optimize to filter with and without .pub accordingly
+      @files.each do |file|                           
         return true if get_md5_hash(file) == pattern
       end
       
@@ -331,12 +312,6 @@ module Gas
     def self.upload_public_key_to_github(user)
       @uid = user.nickname
       
-      if false  # XXX: clean this up
-        puts "You can paste this key into your git hub account:"
-        puts File.open("#{GAS_DIRECTORY}/#{@uid.nickname}_id_rsa.pub", "rb").read
-        return "Impliment me plz!"
-      end
-      
       if user_wants_to_install_key_to_github?
         key_installation_routine!
       end
@@ -348,7 +323,7 @@ module Gas
       
       rsa_key = get_associated_rsa_key(@uid)
       rsa_key = rsa_test unless rsa_test.nil?
-      return false if rsa_key.nil?    # XXX: I changed stuff here
+      return false if rsa_key.nil?
       
       #  TODO:  Impliment a key ring system where you store your key on your github in a repository, only it's encrypted.  And to decrypt it, there is 
       #    A file in your .gas folder!!!  That sounds SO fun!  
@@ -356,13 +331,11 @@ module Gas
       
       if !credentials
         puts "Invalid credentials.  Skipping upload of keys to github.  "
-        puts "To try again, type  $  gas ssh #{@uid}"  # TODO: impliment
+        puts "To try again, type  $  gas ssh #{@uid}"
         return false
       end
       
-      rsa_key = rsa_test unless rsa_test.nil? # for easy testing  # TODO: there are two of these here...
-      
-      result = post_key!(credentials, @uid, rsa_key)                  # XXX: check that these variables are getting here safe and sound...
+      result = post_key!(credentials, @uid, rsa_key)  
       if result
         puts "Key uploaded successfully!"
         return true
@@ -521,11 +494,8 @@ module Gas
     
     
     def self.install_key(username, password, title, rsa_key)
-      keys_beg = get_keys(username, password).length
-      
       server = 'api.github.com'
       path = '/user/keys'
-    
       
       http = Net::HTTP.new(server, 443)   # 443 for ssl
       http.use_ssl = true
@@ -535,31 +505,19 @@ module Gas
       req.body = "{\"title\":\"#{title}\", \"key\":\"#{rsa_key}\"}"
       
       response = http.start {|http| http.request(req) }
+      the_code = response.code
       
-      return_hash = http.request(req).body
-      
-      my_hash = JSON.parse(return_hash)
-      
-      begin
-        the_code = my_hash["errors"][0]["code"]
-      rescue
-        puts "error caught:  maybe github upgraded something and you'd like to contribute a fix?  Check your github account to see if the key got in there ok.  Then adjust the code so that it doesn't throw an exception and instead returns true at the bottom somewhere.  Or perhaps your id_rsa key is corrupt?"
-        puts "GITHUB SERVER RESPONSE:"
-        p return_hash
-        puts
-        raise "After sending a call to the GitHub API... and unexpected response came back.  As of the writing of this code, the API is slightly bugged and it always responds with an error.  Perhaps you can see what it was."
-      end
-        
       keys_end = get_keys(username, password).length
 
-      return true if keys_beg - keys_end == -1
-      
+      return true if the_code == "201"
+              
       puts "The key you are trying to use already exists in another github user's account.  You need to use another key." if the_code == "already_exists"
       
       # currently.. I think it always returns "already_exists" even if successful.  API bug.  
       puts "Something may have gone wrong.  Either github fixed their API, or your key couldn't be installed." if the_code != "already_exists"
       
       #return true if my_hash.key?("errors")   # this doesn't work due to it being a buggy API atm  # false  change me to false when they fix their API
+      puts "Server Response: #{response.body}"
       return false
     end
     
@@ -623,7 +581,6 @@ module Gas
       puts "Removing associated keys from local machine..."
       puts
       
-      # XXX: check if this user's key is also in ~/.ssh
       ssh_file = get_md5_hash("#{SSH_DIRECTORY}/id_rsa")
       gas_file = get_md5_hash("#{GAS_DIRECTORY}/#{nickname}_id_rsa")
       

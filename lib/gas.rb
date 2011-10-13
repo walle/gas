@@ -90,11 +90,15 @@ module Gas
     else
       user = @config[nickname]
       
+      
+      # Prompt Remake this user's ssh keys?
+      
       # check for ssh keys
       if !Ssh.corresponding_rsa_files_exist?(nickname)
-        Ssh.setup_ssh_keys user   # TODO:  Check to see if ssh keys are already setup for that user, if they are, prompt the github thing.
+        Ssh.setup_ssh_keys user
         Ssh.upload_public_key_to_github user
       else  
+        Ssh.setup_ssh_keys user
         Ssh.upload_public_key_to_github user
       end
     end
