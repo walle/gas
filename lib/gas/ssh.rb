@@ -1,33 +1,10 @@
 module Gas
   
   class Ssh
+    require 'highline/import'
+    require 'net/https'
+    require 'json'
     
-    
-
-    #  TODO: remove me, obsolete after "Impliment the below form..." refactor is complete
-    def self.id_rsa_already_in_gas_dir_for_use?
-      if corresponding_rsa_files_exist?
-        puts "Gas has detected a key in its archive directory ~/.gas/#{@uid}_id_rsa.  Should gas use this key or overwrite this key with a brand new one?"
-        puts "Keep current key? [y/n]"
-        
-        while true
-          keep_current_file = STDIN.gets.strip
-          
-          case keep_current_file
-          
-          when "y"
-            return true # keep the files already in .gas, skip making key.  
-          when "n"
-            return false
-          else
-            puts "please respond 'y' or 'n'"
-          end
-        end
-      
-      else # no need to do anything if files don't exist
-        return false 
-      end
-    end
     
     
     # If the user says 'f', the system will
@@ -65,8 +42,9 @@ module Gas
     end
     
     
-    def self.corresponding_rsa_files_exist?
-      return true if File.exists? "#{GAS_DIRECTORY}/#{@uid}_id_rsa" and File.exists? "#{GAS_DIRECTORY}/#{@uid}_id_rsa.pub"   # TODO: Unit test me
+    def self.corresponding_rsa_files_exist?(nickname = '')
+      nickname = @uid if nickname  == ''
+      return true if File.exists? "#{GAS_DIRECTORY}/#{nickname}_id_rsa" and File.exists? "#{GAS_DIRECTORY}/#{nickname}_id_rsa.pub"   # TODO: Unit test me
       false
     end
     
@@ -86,11 +64,10 @@ module Gas
     end
     
     # Copies a key pair from ~/.ssh to .gas/Nickname*
-    # TODO: return false if a problem occured?  Also convert it to ruby code
-    def self.use_current_rsa_files_for_this_user
-      cmd_result = `cp ~/.ssh/id_rsa ~/.gas/#{@uid}_id_rsa`           # TODO: make this into ruby code so its faster I guess?
-      cmd_result = `cp ~/.ssh/id_rsa.pub ~/.gas/#{@uid}_id_rsa.pub`   # TODO: Handle permission errors
-      puts "This is for checking the test...  #{@uid}"
+    def self.use_current_rsa_files_for_this_user(test = nil)
+      @uid = test unless test.nil?
+      cmd_result = `cp ~/.ssh/id_rsa ~/.gas/#{@uid}_id_rsa`          
+      cmd_result = `cp ~/.ssh/id_rsa.pub ~/.gas/#{@uid}_id_rsa.pub`  
       return true
     end
     
@@ -100,29 +77,7 @@ module Gas
       return false
     end
     
-    #  Checks if the ~/.ssh directroy contains id_rsa and id_rsa.pub
-    #  if it does, it asks the user if they would like to use that as their ssh key, instead of generating a new key pair.  
-    #  
-    #  TODO: remove me, obsolete after "Impliment the below form..." refactor is complete
-    def self.id_rsa_already_in_ssh_directory?
-      return false unless ssh_dir_contains_rsa?
-      
-      #puts "Gas has detected that an ~/.ssh/id_rsa file already exists.  Would you like to use this as your ssh key to connect with github?  Otherwise a new key will be generated and stored in ~/.gas (no overwrite concerns until you 'gas use nickname')"
-      puts "Generate a brand new ssh key pair?"
-      puts "[y/n]"
-      
-      while true
-        generate_new_rsa = STDIN.gets.strip
-        case generate_new_rsa
-          when "y"
-            return false
-          when "n"
-            return use_current_rsa_files_for_this_user # return true if we aren't generating a new key
-          else
-            puts "plz answer 'y' or 'n'"
-        end
-      end
-    end
+    
     
     #  Checks if the ~/.ssh directroy contains id_rsa and id_rsa.pub
     #  if it does, it asks the user if they would like to use that as their ssh key, instead of generating a new key pair.  
@@ -131,13 +86,14 @@ module Gas
       return false unless ssh_dir_contains_rsa?
       
       #puts "Gas has detected that an ~/.ssh/id_rsa file already exists.  Would you like to use this as your ssh key to connect with github?  Otherwise a new key will be generated and stored in ~/.gas (no overwrite concerns until you 'gas use nickname')"
-      puts "Generate a brand new ssh key pair?"
-      puts "[y/n]"
+      puts "Generate a brand new ssh key pair?  (Choose 'n' to use key in ~/.ssh/id_rsa)"
+      puts "Default: 'y'"
+      puts "[Y/n]"
       
       while true
-        generate_new_rsa = STDIN.gets.strip
+        generate_new_rsa = STDIN.gets.strip.downcase
         case generate_new_rsa
-          when "y"
+          when "y", ""
             return false
           when "n"
             return true # return true if we aren't generating a new key
@@ -150,44 +106,49 @@ module Gas
     
     
     # Generates a new sshkey putting it in ~/.gas/nickname_id_rsa
+    # This function can get a little tricky.  It's best to strip off the comment here, 
+    # because github API doesn't retain the comment...
     def self.generate_new_rsa_keys_in_gas_dir
       puts "Generating new ssh key..."
-      # TODO: Prompt user if they'd like to use a more secure password if physical security to their computer is not possible (dumb imo)
+      # TODO: Prompt user if they'd like to use a more secure password if physical security to their computer is not possible (dumb imo)... Unless we do that thing where we store keys on github!
       
       # Old ssh key method (relies on unix environment)
       # puts `ssh-keygen -f ~/.gas/#{@uid}_id_rsa -t rsa -C "#{@email}" -N ""`    # ssh-keygen style key creation
       
-      
       # new sshkey gem method...
-      # XXX use sshkey gem instead of command line utilitie
-      k = SSHKey.generate(:comment => "#{@email}")
-      
-      publ = k.ssh_public_key
-      privl = k.private_key
-      
-      my_file_privl = File.open(GAS_DIRECTORY + "/#{@uid}_id_rsa",'w',0700)
-      my_file_privl.write(privl)
-      my_file_privl.close
-      
-      my_file_publ = File.open(GAS_DIRECTORY + "/#{@uid}_id_rsa.pub",'w',0700)
-      my_file_publ.write(publ)
-      my_file_publ.close
-      
-      
-      
+      begin
+        k = SSHKey.generate()         #   (:comment => "#{@email}")
+        
+        publ = k.ssh_public_key
+        privl = k.private_key
+        
+        my_file_privl = File.open(GAS_DIRECTORY + "/#{@uid}_id_rsa",'w',0700)
+        my_file_privl.write(privl)
+        my_file_privl.close
+        
+        my_file_publ = File.open(GAS_DIRECTORY + "/#{@uid}_id_rsa.pub",'w',0700)
+        my_file_publ.write(publ)
+        my_file_publ.close
+        
+        return true
+      rescue
+        puts "Fatal Error:  Something unexpected happened while writing to #{GAS_DIRECTORY}/#{@uid}_id_rsa"
+        puts "SSH key not saved."
+        return false
+      end
     end
     
     
     
     def self.user_wants_gas_to_handle_rsa_keys?
       puts "Do you want gas to handle switching rsa keys for this user?"
-      puts "[y/n]"
+      puts "[Y/n]"
       
       while true
         handle_rsa = STDIN.gets.strip
         
         case handle_rsa
-        when "y"
+        when "y", ""
           return true
         when "n"
           puts
@@ -208,11 +169,12 @@ module Gas
                 puts "Excelent!  Gas will handle rsa keys for this user."
                 return nil
               else
-                puts "Please use 'y' or 'n'"
+                puts "Please use 'y' or 'n' or enter to choose default."
               end
             end
-            
           end
+          return false
+          
         else
           puts "Please use 'y' or 'n'"
         end
@@ -229,11 +191,13 @@ module Gas
       @uid = user.name if @uid.nil?
       @email = user.email
       
-      if user_wants_gas_to_handle_rsa_keys?
+      wants_gas_handling_keys = user_wants_gas_to_handle_rsa_keys?
+      
+      if wants_gas_handling_keys
         puts
         
         if user_wants_to_use_key_already_in_gas?
-          return true  # because gas directory is already setup
+          return true  # We don't need to do anything because the .gas directory is already setup
         elsif user_wants_to_use_key_already_in_ssh?   #  Check ~/.ssh for a current id_rsa file, if yes, "Do you want to use the current id_rsa file to be used as your key?"
           use_current_rsa_files_for_this_user    # copies the keys from ~/.ssh instead of generating new keys if desired/possible
           return true
@@ -241,7 +205,7 @@ module Gas
           return generate_new_rsa_keys_in_gas_dir
         end
         
-      elsif user_wants_gas_to_handle_rsa_keys?.nil?
+      elsif wants_gas_handling_keys.nil?
         return true  # if user_wants_gas_to_handle_rsa_keys? returns nill that means the user actually had ssh keys already in .gas, and they would like to use those.  
       else
         return false # if user doesn't want gas to use ssh keys, that's fine too.  
@@ -291,7 +255,8 @@ module Gas
     
     
     def self.write_to_ssh_dir!
-      `ssh-add -d ~/.ssh/id_rsa` if is_ssh_agent_there?    # remove the current key from the ssh-agent session (key will no longer be used with github)
+      # remove the current key from the ssh-agent session (key will no longer be used with github)
+      system('ssh-add -d ~/.ssh/id_rsa > /dev/null 2>&1') if is_ssh_agent_there?
       
       FileUtils.cp(GAS_DIRECTORY + "/#{@uid}_id_rsa", SSH_DIRECTORY + "/id_rsa") 
       FileUtils.cp(GAS_DIRECTORY + "/#{@uid}_id_rsa.pub", SSH_DIRECTORY + "/id_rsa.pub")  
@@ -300,11 +265,16 @@ module Gas
       FileUtils.chmod(0700, SSH_DIRECTORY + "/id_rsa.pub")
       
       if is_ssh_agent_there?
-        `ssh-add ~/.ssh/id_rsa`  # TODO: you need to run this command to get the private key to be set to active on unix based machines.  Not sure what to do for windows yet...
+        `ssh-add ~/.ssh/id_rsa > /dev/null 2>&1`  # you need to run this command to get the private key to be set to active on unix based machines.  Not sure what to do for windows yet...
+        if $?.exitstatus != 0
+          raise "Exit code on ssh-add command line was not zero!"
+          puts "Looks like there may have been a fatal error in registering the rsa key with ssh-agent.  Might be worth looking into" if result != true
+        end
       else
         puts "Slight Error:  The key should now be in ~/.ssh so that's good, BUT ssh-add could not be found.  If you're using windows, you'll need to use git bash or cygwin to emulate this unix command and actually do uploads."
       end
     end
+    
     
     # This function scans each file in a directory to check to see if it is the same file which it's being compared against
     # dir_to_scan        The target directory you'd like to scan
@@ -340,19 +310,15 @@ module Gas
     end
   
     
-    # TODO:  Uploads the public key to github
-    def self.upload_public_key_to_github(user)
-      puts "You can paste this key into your git hub account:"
-      puts File.open("#{GAS_DIRECTORY}/#{user.nickname}_id_rsa.pub", "rb").read
-      return "Impliment me plz!"
+    def self.user_wants_to_install_key_to_github?
       puts "Gas can automatically install this ssh key into the github account of your choice.  Would you like gas to do this for you?  (Requires inputting github username and password)"
-      puts "[y/n]"
+      puts "[Y/n]"
       
       while true
-        upload_key = STDIN.gets.strip
+        upload_key = STDIN.gets.strip.downcase
         case upload_key
-        when "y"
-          key_installation_routine
+        when "y", ""
+          return true
         when "n"
           return false
         else
@@ -361,23 +327,240 @@ module Gas
       end
     end
     
-    def self.key_installation_routine
+    
+    def self.upload_public_key_to_github(user)
+      @uid = user.nickname
       
-      credentials = get_username_and_password_and_authenticate
+      if false  # XXX: clean this up
+        puts "You can paste this key into your git hub account:"
+        puts File.open("#{GAS_DIRECTORY}/#{@uid.nickname}_id_rsa.pub", "rb").read
+        return "Impliment me plz!"
+      end
       
-      post_details = log_in_and_figure_out_where_to_post_to
-      
-      server_response = post_key!
-      
+      if user_wants_to_install_key_to_github?
+        key_installation_routine!
+      end
     end
     
-    def get_username_and_password_and_authenticate
+    
+    def self.key_installation_routine!(user = nil, rsa_test = nil)
+      @uid = user.nickname unless user.nil?      # allows for easy testing
+      
+      rsa_key = get_associated_rsa_key(@uid)
+      rsa_key = rsa_test unless rsa_test.nil?
+      return false if rsa_key.nil?    # XXX: I changed stuff here
+      
+      #  TODO:  Impliment a key ring system where you store your key on your github in a repository, only it's encrypted.  And to decrypt it, there is 
+      #    A file in your .gas folder!!!  That sounds SO fun!  
+      credentials = get_username_and_password_diligently
+      
+      if !credentials
+        puts "Invalid credentials.  Skipping upload of keys to github.  "
+        puts "To try again, type  $  gas ssh #{@uid}"  # TODO: impliment
+        return false
+      end
+      
+      rsa_key = rsa_test unless rsa_test.nil? # for easy testing  # TODO: there are two of these here...
+      
+      result = post_key!(credentials, @uid, rsa_key)                  # XXX: check that these variables are getting here safe and sound...
+      if result
+        puts "Key uploaded successfully!"
+        return true
+      end
     end
     
-    def log_in_and_figure_out_where_to_post_to
+    
+    # Get's the ~/.gas/user_id_rsa associated with the specified user and returns it as a string
+    def self.get_associated_rsa_key(nickname)
+      file_path = "#{GAS_DIRECTORY}/#{nickname}_id_rsa.pub"
+      
+      if File.exists? file_path
+        rsa = File.open(file_path, "rb").read.strip
+        if rsa.count(' ') == 2             # special trick to split off the trailing comment text because github API won't store it.  
+          rsa = rsa.split(" ")
+          rsa = "#{rsa[0]} #{rsa[1]}"
+        end
+        
+        return rsa
+      end
+      return nil
     end
     
-    def post_key!
+    
+    def self.get_username_and_password_and_authenticate
+      puts "Type your github.com user name:"
+      print "User: "
+      username = STDIN.gets.strip
+      
+      puts "Type your github password:"
+      password = ask("Password: ") { |q| q.echo = false }
+      puts
+      
+      credentials = {:username => username, :password => password}
+      
+      if valid_github_username_and_pass?(credentials[:username], credentials[:password])
+        return credentials
+      else
+        return false
+      end
+    end
+    
+    # Get's the username and password from the user, then authenticates.  If it fails, it asks them if they'd like to try again.  
+    # Returns false if aborted
+    def self.get_username_and_password_diligently
+      while true
+        credentials = get_username_and_password_and_authenticate
+        if !credentials
+          puts "Could not authenticate, try again?"
+          puts "y/n"
+          
+          again = STDIN.gets.strip
+          case again.downcase
+          when "y"
+          when "n"
+            return false
+          end
+        else
+          return credentials
+        end
+      end
+    end
+    
+    
+    def self.valid_github_username_and_pass?(username, password)
+      path = '/user'
+      
+      http = Net::HTTP.new(GITHUB_SERVER,443)
+      http.use_ssl = true
+      
+      req = Net::HTTP::Get.new(path)
+      req.basic_auth username, password
+      response = http.request(req)
+      
+      result = JSON.parse(response.body)["message"]
+      
+      return false if result == "Bad credentials"
+      return true 
+    end
+    
+    
+    def self.post_key!(credentials, nickname, rsa)
+      puts "Posting key to GitHub.com..."
+      rsa_key = rsa
+      username = credentials[:username]
+      password = credentials[:password]
+
+        
+      #  find key...
+      if has_key(username, password, rsa_key)
+        puts "Key already installed."
+        return false
+      end      
+      title = "GAS: #{nickname}"
+      install_key(username, password, title, rsa_key)
+    end
+    
+    
+    def self.remove_key_by_id!(username, password, id)
+      server = 'api.github.com'
+      path = "/user/keys/#{id}"
+      
+      
+      http = Net::HTTP.new(server,443)
+      http.use_ssl = true
+      req = Net::HTTP::Delete.new(path)
+      req.basic_auth username, password
+      
+      response = http.request(req)
+            
+      return true if response.body.nil?
+    end
+    
+    # Cycles through github, looking to see if rsa exists as a public key, then deletes it if it does
+    def self.has_key(username, password, rsa)
+      # get all keys
+      keys = get_keys(username, password)
+      # loop through arrays checking against 'key'
+      keys.each do |key|
+          if key["key"] == rsa
+            return true
+          end
+      end
+
+      return false   # key not found      
+    end
+    
+    
+    # Cycles through github, looking to see if rsa exists as a public key, then deletes it if it does
+    def self.remove_key!(username, password, rsa)
+      # get all keys
+      keys = get_keys(username, password)
+      # loop through arrays checking against 'key'
+      keys.each do |key|
+          if key["key"] == rsa
+            return remove_key_by_id!(username, password, key["id"])
+          end
+      end
+
+      return false   # key not found      
+    end
+    
+    def self.get_keys(username, password)
+      server = 'api.github.com'
+      path = '/user/keys'
+      
+      
+      http = Net::HTTP.new(server,443)
+      req = Net::HTTP::Get.new(path)
+      http.use_ssl = true
+      req.basic_auth username, password
+      response = http.request(req)
+      
+      return JSON.parse(response.body)
+    end
+    
+    
+    def self.install_key(username, password, title, rsa_key)
+      keys_beg = get_keys(username, password).length
+      
+      server = 'api.github.com'
+      path = '/user/keys'
+    
+      
+      http = Net::HTTP.new(server, 443)   # 443 for ssl
+      http.use_ssl = true
+      
+      req = Net::HTTP::Post.new(path)
+      req.basic_auth username, password
+      req.body = "{\"title\":\"#{title}\", \"key\":\"#{rsa_key}\"}"
+      
+      response = http.start {|http| http.request(req) }
+      
+      return_hash = http.request(req).body
+      
+      my_hash = JSON.parse(return_hash)
+      
+      begin
+        the_code = my_hash["errors"][0]["code"]
+      rescue
+        puts "error caught:  maybe github upgraded something and you'd like to contribute a fix?  Check your github account to see if the key got in there ok.  Then adjust the code so that it doesn't throw an exception and instead returns true at the bottom somewhere.  Or perhaps your id_rsa key is corrupt?"
+        puts "GITHUB SERVER RESPONSE:"
+        p return_hash
+        puts
+        raise "After sending a call to the GitHub API... and unexpected response came back.  As of the writing of this code, the API is slightly bugged and it always responds with an error.  Perhaps you can see what it was."
+      end
+        
+      keys_end = get_keys(username, password).length
+
+      return true if keys_beg - keys_end == -1
+      
+      puts "The key you are trying to use already exists in another github user's account.  You need to use another key." if the_code == "already_exists"
+      
+      # currently.. I think it always returns "already_exists" even if successful.  API bug.  
+      puts "Something may have gone wrong.  Either github fixed their API, or your key couldn't be installed." if the_code != "already_exists"
+      
+      #return true if my_hash.key?("errors")   # this doesn't work due to it being a buggy API atm  # false  change me to false when they fix their API
+      return false
     end
     
     
@@ -403,11 +586,48 @@ module Gas
     
     # deletes the ssh keys associated with a user
     def self.delete(nickname)
+      return false unless user_has_ssh_keys?(nickname)  # return if no keys
+      
+      case user_wants_to_delete_all_ssh_data?
+      when "a"
+        delete_associated_github_keys!(nickname)
+        delete_associated_local_keys!(nickname)
+      when "l"
+        delete_associated_local_keys!(nickname)
+      when "g"
+        delete_associated_github_keys!(nickname)
+      when "n"
+        return false
+      end
+      
+    end
+    
+    def self.user_has_ssh_keys?(nickname)
+      return false if get_associated_rsa_key(nickname).nil?
+      return true
+    end
+    
+    
+    def self.delete_associated_github_keys!(nickname)
+      rsa = get_associated_rsa_key(nickname)
+      credentials = get_username_and_password_diligently
+      if !credentials
+        return false
+      end
+      result = remove_key!(credentials[:username], credentials[:password], rsa)
+      puts "The key for this user was not in the specified github account's public keys section." if !result
+    end
+    
+    
+    def self.delete_associated_local_keys!(nickname)
+      puts "Removing associated keys from local machine..."
+      puts
+      
       # XXX: check if this user's key is also in ~/.ssh
       ssh_file = get_md5_hash("#{SSH_DIRECTORY}/id_rsa")
       gas_file = get_md5_hash("#{GAS_DIRECTORY}/#{nickname}_id_rsa")
       
-      return false if gas_file.nil?       # if the gas file doesn't exist, return from this function safely
+      return false if gas_file.nil?       # if the gas file doesn't exist, return from this function safely, otherwise both objects could be nil, pass this check, and then fuck up our interpreter with file not found errors
       
       if ssh_file == gas_file
         File.delete("#{SSH_DIRECTORY}/id_rsa")
@@ -416,6 +636,35 @@ module Gas
       
       File.delete("#{GAS_DIRECTORY}/#{nickname}_id_rsa")
       File.delete("#{GAS_DIRECTORY}/#{nickname}_id_rsa.pub")
+    end
+    
+    # This is another prompt function, but it returns a more complicated lexicon
+    # 
+    # returns "a", "l", "g", or "n"
+    def self.user_wants_to_delete_all_ssh_data?
+      puts "Would you like to remove all ssh keys too!?!  (github account keys can be removed as well!)"
+      puts "a:  All, the local copy, and checks github too."
+      puts "l:  Remove local keys only."
+      puts "g:  Removes keys from github.com only."
+      puts "n:  Don't remove this users keys."
+      puts "Default: l"
+      
+      while true
+        delete_all_keys = STDIN.gets.strip
+        
+        case delete_all_keys.downcase
+        when "a"
+          return "a"
+        when "l", ""
+          return "l"
+        when "g"
+          return "g"
+        when "n"
+          return "n"
+        else 
+          puts "please use 'a', 'l', 'g' or 'n' for NONE."
+        end
+      end
     end
   
   end

@@ -27,7 +27,6 @@ module Gas
         file.puts contents
         file.close
       end
-      
     end
   
 
@@ -115,9 +114,34 @@ module Gas
       end
     end
 
+    
     # Override to_s to output correct format
     def to_s
-      @users.join("\n")
+      gc = Gitconfig.new
+      
+      users = @users.map do |user|
+        if is_current_user(gc.current_user_object[:name], gc.current_user_object[:email], user.to_s)
+          "  ==>" + user.to_s[5,user.to_s.length]
+        else
+          user.to_s
+        end
+      end.join("\n")
+      
+      return users
+    end
+    
+    
+    # Scans the @users (a string containing info formatted identical to the gas.author file) 
+    #  ...and checks to see if it's name and email match what you're looking for
+    def is_current_user(name, email, object)
+      object.scan(/\[(.+)\]\s+name = (.+)\s+email = (.+)/) do |nicknamec, namec, emailc|
+        if namec == name and emailc == email
+          #  check if ssh is active
+          # TODO:  Check if its SSH key is setup, and indicate SSH ACTIVE
+          return true
+        end
+      end
+      return false   # could not get a current user's nickname       
     end
 
   end

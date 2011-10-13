@@ -12,7 +12,17 @@ module Gas
       
       return nil if name.nil? && email.nil?
 
-      User.new name.delete("\n"), email.delete("\n"), @@nickname # git cli returns the name and email with \n at the end
+      User.new name.delete("\n"), email.delete("\n"), @@nickname   # git cli returns the name and email with \n at the end
+    end
+    
+    # Get current user
+    def current_user_object
+      name = `git config --global --get user.name`
+      email = `git config --global --get user.email`
+      
+      return nil if name.nil? && email.nil?
+      
+      return {:name => name.strip, :email => email.strip}
     end
 
     # Changes the user
@@ -27,10 +37,8 @@ module Gas
       `git config --global user.name "#{name}"`
       `git config --global user.email "#{email}"`
       
-      
       # confirm that this user has an ssh and if so, swap it in safely
       Ssh.swap_in_rsa nickname
-      
     end
 
   end

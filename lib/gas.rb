@@ -1,5 +1,7 @@
 GAS_DIRECTORY = File.expand_path('~/.gas')
 SSH_DIRECTORY = File.expand_path('~/.ssh')
+GITHUB_SERVER = 'api.github.com'
+
 
 require 'sshkey' #external
 
@@ -17,10 +19,13 @@ module Gas
 
   # Lists all authors
   def self.list
+    puts
     puts 'Available users:'
+    puts
     puts @config
+    puts
 
-    self.show
+    # self.show  # XXX: get rid of
   end
 
   # Shows the current user
@@ -30,12 +35,6 @@ module Gas
     if user
       puts 'Current user:'
       puts "#{user.name} <#{user.email}>"
-      
-      if Ssh.corresponding_rsa_files_exist?
-        puts "This user's id_rsa key is:"
-        puts `cat #{GAS_DIRECTORY}/#{user.nickname}_id_rsa.pub`
-      end
-      
     else
       puts 'No current user in gitconfig'
     end
@@ -57,7 +56,7 @@ module Gas
   # @param [String] name The name of the author
   # @param [String] email The email of the author
   def self.add(nickname, name, email)
-    self.has_user? nickname
+    return false if self.has_user?(nickname)
     user = User.new name, email, nickname
     @config.add user
     @config.save!
@@ -66,14 +65,13 @@ module Gas
     
     Ssh.upload_public_key_to_github(user) if using_ssh
     
-    puts 'Added author'
+    puts 'Added new author'
     puts user
   end
   
   
   # Adds an ssh key for the specified user
   def self.ssh(nickname)
-    p @config
     if nickname.nil?
       puts "Oh, so you'd like an elaborate explanation on how ssh key juggling works?  Well pull up a chair!"
       puts
@@ -81,25 +79,26 @@ module Gas
       puts "You will be prompted if you would like to handle SSH keys when you create a new user."
       puts "If you are a long time user of gas, you can add ssh to an author by the command..."
       puts "\$  gas ssh NICKNAME"
+      puts
       puts "Your ssh keys will be stored in ~/.gas/NICKNAME_id_rsa and automatically copied to ~/.ssh/id_rsa when you use the command..."
       puts "\$  gas use NICKNAME"
-      puts "if ~/.ssh/id_rsa already exists, you will be prompted UNLESS that rsa file is already backed up in the .gas directory (I'm so sneaky, huh?)"
+      puts "If ~/.ssh/id_rsa already exists, you will be prompted UNLESS that rsa file is already backed up in the .gas directory (I'm so sneaky, huh?)"
+      puts
       puts "The unix command ssh-add is used in order to link up your rsa keys when you attempt to make an ssh connection (git push uses ssh keys of course)"
       puts
-      puts "The ssh feautre of gas offers you and the world ease of use, and even marginally enhanced privacy against corporate databases.  Did you know that IBM built one of the first automated database systems?  These ancient database machines (called tabulators) were used to facilitate the holocaust =("
+      puts "The ssh feature of gas offers you and the world ease of use, and even marginally enhanced privacy against corporate databases.  Did you know that IBM built one of the first automated database systems?  These ancient database machines (called tabulators) were used to facilitate the holocaust =("
     else
       user = @config[nickname]
       
-      Ssh.setup_ssh_keys user
-          
-      Ssh.upload_public_key_to_github user
+      # check for ssh keys
+      if !Ssh.corresponding_rsa_files_exist?(nickname)
+        Ssh.setup_ssh_keys user   # TODO:  Check to see if ssh keys are already setup for that user, if they are, prompt the github thing.
+        Ssh.upload_public_key_to_github user
+      else  
+        Ssh.upload_public_key_to_github user
+      end
     end
   end
-  
-
-    
-  
-  
   
 
   # Imports current user from .gitconfig to .gas
@@ -124,13 +123,18 @@ module Gas
   # Deletes an author from the config using nickname
   # @param [String] nickname The nickname of the author
   def self.delete(nickname)
-    Ssh.delete nickname
+    
     return false unless self.no_user? nickname        # I re-engineered this section so I could use Gas.delete in a test even when that author didn't exist
                                                       # TODO: The name no_user? is now very confusing.  It should be changed to something like "is_user?" now maybe?
+    
+    Ssh.delete nickname  # XXX: there are 2 calls to this in the method!  
+    
+    
+    # exit
     @config.delete nickname
     @config.save!
     
-    Ssh.delete nickname
+    #Ssh.delete nickname   # TODO: delete this duplicate after...
 
     puts "Deleted author #{nickname}"
     return true
@@ -155,9 +159,10 @@ module Gas
   # @param [String] nickname
   def self.has_user?(nickname)
     if @config.exists? nickname
-      puts "Nickname #{nickname} does already exist"
-      exit
+      puts "Nickname #{nickname} already exists"
+      return true
     end
+    return false
   end
 
 end
