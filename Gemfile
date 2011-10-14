@@ -1,7 +1,7 @@
 source :rubygems
 gemspec
 
-#gem 'sshkey' ~> '1.2.2'
+gem 'sshkey' ~> '1.2.2'
 gem 'highline'
 
 
