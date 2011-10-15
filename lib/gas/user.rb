@@ -3,7 +3,7 @@ module Gas
   # Class that contains data for a git user
   class User
     attr_reader :name, :email, :nickname
-    
+
 
     # @param [String] name The name of the user
     # @param [String] email The email of the user
@@ -12,7 +12,7 @@ module Gas
       @name = name
       @email = email
       @nickname = nickname
-      
+
     end
 
     # Returns the git format of user
@@ -27,7 +27,7 @@ module Gas
     def to_s(use_nickname = true)
       "      [#{use_nickname ? @nickname : 'user'}]\n         name = #{@name}\n         email = #{@email}"
     end
-    
+
 
   end
 end
