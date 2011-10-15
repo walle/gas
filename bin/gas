@@ -36,6 +36,11 @@ class GasRunner < Thor
   def delete(nickname)
     Gas.delete nickname
   end
+  
+  desc "ssh", "Creates a new ssh key for an existing gas author"
+  def ssh(nickname=nil)
+    Gas.ssh nickname
+  end
 
   desc "version", "Prints Gas's version"
   def version
