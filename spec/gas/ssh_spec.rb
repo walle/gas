@@ -315,11 +315,12 @@ bundle exec rspec spec/gas/ssh_spec.rb -e 'UTILITY:  should be able to insert a 
     end
     
     
-    it 'should be able to'
     
     it "Should be able to tell if it's ever used this key under this ISP provider before and then warn the user"
     
+    it 'Should have the ability to show if the author is associated with a specific github account NAME, stored in gas.accouts file'
     
+    it 'Should have the ability to link up with non-github git-daemons'
   end
   
   
