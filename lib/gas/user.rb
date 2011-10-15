@@ -4,6 +4,7 @@ module Gas
   class User
     attr_reader :name, :email, :nickname
 
+
     # @param [String] name The name of the user
     # @param [String] email The email of the user
     # @param [String] nickname A nickname for the user, not used when parsing from gitconfig
@@ -11,6 +12,7 @@ module Gas
       @name = name
       @email = email
       @nickname = nickname
+
     end
 
     # Returns the git format of user
@@ -23,8 +25,9 @@ module Gas
     # @param [Boolean] use_nickname Defaults to true
     # @return [String]
     def to_s(use_nickname = true)
-      "[#{use_nickname ? @nickname : 'user'}]\n  name = #{@name}\n  email = #{@email}"
+      "      [#{use_nickname ? @nickname : 'user'}]\n         name = #{@name}\n         email = #{@email}"
     end
+
 
   end
 end

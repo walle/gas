@@ -24,7 +24,10 @@ describe Gas::Config do
     user2 = Gas::User.new 'foo', 'bar', 'user2'
     users = [user1, user2]
     config = Gas::Config.new users
-    config.to_s.should == "[walle]\n  name = Fredrik Wallgren\n  email = fredrik.wallgren@gmail.com\n[user2]\n  name = foo\n  email = bar"
+
+    stub(config).is_current_user { false }
+
+    config.to_s.should == "      [walle]\n         name = Fredrik Wallgren\n         email = fredrik.wallgren@gmail.com\n      [user2]\n         name = foo\n         email = bar"
   end
 
   it 'should be able to tell if a nickname exists' do
@@ -71,5 +74,10 @@ describe Gas::Config do
     config.delete 'user2'
     config.users.count.should == 0
   end
+
+  it 'should remove the ssh keys from .gas appropriately'
+
+  it 'should remove the keys from .ssh if present'
+
 end
 
