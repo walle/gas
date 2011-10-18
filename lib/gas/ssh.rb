@@ -4,6 +4,7 @@ module Gas
     require 'highline/import'
     require 'net/https'
     require 'json'
+    require 'gas/GithubSpeaker'
 
 
     # If the user says 'f', the system will
@@ -310,13 +311,41 @@ module Gas
 
 
     def self.upload_public_key_to_github(user)
-      @uid = user.nickname
 
       if user_wants_to_install_key_to_github?
-        key_installation_routine!
+        key_installation_routine!(user)
       end
     end
 
+    
+    def self.key_installation_routine_oo!(user = nil, rsa_test = nil)
+      @uid = user.nickname unless user.nil?      # allows for easy testing
+
+      rsa_key = get_associated_rsa_key(@uid)
+      rsa_key = rsa_test unless rsa_test.nil?
+      return false if rsa_key.nil?
+
+      #  TODO:  Impliment a key ring system where you store your key on your github in a repository, only it's encrypted.  And to decrypt it, there is
+      #    A file in your .gas folder!!!  That sounds SO fun!
+      gs = GithubSpeaker.new(user)
+      
+      puts gs.status
+      
+
+      if gs.status == :bad_credentials
+        puts "Invalid credentials.  Skipping upload of keys to github.  "
+        puts "To try again, type  $  gas ssh #{@uid}"
+        return false
+      end
+      
+      result = gs.post_key!(rsa_key)
+      
+      if result
+        puts "Key uploaded successfully!"
+        return true
+      end
+    end
+    
 
     def self.key_installation_routine!(user = nil, rsa_test = nil)
       @uid = user.nickname unless user.nil?      # allows for easy testing
@@ -623,7 +652,7 @@ module Gas
         end
       end
     end
-
+    
   end
 end
 

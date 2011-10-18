@@ -209,17 +209,20 @@ describe Gas::Ssh do
 
 
       Gas::Ssh.remove_key!(@username, @password, @sample_rsa)
-      Gas::Ssh.stub!(:get_username_and_password_and_authenticate).and_return(@credentials)
+      Gas::Ssh.stub!(:get_username_and_password_and_authenticate).and_return(@credentials)  #TODO: remove this obsolete stub when it's really obsolete
+      #Gas::GithubSpeaker.stub!(:get_username_and_password_and_authenticate).and_return({:account_name => @username, :password => @password})
+      #Gas::Ssh::GithubSpeaker.stub!(:get_username_and_password_and_authenticate).and_return({:account_name => @username, :password => @password})
     end
 
     after :all do
       # make sure sample key is deleted
 
       Gas::Ssh.unstub!(:get_username_and_password_and_authenticate)
+      Gas::GithubSpeaker.unstub!(:get_username_and_password_and_authenticate)
     end
 
-    it "UTILITY:  should be able to insert a new key into github and conversly remove that key" do
-
+  # bundle exec rspec spec/gas/ssh_spec.rb -e 'UTILITY:  should be able to insert a new key into github and conversly remove that key'
+    it 'UTILITY:  should be able to insert a new key into github and conversly remove that key' do
 
       lambda do
         Gas::Ssh.key_installation_routine!(@user, @sample_rsa)
@@ -228,6 +231,7 @@ describe Gas::Ssh do
       lambda do
         Gas::Ssh.remove_key!(@username, @password, @sample_rsa)
       end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(-1)
+      
     end
 
 
@@ -321,6 +325,13 @@ bundle exec rspec spec/gas/ssh_spec.rb -e 'UTILITY:  should be able to insert a 
     it 'Should have the ability to show if the author is associated with a specific github account NAME, stored in gas.accouts file'
 
     it 'Should have the ability to link up with non-github git-daemons'
+    
+    # bundle exec rspec spec/gas/ssh_spec.rb -e 'gitspeaker test'
+    it 'gitspeaker test' do
+      
+      Gas::Ssh.key_installation_routine_oo!()
+    end
+    
   end
 
 
