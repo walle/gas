@@ -20,7 +20,7 @@ module Gas
         puts "Keep current key? [y/n]"
 
         while true
-          keep_current_file = STDIN.gets.strip
+          keep_current_file = clean_gets
 
           case keep_current_file
 
@@ -74,7 +74,7 @@ module Gas
       puts "[Y/n]"
 
       while true
-        generate_new_rsa = STDIN.gets.strip.downcase
+        generate_new_rsa = clean_gets.downcase
         case generate_new_rsa
           when "y", ""
             return false
@@ -128,7 +128,7 @@ module Gas
       puts "[Y/n]"
 
       while true
-        handle_rsa = STDIN.gets.strip
+        handle_rsa = clean_gets
 
         case handle_rsa
         when "y", ""
@@ -142,7 +142,7 @@ module Gas
             puts "Just let gas handle ssh key for this user? [y/n]"
 
             while true
-              keep_file = STDIN.gets.strip
+              keep_file = clean_gets
 
               case keep_file
               when "n"
@@ -213,7 +213,7 @@ module Gas
             puts "[y/n]"
 
             while true
-              overwrite = STDIN.gets.strip
+              overwrite = clean_gets
               case overwrite
                 when "y"
                   write_to_ssh_dir!
@@ -310,7 +310,7 @@ module Gas
       puts "[Y/n]"
 
       while true
-        upload_key = STDIN.gets.strip.downcase
+        upload_key = clean_gets.downcase
         case upload_key
         when "y", ""
           return true
@@ -371,7 +371,7 @@ module Gas
       #    A file in your .gas folder!!!  That sounds SO fun!
       credentials = get_username_and_password_diligently
 
-      if !credentials
+      if !credentials or credentials.nil?
         puts "Invalid credentials.  Skipping upload of keys to github.  "
         puts "To try again, type  $  gas ssh #{@uid}"
         return false
@@ -401,11 +401,15 @@ module Gas
       return nil
     end
 
+    
+    
+    
 
     def self.get_username_and_password_and_authenticate
       puts "Type your github.com user name:"
       print "User: "
-      username = STDIN.gets.strip
+      username = clean_gets
+      
 
       puts "Type your github password:"
       password = ask("Password: ") { |q| q.echo = false }
@@ -425,11 +429,11 @@ module Gas
     def self.get_username_and_password_diligently
       while true
         credentials = get_username_and_password_and_authenticate
-        if !credentials
+        if credentials == false                                    # don't catch nil, it's special!
           puts "Could not authenticate, try again?"
           puts "y/n"
 
-          again = STDIN.gets.strip
+          again = clean_gets
           case again.downcase
           when "y"
           when "n"
@@ -637,6 +641,7 @@ module Gas
       File.delete("#{GAS_DIRECTORY}/#{nickname}_id_rsa.pub")
     end
 
+    
     # This is another prompt function, but it returns a more complicated lexicon
     #
     # returns "a", "l", "g", or "n"
@@ -651,7 +656,7 @@ module Gas
       puts "Default: l"
 
       while true
-        delete_all_keys = STDIN.gets.strip
+        delete_all_keys = clean_gets
 
         case delete_all_keys.downcase
         when "a"
@@ -666,6 +671,20 @@ module Gas
           puts "please use 'a', 'l', 'g' or 'n' for NONE."
         end
       end
+    end
+    
+    
+    # If the user hits ctrl+c with this, it will exit cleanly
+    def self.clean_gets
+      begin
+        getit = STDIN.gets.strip
+      rescue SystemExit, Interrupt           # catch if they hit ctrl+c
+        puts
+        puts "Safely aborting operation..."    # reassure user that ctrl+c is fine to use.  
+        exit
+      end
+      
+      return getit
     end
     
   end
