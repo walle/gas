@@ -641,11 +641,13 @@ module Gas
     #
     # returns "a", "l", "g", or "n"
     def self.user_wants_to_delete_all_ssh_data?
-      puts "Would you like to remove all ssh keys too!?!  (github account keys can be removed as well!)"
+      puts "Would you like to remove all of this user's ssh keys too!?!"  
+      puts "(github account keys can be removed as well!)"
+      puts
       puts "a:  All, the local copy, and checks github too."
-      puts "l:  Remove local keys only."
-      puts "g:  Removes keys from github.com only."
-      puts "n:  Don't remove this users keys."
+      puts "l:  Remove local key only."
+      puts "g:  Removes key from github.com only."
+      puts "n:  Don't remove this user's keys."
       puts "Default: l"
 
       while true
