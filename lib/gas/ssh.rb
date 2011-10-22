@@ -248,13 +248,26 @@ module Gas
 
       if is_ssh_agent_there?
         `ssh-add ~/.ssh/id_rsa > /dev/null 2>&1`  # you need to run this command to get the private key to be set to active on unix based machines.  Not sure what to do for windows yet...
-        if $?.exitstatus != 0
-          raise "Exit code on ssh-add command line was not zero!"
-          puts "Looks like there may have been a fatal error in registering the rsa key with ssh-agent.  Might be worth looking into" if result != true
+        
+        if $?.exitstatus == 1    # exit status 1 means failed
+          puts "Looks like there may have been a fatal error in registering the rsa key with ssh-agent.  Might be worth looking into"
+          raise "Exit code on ssh-add command line was one meaning: Error!"
         end
+        
+        # Possible bug fix solution to using gas not in the local GUI environment:  (delete me in a while if things are running stable, plz -- 10-22-2011)
+        #
+        #if $?.exitstatus == 2    # exit 2 means it couldn't contact the ssh agent... happens over ssh on root...
+          # There seems to be no problem with the command exiting with status 2... although if people are having problems using this with
+          # ssh, then this is the first place I'd look to solve it.  Maybe create a new bash with ssh-agent running in it
+          # and then attempt the ssh-add command and it should return 0 just fine
+          # puts "Exit status 2 detected...  You must be using ssh.  I don't think it will matter..."
+        #end
+        
+
       else
         puts "Slight Error:  The key should now be in ~/.ssh so that's good, BUT ssh-add could not be found.  If you're using windows, you'll need to use git bash or cygwin to emulate this unix command and actually do uploads."
       end
+      
     end
 
 
