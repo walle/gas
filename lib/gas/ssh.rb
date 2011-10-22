@@ -4,6 +4,7 @@ module Gas
     require 'highline/import'
     require 'net/https'
     require 'json'
+    require 'gas/GithubSpeaker'
 
 
     # If the user says 'f', the system will
@@ -19,7 +20,7 @@ module Gas
         puts "Keep current key? [y/n]"
 
         while true
-          keep_current_file = STDIN.gets.strip
+          keep_current_file = clean_gets
 
           case keep_current_file
 
@@ -73,7 +74,7 @@ module Gas
       puts "[Y/n]"
 
       while true
-        generate_new_rsa = STDIN.gets.strip.downcase
+        generate_new_rsa = clean_gets.downcase
         case generate_new_rsa
           when "y", ""
             return false
@@ -127,7 +128,7 @@ module Gas
       puts "[Y/n]"
 
       while true
-        handle_rsa = STDIN.gets.strip
+        handle_rsa = clean_gets
 
         case handle_rsa
         when "y", ""
@@ -141,7 +142,7 @@ module Gas
             puts "Just let gas handle ssh key for this user? [y/n]"
 
             while true
-              keep_file = STDIN.gets.strip
+              keep_file = clean_gets
 
               case keep_file
               when "n"
@@ -212,7 +213,7 @@ module Gas
             puts "[y/n]"
 
             while true
-              overwrite = STDIN.gets.strip
+              overwrite = clean_gets
               case overwrite
                 when "y"
                   write_to_ssh_dir!
@@ -247,13 +248,26 @@ module Gas
 
       if is_ssh_agent_there?
         `ssh-add ~/.ssh/id_rsa > /dev/null 2>&1`  # you need to run this command to get the private key to be set to active on unix based machines.  Not sure what to do for windows yet...
-        if $?.exitstatus != 0
-          raise "Exit code on ssh-add command line was not zero!"
-          puts "Looks like there may have been a fatal error in registering the rsa key with ssh-agent.  Might be worth looking into" if result != true
+        
+        if $?.exitstatus == 1    # exit status 1 means failed
+          puts "Looks like there may have been a fatal error in registering the rsa key with ssh-agent.  Might be worth looking into"
+          raise "Exit code on ssh-add command line was one meaning: Error!"
         end
+        
+        # Possible bug fix solution to using gas not in the local GUI environment:  (delete me in a while if things are running stable, plz -- 10-22-2011)
+        #
+        #if $?.exitstatus == 2    # exit 2 means it couldn't contact the ssh agent... happens over ssh on root...
+          # There seems to be no problem with the command exiting with status 2... although if people are having problems using this with
+          # ssh, then this is the first place I'd look to solve it.  Maybe create a new bash with ssh-agent running in it
+          # and then attempt the ssh-add command and it should return 0 just fine
+          # puts "Exit status 2 detected...  You must be using ssh.  I don't think it will matter..."
+        #end
+        
+
       else
         puts "Slight Error:  The key should now be in ~/.ssh so that's good, BUT ssh-add could not be found.  If you're using windows, you'll need to use git bash or cygwin to emulate this unix command and actually do uploads."
       end
+      
     end
 
 
@@ -296,7 +310,7 @@ module Gas
       puts "[Y/n]"
 
       while true
-        upload_key = STDIN.gets.strip.downcase
+        upload_key = clean_gets.downcase
         case upload_key
         when "y", ""
           return true
@@ -310,13 +324,41 @@ module Gas
 
 
     def self.upload_public_key_to_github(user)
-      @uid = user.nickname
 
       if user_wants_to_install_key_to_github?
-        key_installation_routine!
+        key_installation_routine!(user)
       end
     end
 
+    
+    def self.key_installation_routine_oo!(user = nil, rsa_test = nil)
+      @uid = user.nickname unless user.nil?      # allows for easy testing
+
+      rsa_key = get_associated_rsa_key(@uid)
+      rsa_key = rsa_test unless rsa_test.nil?
+      return false if rsa_key.nil?
+
+      #  TODO:  Impliment a key ring system where you store your key on your github in a repository, only it's encrypted.  And to decrypt it, there is
+      #    A file in your .gas folder!!!  That sounds SO fun!
+      gs = GithubSpeaker.new(user)
+      
+      puts gs.status
+      
+
+      if gs.status == :bad_credentials
+        puts "Invalid credentials.  Skipping upload of keys to github.  "
+        puts "To try again, type  $  gas ssh #{@uid}"
+        return false
+      end
+      
+      result = gs.post_key!(rsa_key)
+      
+      if result
+        puts "Key uploaded successfully!"
+        return true
+      end
+    end
+    
 
     def self.key_installation_routine!(user = nil, rsa_test = nil)
       @uid = user.nickname unless user.nil?      # allows for easy testing
@@ -329,7 +371,7 @@ module Gas
       #    A file in your .gas folder!!!  That sounds SO fun!
       credentials = get_username_and_password_diligently
 
-      if !credentials
+      if !credentials or credentials.nil?
         puts "Invalid credentials.  Skipping upload of keys to github.  "
         puts "To try again, type  $  gas ssh #{@uid}"
         return false
@@ -359,11 +401,15 @@ module Gas
       return nil
     end
 
+    
+    
+    
 
     def self.get_username_and_password_and_authenticate
       puts "Type your github.com user name:"
       print "User: "
-      username = STDIN.gets.strip
+      username = clean_gets
+      
 
       puts "Type your github password:"
       password = ask("Password: ") { |q| q.echo = false }
@@ -383,11 +429,11 @@ module Gas
     def self.get_username_and_password_diligently
       while true
         credentials = get_username_and_password_and_authenticate
-        if !credentials
+        if credentials == false                                    # don't catch nil, it's special!
           puts "Could not authenticate, try again?"
           puts "y/n"
 
-          again = STDIN.gets.strip
+          again = clean_gets
           case again.downcase
           when "y"
           when "n"
@@ -595,19 +641,22 @@ module Gas
       File.delete("#{GAS_DIRECTORY}/#{nickname}_id_rsa.pub")
     end
 
+    
     # This is another prompt function, but it returns a more complicated lexicon
     #
     # returns "a", "l", "g", or "n"
     def self.user_wants_to_delete_all_ssh_data?
-      puts "Would you like to remove all ssh keys too!?!  (github account keys can be removed as well!)"
+      puts "Would you like to remove all of this user's ssh keys too!?!"  
+      puts "(github account keys can be removed as well!)"
+      puts
       puts "a:  All, the local copy, and checks github too."
-      puts "l:  Remove local keys only."
-      puts "g:  Removes keys from github.com only."
-      puts "n:  Don't remove this users keys."
+      puts "l:  Remove local key only."
+      puts "g:  Removes key from github.com only."
+      puts "n:  Don't remove this user's keys."
       puts "Default: l"
 
       while true
-        delete_all_keys = STDIN.gets.strip
+        delete_all_keys = clean_gets
 
         case delete_all_keys.downcase
         when "a"
@@ -623,7 +672,21 @@ module Gas
         end
       end
     end
-
+    
+    
+    # If the user hits ctrl+c with this, it will exit cleanly
+    def self.clean_gets
+      begin
+        getit = STDIN.gets.strip
+      rescue SystemExit, Interrupt           # catch if they hit ctrl+c
+        puts
+        puts "Safely aborting operation..."    # reassure user that ctrl+c is fine to use.  
+        exit
+      end
+      
+      return getit
+    end
+    
   end
 end
 
