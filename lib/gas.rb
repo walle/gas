@@ -43,7 +43,7 @@ module Gas
   # Sets _nickname_ as current user
   # @param [String] nickname The nickname to use
   def self.use(nickname)
-    self.no_user? nickname
+    return false unless self.no_user?(nickname)
     user = @config[nickname]
     
     @gitconfig.change_user user        # daring change made here!  Heads up Walle
