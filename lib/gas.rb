@@ -108,7 +108,7 @@ module Gas
   # Imports current user from .gitconfig to .gas
   # @param [String] nickname The nickname to give to the new user
   def self.import(nickname)
-    self.has_user? nickname
+    return false if self.has_user?(nickname)
     user = @gitconfig.current_user
 
     if user
