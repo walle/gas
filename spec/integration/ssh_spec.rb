@@ -207,7 +207,7 @@ describe Gas::Ssh do
       # Code to prepare the github environment for testing
       @sample_rsa = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDn74QR9yHb+hcid8iH3+FTaEwnKtwjttseJDbIA2PaivN2uvESrvHlp8Ss/cRox3fFu34QR5DpdOhlfULjTX7yKVuxhaNrAJaqg8rX8hgr9U1Botnyy1DBueEyyA3o1fxRkmwTf6FNnkt1BxWP635tD0lbmUubwaadXjQqPOf3Uw=="
 
-
+      Gas.delete(@nickname)
       Gas::Ssh.stub!(:get_username_and_password_and_authenticate).and_return(@credentials)
       #Gas::GithubSpeaker.stub!(:get_username_and_password_and_authenticate).and_return({:account_name => @username, :password => @password})
       #Gas::Ssh::GithubSpeaker.stub!(:get_username_and_password_and_authenticate).and_return({:account_name => @username, :password => @password})
