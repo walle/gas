@@ -214,6 +214,7 @@ describe Gas::Ssh do
     end
 
     after :all do
+      Gas.delete(@nickname)
       Gas::Ssh.unstub!(:get_username_and_password_and_authenticate)
       #Gas::GithubSpeaker.unstub!(:get_username_and_password_and_authenticate)
     end
@@ -221,7 +222,7 @@ describe Gas::Ssh do
   # bundle exec rspec spec/integration/ssh_spec.rb -e 'UTILITY:  should be able to insert a new key into github and conversly remove that key'
     it 'UTILITY:  should be able to insert a new key into github and conversly remove that key' do
       
-      VCR.use_cassette('install-delete-a-key') do # this test has been saved under fixtures/install-and-remove.yml
+      VCR.use_cassette('install-delete-a-key') do # this test has been saved under fixtures/install-delete-a-key.yml
         lambda do
           Gas::Ssh.key_installation_routine!(@user, @sample_rsa)
         end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(1)
@@ -239,13 +240,13 @@ describe Gas::Ssh do
 rake spec SPEC=spec/gas/ssh_spec.rb \
           SPEC_OPTS="-e \"should add ssh keys to github when user is created, and delete them when destroyed\""
 
-    bundle exec rspec spec/gas/ssh_spec.rb -e 'should add ssh keys to github when user is created, and delete them when destroyed'
+    bundle exec rspec spec/integration/ssh_spec.rb -e 'should add ssh keys to github when user is created, and delete them when destroyed'
 
 bundle exec rspec spec/gas/ssh_spec.rb -e 'UTILITY:  should be able to insert a new key into github and conversly remove that key'
 =end
 
     it "should add ssh keys to github when user is created, and delete them when destroyed" do
-
+      
       #move_the_testers_personal_ssh_key_out_of_way
 
       # yes, delete all
@@ -255,14 +256,15 @@ bundle exec rspec spec/gas/ssh_spec.rb -e 'UTILITY:  should be able to insert a 
       Gas::Ssh.stub!(:user_wants_to_use_key_already_in_ssh?).and_return(false)
       Gas::Ssh.stub!(:user_wants_to_install_key_to_github?).and_return(true)
 
-
-      lambda do
-        Gas.add(@nickname,@name,@email)
-      end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(1)
-
-      lambda do
-        Gas.delete(@nickname)
-      end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(-1)
+      VCR.use_cassette('add-on-crteation-delete-on-deletion') do 
+        lambda do
+          Gas.add(@nickname,@name,@email)
+        end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(1)
+  
+        lambda do
+          Gas.delete(@nickname)
+        end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(-1)
+      end
 
 
       #restore_the_testers_ssh_key
