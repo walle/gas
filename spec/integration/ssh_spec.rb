@@ -282,15 +282,16 @@ bundle exec rspec spec/gas/ssh_spec.rb -e 'UTILITY:  should be able to insert a 
       Gas::Ssh.stub!(:user_wants_gas_to_handle_rsa_keys?).and_return(true)
       Gas::Ssh.stub!(:user_wants_to_use_key_already_in_ssh?).and_return(false)
       Gas::Ssh.stub!(:user_wants_to_install_key_to_github?).and_return(true)
-
-      lambda do
-        Gas.add(@nickname,@name,@email)
-      end.should change{`ls ~/.gas -1 | wc -l`.to_i}.by(2)
-
-      lambda do
-        Gas.delete(@nickname)
-      end.should change{`ls ~/.gas -1 | wc -l`.to_i}.by(-2)
-
+      
+      VCR.use_cassette('add-on-crteation-delete-on-deletion') do 
+        lambda do
+          Gas.add(@nickname,@name,@email)
+        end.should change{`ls ~/.gas -1 | wc -l`.to_i}.by(2)
+  
+        lambda do
+          Gas.delete(@nickname)
+        end.should change{`ls ~/.gas -1 | wc -l`.to_i}.by(-2)
+      end
 
       Gas::Ssh.unstub!(:user_wants_to_delete_all_ssh_data?)
       Gas::Ssh.unstub!(:user_wants_gas_to_handle_rsa_keys?)
