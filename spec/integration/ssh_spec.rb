@@ -208,15 +208,12 @@ describe Gas::Ssh do
       @sample_rsa = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDn74QR9yHb+hcid8iH3+FTaEwnKtwjttseJDbIA2PaivN2uvESrvHlp8Ss/cRox3fFu34QR5DpdOhlfULjTX7yKVuxhaNrAJaqg8rX8hgr9U1Botnyy1DBueEyyA3o1fxRkmwTf6FNnkt1BxWP635tD0lbmUubwaadXjQqPOf3Uw=="
 
 
-      Gas::Ssh.remove_key!(@username, @password, @sample_rsa)
       Gas::Ssh.stub!(:get_username_and_password_and_authenticate).and_return(@credentials)  #TODO: remove this obsolete stub when it's really obsolete
       #Gas::GithubSpeaker.stub!(:get_username_and_password_and_authenticate).and_return({:account_name => @username, :password => @password})
       #Gas::Ssh::GithubSpeaker.stub!(:get_username_and_password_and_authenticate).and_return({:account_name => @username, :password => @password})
     end
 
     after :all do
-      # make sure sample key is deleted
-
       Gas::Ssh.unstub!(:get_username_and_password_and_authenticate)
       #Gas::GithubSpeaker.unstub!(:get_username_and_password_and_authenticate)
     end
