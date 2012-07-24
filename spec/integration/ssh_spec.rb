@@ -205,7 +205,7 @@ describe Gas::Ssh do
       @credentials = {:username => @username, :password => @password}
 
       # Code to prepare the github environment for testing
-      @sample_rsa = "ssh-rsa AAAAB3NzaC1yc2EAAAA55555AAABAQCpxktnw9eBaYkxLnvLq8ZeUI8d/d00MeV32na3GZ35qKtJ3Vmvzvb8anF1eZD8/+BtBgYer9/3E0KUi3YNYCeejkdUPj3/Z+aV7Ft0+IeKdzFSqfnfN9UsuS/zkeyia2bjgQJYqk2ZbkMuVIn79UI5ypJWGOXNfKyQ2adYJD7Pjgsxvx8qEXHlU+SszlGr7YFEFwT7rZtSXILylmcwCnZryy91cs50vGWxKzKrOV/2iMd8V4Qv7RbhKtQ7OCd19CaZ08H3xqcG1U2lqXIgxSN75bLL71AM0KfIvNOzvigBZnYyb/RKiUQUhA0FnnIYc/7hF9rOe/S1acRiOF6ihz1x"
+      @sample_rsa = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDn74QR9yHb+hcid8iH3+FTaEwnKtwjttseJDbIA2PaivN2uvESrvHlp8Ss/cRox3fFu34QR5DpdOhlfULjTX7yKVuxhaNrAJaqg8rX8hgr9U1Botnyy1DBueEyyA3o1fxRkmwTf6FNnkt1BxWP635tD0lbmUubwaadXjQqPOf3Uw=="
 
 
       Gas::Ssh.remove_key!(@username, @password, @sample_rsa)
@@ -218,19 +218,21 @@ describe Gas::Ssh do
       # make sure sample key is deleted
 
       Gas::Ssh.unstub!(:get_username_and_password_and_authenticate)
-      Gas::GithubSpeaker.unstub!(:get_username_and_password_and_authenticate)
+      #Gas::GithubSpeaker.unstub!(:get_username_and_password_and_authenticate)
     end
 
-  # bundle exec rspec spec/gas/ssh_spec.rb -e 'UTILITY:  should be able to insert a new key into github and conversly remove that key'
+  # bundle exec rspec spec/integration/ssh_spec.rb -e 'UTILITY:  should be able to insert a new key into github and conversly remove that key'
     it 'UTILITY:  should be able to insert a new key into github and conversly remove that key' do
-
-      lambda do
-        Gas::Ssh.key_installation_routine!(@user, @sample_rsa)
-      end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(1)
-
-      lambda do
-        Gas::Ssh.remove_key!(@username, @password, @sample_rsa)
-      end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(-1)
+      
+      VCR.use_cassette('install-delete-a-key') do # this test has been saved under fixtures/install-and-remove.yml
+        lambda do
+          Gas::Ssh.key_installation_routine!(@user, @sample_rsa)
+        end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(1)
+  
+        lambda do
+          Gas::Ssh.remove_key!(@username, @password, @sample_rsa)
+        end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(-1)
+      end
       
     end
 
