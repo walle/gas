@@ -9,6 +9,17 @@ RSpec.configure do |config|
   config.mock_with :rr
 end
 
+# Configure VCR, this thing alows you to record HTTP traffic so you never
+# Need to connect to a server.  Tests run offline just fine!
+require 'vcr'
+
+VCR.configure do |c|
+  #c.allow_http_connections_when_no_cassette = true
+  c.cassette_library_dir = 'fixtures/vcr_cassettes'
+  c.hook_into :webmock # or :fakeweb
+end
+
+
 # Mocks a cli call using ` with rr.
 # Takes a block to use as rr return block
 # @param [Object] mock_object The object to mock

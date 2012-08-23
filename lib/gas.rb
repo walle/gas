@@ -10,7 +10,7 @@ require 'gas/ssh'
 require 'gas/user'
 require 'gas/config'
 require 'gas/gitconfig'
-
+require 'gas/settings'
 
 module Gas
 
@@ -45,9 +45,9 @@ module Gas
   def self.use(nickname)
     return false unless self.no_user?(nickname)
     user = @config[nickname]
-    
+
     @gitconfig.change_user user        # daring change made here!  Heads up Walle
-    
+
     self.show
   end
 
@@ -60,16 +60,16 @@ module Gas
     user = User.new name, email, nickname
     @config.add user
     @config.save!
-    
+
     using_ssh = Ssh.setup_ssh_keys user
-    
+
     Ssh.upload_public_key_to_github(user) if using_ssh
-    
+
     puts 'Added new author'
     puts user
   end
-  
-  
+
+
   # Adds an ssh key for the specified user
   def self.ssh(nickname)
     if nickname.nil?
@@ -89,21 +89,21 @@ module Gas
       puts "The ssh feature of gas offers you and the world ease of use, and even marginally enhanced privacy against corporate databases.  Did you know that IBM built one of the first automated database systems?  These ancient database machines (called tabulators) were used to facilitate the holocaust =("
     else
       user = @config[nickname]
-      
-      
+
+
       # Prompt Remake this user's ssh keys?
-      
+
       # check for ssh keys
       if !Ssh.corresponding_rsa_files_exist?(nickname)
         Ssh.setup_ssh_keys user
         Ssh.upload_public_key_to_github user
-      else  
+      else
         Ssh.setup_ssh_keys user
         Ssh.upload_public_key_to_github user
       end
     end
   end
-  
+
 
   # Imports current user from .gitconfig to .gas
   # @param [String] nickname The nickname to give to the new user
@@ -127,17 +127,17 @@ module Gas
   # Deletes an author from the config using nickname
   # @param [String] nickname The nickname of the author
   def self.delete(nickname)
-    
+
     return false unless self.no_user? nickname        # I re-engineered this section so I could use Gas.delete in a test even when that author didn't exist
                                                       # TODO: The name no_user? is now very confusing.  It should be changed to something like "is_user?" now maybe?
-    
-    Ssh.delete nickname  # XXX: there are 2 calls to this in the method!  
-    
-    
+
+    Ssh.delete nickname  # XXX: there are 2 calls to this in the method!
+
+
     # exit
     @config.delete nickname
     @config.save!
-    
+
     #Ssh.delete nickname   # TODO: delete this duplicate after...
 
     puts "Deleted author #{nickname}"
