@@ -1,4 +1,14 @@
 # encoding: utf-8
+require 'fileutils'
+include FileUtils
+
+# Create a virtual directory in the tmp folder so
+# we don't risk damaging files on the running machine
+fake_home = '/tmp/gas-virtual-fs'
+rm_rf fake_home if File.exists? fake_home
+mkdir_p fake_home
+mkdir_p fake_home + '/.ssh'
+ENV['HOME'] = fake_home
 
 
 RSpec.configure do |config|
@@ -95,4 +105,6 @@ def delete_user_no_git(nickname)
   Gas.delete(nickname)
   
 end
+
+
 

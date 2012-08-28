@@ -75,8 +75,8 @@ describe Gas::Ssh do
         @name = "tim T"
         @email = "tim@timmy.com"
 
-        `rm ~/.gas/#{@nickname}_id_rsa`
-        `rm ~/.gas/#{@nickname}_id_rsa.pub`
+        `rm #{@gas_dir}/#{@nickname}_id_rsa`
+        `rm #{@gas_dir}/#{@nickname}_id_rsa.pub`
         Gas.delete(@nickname)
 
         # make sure that nickname isn't in use
