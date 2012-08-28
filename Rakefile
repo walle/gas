@@ -18,10 +18,10 @@ RSpec::Core::RakeTask.new(:integration) do |t|
 end
 
 desc "Run all specs"
-RSpec::Core::RakeTask.new(:all) do |t|
+RSpec::Core::RakeTask.new(:spec) do |t|
   t.rspec_opts = %w(-fd -c)
 end
 
-task :default => :all
+task :default => :unit
 task :test => :unit
 
