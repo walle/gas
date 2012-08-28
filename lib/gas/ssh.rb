@@ -49,8 +49,8 @@ module Gas
     # Copies a key pair from ~/.ssh to .gas/Nickname*
     def self.use_current_rsa_files_for_this_user(test = nil)
       @uid = test unless test.nil?
-      cmd_result = `cp ~/.ssh/id_rsa ~/.gas/#{@uid}_id_rsa`
-      cmd_result = `cp ~/.ssh/id_rsa.pub ~/.gas/#{@uid}_id_rsa.pub`
+      cmd_result = `cp #{SSH_DIRECTORY}/id_rsa #{GAS_DIRECTORY}/#{@uid}_id_rsa`
+      cmd_result = `cp #{SSH_DIRECTORY}/id_rsa.pub #{GAS_DIRECTORY}/#{@uid}_id_rsa.pub`
       return true
     end
 
@@ -146,7 +146,7 @@ module Gas
 
               case keep_file
               when "n"
-                delete "~/.gas/#{@uid}_id_rsa", "~/.gas/#{@uid}_id_rsa.pub"
+                delete "#{GAS_DIRECTORY}/#{@uid}_id_rsa", "#{GAS_DIRECTORY}/#{@uid}_id_rsa.pub"
                 return false
               when "y"
                 puts "Excelent!  Gas will handle rsa keys for this user."
@@ -238,7 +238,7 @@ module Gas
 
     def self.write_to_ssh_dir!
       # remove the current key from the ssh-agent session (key will no longer be used with github)
-      system('ssh-add -d ~/.ssh/id_rsa > /dev/null 2>&1') if is_ssh_agent_there?
+      system('ssh-add -d #{SSH_DIRECTORY}/id_rsa > /dev/null 2>&1') if is_ssh_agent_there?
 
       FileUtils.cp(GAS_DIRECTORY + "/#{@uid}_id_rsa", SSH_DIRECTORY + "/id_rsa")
       FileUtils.cp(GAS_DIRECTORY + "/#{@uid}_id_rsa.pub", SSH_DIRECTORY + "/id_rsa.pub")
@@ -247,7 +247,7 @@ module Gas
       FileUtils.chmod(0700, SSH_DIRECTORY + "/id_rsa.pub")
 
       if is_ssh_agent_there?
-        `ssh-add ~/.ssh/id_rsa > /dev/null 2>&1`  # you need to run this command to get the private key to be set to active on unix based machines.  Not sure what to do for windows yet...
+        `ssh-add #{SSH_DIRECTORY}/id_rsa > /dev/null 2>&1`  # you need to run this command to get the private key to be set to active on unix based machines.  Not sure what to do for windows yet...
         
         if $?.exitstatus == 1    # exit status 1 means failed
           puts "Looks like there may have been a fatal error in registering the rsa key with ssh-agent.  Might be worth looking into"
