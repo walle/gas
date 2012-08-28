@@ -36,6 +36,7 @@ def mock_cli_call(mock_object, command)
 end
 
 
+# Obsolete, using virtual file directory now
 def move_the_testers_personal_ssh_key_out_of_way
   if File.exists?(SSH_DIRECTORY + "/id_rsa") 
     @pattern_to_restore_privl = File.open(SSH_DIRECTORY + "/id_rsa","r").read      # this test requires some juggling of files that may already exist.
@@ -48,9 +49,10 @@ def move_the_testers_personal_ssh_key_out_of_way
     File.open(GAS_DIRECTORY + "/temp_test.pub","w+").puts @pattern_to_restore_publ
     File.delete(SSH_DIRECTORY + "/id_rsa.pub")
   end
-  
 end
 
+
+# Obsolete, using virtual file directory now
 def restore_the_testers_ssh_key
   if File.exists?(GAS_DIRECTORY + "/temp_test") 
     @pattern_to_restore_privl = File.open(GAS_DIRECTORY + "/temp_test","r").read      # this test requires some juggling of files that may already exist.

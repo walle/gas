@@ -8,11 +8,11 @@ require 'rspec/mocks/standalone'
 describe Gas::Ssh do
 
   before :all do
-    move_the_testers_personal_ssh_key_out_of_way
+    #move_the_testers_personal_ssh_key_out_of_way # this isn't needed anymore, we don't need to write to the users home directory anymore, only to /tmp
   end
 
   after :all do
-    restore_the_testers_ssh_key
+    #restore_the_testers_ssh_key
   end
 
   before :each do
@@ -22,12 +22,10 @@ describe Gas::Ssh do
   describe "SSH key file handling..." do
 
     before :all do
-      #Gas::Ssh.stub!(:delete).and_return(false)
       Gas::Ssh.stub!(:user_wants_to_delete_all_ssh_data?).and_return("l")  # only delete's local keys
     end
 
     after :all do
-      #Gas::Ssh.unstub!(:delete)
       Gas::Ssh.unstub!(:user_wants_to_delete_all_ssh_data?)
     end
 
