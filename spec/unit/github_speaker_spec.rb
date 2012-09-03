@@ -26,12 +26,14 @@ describe Gas::GithubSpeaker do
     VCR.use_cassette('githubspeaker-post_key-remove_key', :record => :new_episodes) do # this test has been saved under fixtures/install-delete-a-key.yml
       lambda do
         @github_speaker.post_key! @sample_rsa
-      end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(1)
+      end.should change{get_keys(@username, @password).length}.by(1)
   
       lambda do
         @github_speaker.remove_key! @sample_rsa
-      end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(-1)
+      end.should change{get_keys(@username, @password).length}.by(-1)
     end
     
   end
+  
+  
 end

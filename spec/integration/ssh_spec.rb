@@ -225,13 +225,12 @@ describe Gas::Ssh do
         
         VCR.use_cassette('install-delete-a-key', :record => :new_episodes) do # this test has been saved under fixtures/install-delete-a-key.yml
           lambda do
-            @github_speaker.post_key! @sample_rsa
-            #Gas::Ssh.key_installation_routine!(@user, @sample_rsa, @github_speaker)
-          end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(1)
+            Gas::Ssh.key_installation_routine!(@user, @sample_rsa, @github_speaker)
+          end.should change{get_keys(@username, @password).length}.by(1)
       
           lambda do
             @github_speaker.remove_key! @sample_rsa
-          end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(-1)
+          end.should change{get_keys(@username, @password).length}.by(-1)
         end
         
       end
@@ -249,11 +248,11 @@ describe Gas::Ssh do
       VCR.use_cassette('add-on-crteation-delete-on-deletion', :record => :new_episodes) do 
         lambda do
           Gas.add(@nickname,@name,@email, @github_speaker)
-        end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(1)
+        end.should change{get_keys(@username, @password).length}.by(1)
   
         lambda do
           Gas.delete(@nickname)
-        end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(-1)
+        end.should change{get_keys(@username, @password).length}.by(-1)
       end
 
 

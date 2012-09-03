@@ -121,3 +121,16 @@ def remove_key_from_github_account(username, password, rsa)
   return false   # key not found
 end
 
+def get_keys(username, password)
+  server = 'api.github.com'
+  path = '/user/keys'
+
+
+  http = Net::HTTP.new(server,443)
+  req = Net::HTTP::Get.new(path)
+  http.use_ssl = true
+  req.basic_auth username, password
+  response = http.request(req)
+
+  return JSON.parse(response.body)
+end

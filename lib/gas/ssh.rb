@@ -3,6 +3,7 @@ module Gas
     require 'highline/import'
     require 'net/https'
     require 'json'
+    require 'digest/md5'
 
     # If the user says 'f', the system will
     #   report that there isn't an id_rsa already in gas.  This causes a new key to overwrite automatically down the road.
@@ -162,6 +163,56 @@ module Gas
 
 
     end
+    
+    # This is another prompt function, but it returns a more complicated lexicon
+    #
+    # returns "a", "l", "g", or "n"
+    def self.user_wants_to_delete_all_ssh_data?
+      puts "Would you like to remove all of this user's ssh keys too!?!"  
+      puts "(github account keys can be removed as well!)"
+      puts
+      puts "a:  All, the local copy, and checks github too."
+      puts "l:  Remove local key only."
+      puts "g:  Removes key from github.com only."
+      puts "n:  Don't remove this user's keys."
+      puts "Default: l"
+
+      while true
+        delete_all_keys = clean_gets
+
+        case delete_all_keys.downcase
+        when "a"
+          return "a"
+        when "l", ""
+          return "l"
+        when "g"
+          return "g"
+        when "n"
+          return "n"
+        else
+          puts "please use 'a', 'l', 'g' or 'n' for NONE."
+        end
+      end
+    end
+    
+    
+    def self.user_wants_to_install_key_to_github?
+      puts "Gas can automatically install this ssh key into the github account of your choice.  Would you like gas to do this for you?  (Requires inputting github username and password)"
+      puts "[Y/n]"
+
+      while true
+        upload_key = clean_gets.downcase
+        case upload_key
+        when "y", ""
+          return true
+        when "n"
+          return false
+        else
+          puts "Plz respond 'y' or 'n'"
+        end
+      end
+    end
+    
 
     # This function creates the ssh keys if needed and puts them in ~/.gas/NICKNAME_id_rsa and ...rsa.pub
     #
@@ -250,16 +301,6 @@ module Gas
           puts "Looks like there may have been a fatal error in registering the rsa key with ssh-agent.  Might be worth looking into"
           raise "Exit code on ssh-add command line was one meaning: Error!"
         end
-        
-        # Possible bug fix solution to using gas not in the local GUI environment:  (delete me in a while if things are running stable, plz -- 10-22-2011)
-        #
-        #if $?.exitstatus == 2    # exit 2 means it couldn't contact the ssh agent... happens over ssh on root...
-          # There seems to be no problem with the command exiting with status 2... although if people are having problems using this with
-          # ssh, then this is the first place I'd look to solve it.  Maybe create a new bash with ssh-agent running in it
-          # and then attempt the ssh-add command and it should return 0 just fine
-          # puts "Exit status 2 detected...  You must be using ssh.  I don't think it will matter..."
-        #end
-        
 
       else
         puts "Slight Error:  The key should now be in ~/.ssh so that's good, BUT ssh-add could not be found.  If you're using windows, you'll need to use git bash or cygwin to emulate this unix command and actually do uploads."
@@ -272,8 +313,6 @@ module Gas
     # dir_to_scan        The target directory you'd like to scan
     # file_to_compare    The file's path that you're expecting to find
     def self.scan_for_file_match(file_to_compare, dir_to_scan)
-      require 'digest/md5'
-
       pattern = get_md5_hash(file_to_compare)
 
       @files = Dir.glob(dir_to_scan + "/*" + file_to_compare.split(//).last(1).to_s)
@@ -302,22 +341,7 @@ module Gas
     end
 
 
-    def self.user_wants_to_install_key_to_github?
-      puts "Gas can automatically install this ssh key into the github account of your choice.  Would you like gas to do this for you?  (Requires inputting github username and password)"
-      puts "[Y/n]"
-
-      while true
-        upload_key = clean_gets.downcase
-        case upload_key
-        when "y", ""
-          return true
-        when "n"
-          return false
-        else
-          puts "Plz respond 'y' or 'n'"
-        end
-      end
-    end
+    
 
 
     def self.upload_public_key_to_github(user, github_speaker = nil)
@@ -354,33 +378,6 @@ module Gas
         return true
       end
     end
-    
-
-=begin
-    def self.key_installation_routine!(user = nil, rsa_test = nil)
-      @uid = user.nickname unless user.nil?      # allows for easy testing
-
-      rsa_key = get_associated_rsa_key(@uid)
-      rsa_key = rsa_test unless rsa_test.nil?
-      return false if rsa_key.nil?
-
-      #  TODO:  Impliment a key ring system where you store your key on your github in a repository, only it's encrypted.  And to decrypt it, there is
-      #    A file in your .gas folder!!!  That sounds SO fun!
-      credentials = get_username_and_password_diligently
-      
-      if !credentials or credentials.nil?
-        puts "Invalid credentials.  Skipping upload of keys to github.  "
-        puts "To try again, type  $  gas ssh #{@uid}"
-        return false
-      end
-
-      result = post_key!(credentials, @uid, rsa_key)
-      if result
-        puts "Key uploaded successfully!"
-        return true
-      end
-    end
-=end
 
     # Get's the ~/.gas/user_id_rsa associated with the specified user and returns it as a string
     def self.get_associated_rsa_key(nickname)
@@ -397,10 +394,6 @@ module Gas
       end
       return nil
     end
-
-    
-    
-    
 
     def self.get_username_and_password_and_authenticate
       puts "Type your github.com user name:"
@@ -460,95 +453,6 @@ module Gas
     end
 
 
-    def self.remove_key_by_id!(username, password, id)
-      server = 'api.github.com'
-      path = "/user/keys/#{id}"
-
-
-      http = Net::HTTP.new(server,443)
-      http.use_ssl = true
-      req = Net::HTTP::Delete.new(path)
-      req.basic_auth username, password
-
-      response = http.request(req)
-
-      return true if response.body.nil?
-    end
-
-    # Cycles through github, looking to see if rsa exists as a public key, then deletes it if it does
-    def self.has_key(username, password, rsa)
-      # get all keys
-      keys = get_keys(username, password)
-      # loop through arrays checking against 'key'
-      keys.each do |key|
-          if key["key"] == rsa
-            return true
-          end
-      end
-
-      return false   # key not found
-    end
-
-=begin
-    # Cycles through github, looking to see if rsa exists as a public key, then deletes it if it does
-    def self.remove_key!(username, password, rsa)
-      # get all keys
-      keys = get_keys(username, password)
-      # loop through arrays checking against 'key'
-      keys.each do |key|
-          if key["key"] == rsa
-            return remove_key_by_id!(username, password, key["id"])
-          end
-      end
-
-      return false   # key not found
-    end
-=end
-
-    def self.get_keys(username, password)
-      server = 'api.github.com'
-      path = '/user/keys'
-
-
-      http = Net::HTTP.new(server,443)
-      req = Net::HTTP::Get.new(path)
-      http.use_ssl = true
-      req.basic_auth username, password
-      response = http.request(req)
-
-      return JSON.parse(response.body)
-    end
-
-
-    def self.install_key(username, password, title, rsa_key)
-      server = 'api.github.com'
-      path = '/user/keys'
-
-      http = Net::HTTP.new(server, 443)   # 443 for ssl
-      http.use_ssl = true
-
-      req = Net::HTTP::Post.new(path)
-      req.basic_auth username, password
-      req.body = "{\"title\":\"#{title}\", \"key\":\"#{rsa_key}\"}"
-
-      response = http.start {|http| http.request(req) }
-      the_code = response.code
-
-      keys_end = get_keys(username, password).length
-
-      return true if the_code == "201"
-
-      puts "The key you are trying to use already exists in another github user's account.  You need to use another key." if the_code == "already_exists"
-
-      # currently.. I think it always returns "already_exists" even if successful.  API bug.
-      puts "Something may have gone wrong.  Either github fixed their API, or your key couldn't be installed." if the_code != "already_exists"
-
-      #return true if my_hash.key?("errors")   # this doesn't work due to it being a buggy API atm  # false  change me to false when they fix their API
-      puts "Server Response: #{response.body}"
-      return false
-    end
-
-
     # Cross-platform way of finding an executable in the $PATH.
     # returns nil if command not present
     #
@@ -594,7 +498,6 @@ module Gas
 
 
     def self.delete_associated_github_keys!(nickname)
-      
       rsa = get_associated_rsa_key(nickname)
       credentials = get_username_and_password_diligently
       if !credentials
@@ -602,7 +505,6 @@ module Gas
       end
       github_speaker = GithubSpeaker.new(nickname, credentials[:username], credentials[:password])
       result = github_speaker.remove_key! rsa
-      #result = remove_key!(credentials[:username], credentials[:password], rsa)
       puts "The key for this user was not in the specified github account's public keys section." if !result
     end
 
@@ -626,36 +528,7 @@ module Gas
     end
 
     
-    # This is another prompt function, but it returns a more complicated lexicon
-    #
-    # returns "a", "l", "g", or "n"
-    def self.user_wants_to_delete_all_ssh_data?
-      puts "Would you like to remove all of this user's ssh keys too!?!"  
-      puts "(github account keys can be removed as well!)"
-      puts
-      puts "a:  All, the local copy, and checks github too."
-      puts "l:  Remove local key only."
-      puts "g:  Removes key from github.com only."
-      puts "n:  Don't remove this user's keys."
-      puts "Default: l"
-
-      while true
-        delete_all_keys = clean_gets
-
-        case delete_all_keys.downcase
-        when "a"
-          return "a"
-        when "l", ""
-          return "l"
-        when "g"
-          return "g"
-        when "n"
-          return "n"
-        else
-          puts "please use 'a', 'l', 'g' or 'n' for NONE."
-        end
-      end
-    end
+    
     
     
     # If the user hits ctrl+c with this, it will exit cleanly
