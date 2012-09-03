@@ -11,6 +11,7 @@ require 'gas/user'
 require 'gas/config'
 require 'gas/gitconfig'
 require 'gas/settings'
+require 'gas/github_speaker'
 
 module Gas
 
