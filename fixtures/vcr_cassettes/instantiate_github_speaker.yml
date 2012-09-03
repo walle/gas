@@ -19,32 +19,32 @@ http_interactions:
       Server:
       - nginx/1.0.13
       Date:
-      - Tue, 04 Sep 2012 19:01:40 GMT
+      - Tue, 04 Sep 2012 19:35:06 GMT
       Content-Type:
       - application/json; charset=utf-8
       Connection:
       - keep-alive
       Status:
       - 200 OK
-      Cache-Control:
-      - private, max-age=60, s-maxage=60
+      X-Ratelimit-Remaining:
+      - '4949'
       X-Ratelimit-Limit:
       - '5000'
       Content-Length:
       - '649'
-      X-Content-Type-Options:
-      - nosniff
-      Etag:
-      - ! '"c40df4dbd1875b6234fbe1e625fbc6cd"'
       Last-Modified:
       - Tue, 04 Sep 2012 16:31:49 GMT
-      X-Ratelimit-Remaining:
-      - '4974'
+      Etag:
+      - ! '"c40df4dbd1875b6234fbe1e625fbc6cd"'
+      Cache-Control:
+      - private, s-maxage=60, max-age=60
+      X-Content-Type-Options:
+      - nosniff
       Vary:
       - Accept, Authorization, Cookie
     body:
       encoding: US-ASCII
-      string: ! '{"html_url":"https://github.com/aTestGitAccount","type":"User","disk_usage":0,"public_gists":0,"following":0,"gravatar_id":"eefd07e4a36269652dd094b038020dd3","created_at":"2011-10-12T06:43:44Z","login":"aTestGitAccount","private_gists":0,"public_repos":0,"total_private_repos":0,"url":"https://api.github.com/users/aTestGitAccount","owned_private_repos":0,"plan":{"space":307200,"private_repos":0,"name":"free","collaborators":0},"avatar_url":"https://secure.gravatar.com/avatar/eefd07e4a36269652dd094b038020dd3?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png","id":1121572,"collaborators":0,"followers":0}'
+      string: ! '{"type":"User","disk_usage":0,"following":0,"gravatar_id":"eefd07e4a36269652dd094b038020dd3","html_url":"https://github.com/aTestGitAccount","created_at":"2011-10-12T06:43:44Z","login":"aTestGitAccount","public_gists":0,"total_private_repos":0,"private_gists":0,"url":"https://api.github.com/users/aTestGitAccount","collaborators":0,"public_repos":0,"avatar_url":"https://secure.gravatar.com/avatar/eefd07e4a36269652dd094b038020dd3?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png","owned_private_repos":0,"plan":{"space":307200,"private_repos":0,"collaborators":0,"name":"free"},"id":1121572,"followers":0}'
     http_version: !!null 
-  recorded_at: Mon, 03 Sep 2012 11:32:07 GMT
+  recorded_at: Mon, 03 Sep 2012 12:05:32 GMT
 recorded_with: VCR 2.2.4
