@@ -20,7 +20,7 @@ end
 require 'vcr'
 
 VCR.configure do |c|
-  #c.allow_http_connections_when_no_cassette = true    # set to true if you're refreshing the cassets in fixtures
+  c.allow_http_connections_when_no_cassette = true    # set to true if you're refreshing the cassets in fixtures
   c.cassette_library_dir = 'fixtures/vcr_cassettes'
   c.hook_into :webmock # or :fakeweb
 end
@@ -107,4 +107,17 @@ def delete_user_no_git(nickname)
 end
 
 
+# Cycles through github, looking to see if rsa exists as a public key, then deletes it if it does
+def remove_key_from_github_account(username, password, rsa)
+  # get all keys
+  keys = Gas::Ssh.get_keys(username, password)
+  # loop through arrays checking against 'key'
+  keys.each do |key|
+      if key["key"] == rsa
+        return Gas::Ssh.remove_key_by_id!(username, password, key["id"])
+      end
+  end
+
+  return false   # key not found
+end
 

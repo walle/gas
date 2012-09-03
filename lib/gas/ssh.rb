@@ -460,23 +460,6 @@ module Gas
     end
 
 
-    def self.post_key!(credentials, nickname, rsa)
-      puts "Posting key to GitHub.com..."
-      rsa_key = rsa
-      username = credentials[:username]
-      password = credentials[:password]
-
-
-      #  find key...
-      if has_key(username, password, rsa_key)
-        puts "Key already installed."
-        return false
-      end
-      title = "GAS: #{nickname}"
-      install_key(username, password, title, rsa_key)
-    end
-
-
     def self.remove_key_by_id!(username, password, id)
       server = 'api.github.com'
       path = "/user/keys/#{id}"
@@ -506,7 +489,7 @@ module Gas
       return false   # key not found
     end
 
-
+=begin
     # Cycles through github, looking to see if rsa exists as a public key, then deletes it if it does
     def self.remove_key!(username, password, rsa)
       # get all keys
@@ -520,6 +503,7 @@ module Gas
 
       return false   # key not found
     end
+=end
 
     def self.get_keys(username, password)
       server = 'api.github.com'
@@ -610,12 +594,15 @@ module Gas
 
 
     def self.delete_associated_github_keys!(nickname)
+      
       rsa = get_associated_rsa_key(nickname)
       credentials = get_username_and_password_diligently
       if !credentials
         return false
       end
-      result = remove_key!(credentials[:username], credentials[:password], rsa)
+      github_speaker = GithubSpeaker.new(nickname, credentials[:username], credentials[:password])
+      result = github_speaker.remove_key! rsa
+      #result = remove_key!(credentials[:username], credentials[:password], rsa)
       puts "The key for this user was not in the specified github account's public keys section." if !result
     end
 

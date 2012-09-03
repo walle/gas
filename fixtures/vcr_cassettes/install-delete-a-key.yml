@@ -19,81 +19,34 @@ http_interactions:
       Server:
       - nginx/1.0.13
       Date:
-      - Tue, 04 Sep 2012 16:50:42 GMT
+      - Tue, 04 Sep 2012 18:10:54 GMT
       Content-Type:
       - application/json; charset=utf-8
       Connection:
       - keep-alive
       Status:
       - 200 OK
-      Content-Length:
-      - '2'
+      Last-Modified:
+      - Tue, 04 Sep 2012 16:31:49 GMT
       Cache-Control:
       - private, s-maxage=60, max-age=60
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Content-Type-Options:
-      - nosniff
       Vary:
       - Accept, Authorization, Cookie
-      X-Ratelimit-Remaining:
-      - '4969'
-      Last-Modified:
-      - Tue, 04 Sep 2012 16:31:49 GMT
       Etag:
       - ! '"c40df4dbd1875b6234fbe1e625fbc6cd"'
-    body:
-      encoding: US-ASCII
-      string: ! '[]'
-    http_version: !!null 
-  recorded_at: Mon, 03 Sep 2012 09:21:09 GMT
-- request:
-    method: get
-    uri: https://aTestGitAccount:plzdon%27thackthetestaccount1@api.github.com/user/keys
-    body:
-      encoding: US-ASCII
-      string: ''
-    headers:
-      Accept:
-      - ! '*/*'
-      User-Agent:
-      - Ruby
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Server:
-      - nginx/1.0.13
-      Date:
-      - Tue, 04 Sep 2012 16:50:43 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Connection:
-      - keep-alive
-      Status:
-      - 200 OK
-      X-Content-Type-Options:
-      - nosniff
-      Cache-Control:
-      - private, max-age=60, s-maxage=60
-      Last-Modified:
-      - Tue, 04 Sep 2012 16:31:49 GMT
-      X-Ratelimit-Limit:
-      - '5000'
-      Vary:
-      - Accept, Authorization, Cookie
       Content-Length:
       - '2'
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Content-Type-Options:
+      - nosniff
       X-Ratelimit-Remaining:
-      - '4968'
-      Etag:
-      - ! '"c40df4dbd1875b6234fbe1e625fbc6cd"'
+      - '4981'
     body:
       encoding: US-ASCII
       string: ! '[]'
     http_version: !!null 
-  recorded_at: Mon, 03 Sep 2012 09:21:09 GMT
+  recorded_at: Mon, 03 Sep 2012 10:41:21 GMT
 - request:
     method: post
     uri: https://aTestGitAccount:plzdon%27thackthetestaccount1@api.github.com/user/keys
@@ -114,33 +67,33 @@ http_interactions:
       Server:
       - nginx/1.0.13
       Date:
-      - Tue, 04 Sep 2012 16:50:44 GMT
+      - Tue, 04 Sep 2012 18:10:55 GMT
       Content-Type:
       - application/json; charset=utf-8
       Connection:
       - keep-alive
       Status:
       - 201 Created
+      X-Ratelimit-Limit:
+      - '5000'
+      Etag:
+      - ! '"5ff378a484420863461c87b5dc455472"'
+      X-Ratelimit-Remaining:
+      - '4980'
+      Location:
+      - https://api.github.com/user/keys/3134850
       Cache-Control:
       - max-age=0, private, must-revalidate
-      X-Content-Type-Options:
-      - nosniff
       Content-Length:
       - '360'
-      X-Ratelimit-Remaining:
-      - '4967'
-      Etag:
-      - ! '"0a2c9ad735fb7cf1c8e522eb4bdc66d9"'
-      X-Ratelimit-Limit:
-      - '5000'
-      Location:
-      - https://api.github.com/user/keys/3134358
+      X-Content-Type-Options:
+      - nosniff
     body:
       encoding: US-ASCII
-      string: ! '{"title":"GAS: thisaccountmaybedeletedmysteriously -debfast","key":"ssh-rsa
-        AAAAB3NzaC1yc2EAAAADAQABAAAAgQDn74QR9yHb+hcid8iH3+FTaEwnKtwjttseJDbIA2PaivN2uvESrvHlp8Ss/cRox3fFu34QR5DpdOhlfULjTX7yKVuxhaNrAJaqg8rX8hgr9U1Botnyy1DBueEyyA3o1fxRkmwTf6FNnkt1BxWP635tD0lbmUubwaadXjQqPOf3Uw==","verified":true,"url":"https://api.github.com/user/keys/3134358","id":3134358}'
+      string: ! '{"verified":true,"title":"GAS: thisaccountmaybedeletedmysteriously
+        -debfast","key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDn74QR9yHb+hcid8iH3+FTaEwnKtwjttseJDbIA2PaivN2uvESrvHlp8Ss/cRox3fFu34QR5DpdOhlfULjTX7yKVuxhaNrAJaqg8rX8hgr9U1Botnyy1DBueEyyA3o1fxRkmwTf6FNnkt1BxWP635tD0lbmUubwaadXjQqPOf3Uw==","url":"https://api.github.com/user/keys/3134850","id":3134850}'
     http_version: !!null 
-  recorded_at: Mon, 03 Sep 2012 09:21:10 GMT
+  recorded_at: Mon, 03 Sep 2012 10:41:22 GMT
 - request:
     method: get
     uri: https://aTestGitAccount:plzdon%27thackthetestaccount1@api.github.com/user/keys
@@ -160,65 +113,19 @@ http_interactions:
       Server:
       - nginx/1.0.13
       Date:
-      - Tue, 04 Sep 2012 16:50:44 GMT
+      - Tue, 04 Sep 2012 18:10:56 GMT
       Content-Type:
       - application/json; charset=utf-8
       Connection:
       - keep-alive
       Status:
       - 200 OK
-      X-Content-Type-Options:
-      - nosniff
-      Cache-Control:
-      - private, max-age=60, s-maxage=60
-      Last-Modified:
-      - Tue, 04 Sep 2012 16:31:49 GMT
-      X-Ratelimit-Limit:
-      - '5000'
-      Vary:
-      - Accept, Authorization, Cookie
       Content-Length:
       - '362'
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
       X-Ratelimit-Remaining:
-      - '4966'
-      Etag:
-      - ! '"c40df4dbd1875b6234fbe1e625fbc6cd"'
-    body:
-      encoding: US-ASCII
-      string: ! '[{"verified":true,"title":"GAS: thisaccountmaybedeletedmysteriously
-        -debfast","key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDn74QR9yHb+hcid8iH3+FTaEwnKtwjttseJDbIA2PaivN2uvESrvHlp8Ss/cRox3fFu34QR5DpdOhlfULjTX7yKVuxhaNrAJaqg8rX8hgr9U1Botnyy1DBueEyyA3o1fxRkmwTf6FNnkt1BxWP635tD0lbmUubwaadXjQqPOf3Uw==","url":"https://api.github.com/user/keys/3134358","id":3134358}]'
-    http_version: !!null 
-  recorded_at: Mon, 03 Sep 2012 09:21:11 GMT
-- request:
-    method: get
-    uri: https://aTestGitAccount:plzdon%27thackthetestaccount1@api.github.com/user/keys
-    body:
-      encoding: US-ASCII
-      string: ''
-    headers:
-      Accept:
-      - ! '*/*'
-      User-Agent:
-      - Ruby
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Server:
-      - nginx/1.0.13
-      Date:
-      - Tue, 04 Sep 2012 16:50:45 GMT
-      Content-Type:
-      - application/json; charset=utf-8
-      Connection:
-      - keep-alive
-      Status:
-      - 200 OK
-      Cache-Control:
-      - private, max-age=60, s-maxage=60
-      Content-Length:
-      - '362'
+      - '4979'
       Vary:
       - Accept, Authorization, Cookie
       Etag:
@@ -227,16 +134,14 @@ http_interactions:
       - nosniff
       Last-Modified:
       - Tue, 04 Sep 2012 16:31:49 GMT
-      X-Ratelimit-Remaining:
-      - '4965'
       X-Ratelimit-Limit:
       - '5000'
     body:
       encoding: US-ASCII
       string: ! '[{"title":"GAS: thisaccountmaybedeletedmysteriously -debfast","key":"ssh-rsa
-        AAAAB3NzaC1yc2EAAAADAQABAAAAgQDn74QR9yHb+hcid8iH3+FTaEwnKtwjttseJDbIA2PaivN2uvESrvHlp8Ss/cRox3fFu34QR5DpdOhlfULjTX7yKVuxhaNrAJaqg8rX8hgr9U1Botnyy1DBueEyyA3o1fxRkmwTf6FNnkt1BxWP635tD0lbmUubwaadXjQqPOf3Uw==","url":"https://api.github.com/user/keys/3134358","id":3134358,"verified":true}]'
+        AAAAB3NzaC1yc2EAAAADAQABAAAAgQDn74QR9yHb+hcid8iH3+FTaEwnKtwjttseJDbIA2PaivN2uvESrvHlp8Ss/cRox3fFu34QR5DpdOhlfULjTX7yKVuxhaNrAJaqg8rX8hgr9U1Botnyy1DBueEyyA3o1fxRkmwTf6FNnkt1BxWP635tD0lbmUubwaadXjQqPOf3Uw==","url":"https://api.github.com/user/keys/3134850","verified":true,"id":3134850}]'
     http_version: !!null 
-  recorded_at: Mon, 03 Sep 2012 09:21:11 GMT
+  recorded_at: Mon, 03 Sep 2012 10:41:22 GMT
 - request:
     method: get
     uri: https://aTestGitAccount:plzdon%27thackthetestaccount1@api.github.com/user/keys
@@ -256,38 +161,86 @@ http_interactions:
       Server:
       - nginx/1.0.13
       Date:
-      - Tue, 04 Sep 2012 16:50:45 GMT
+      - Tue, 04 Sep 2012 18:10:56 GMT
       Content-Type:
       - application/json; charset=utf-8
       Connection:
       - keep-alive
       Status:
       - 200 OK
-      X-Content-Type-Options:
-      - nosniff
-      Cache-Control:
-      - private, max-age=60, s-maxage=60
       Last-Modified:
       - Tue, 04 Sep 2012 16:31:49 GMT
       X-Ratelimit-Limit:
       - '5000'
+      Etag:
+      - ! '"c40df4dbd1875b6234fbe1e625fbc6cd"'
+      X-Ratelimit-Remaining:
+      - '4978'
       Vary:
       - Accept, Authorization, Cookie
       Content-Length:
       - '362'
-      X-Ratelimit-Remaining:
-      - '4964'
-      Etag:
-      - ! '"c40df4dbd1875b6234fbe1e625fbc6cd"'
+      X-Content-Type-Options:
+      - nosniff
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
     body:
       encoding: US-ASCII
       string: ! '[{"verified":true,"title":"GAS: thisaccountmaybedeletedmysteriously
-        -debfast","key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDn74QR9yHb+hcid8iH3+FTaEwnKtwjttseJDbIA2PaivN2uvESrvHlp8Ss/cRox3fFu34QR5DpdOhlfULjTX7yKVuxhaNrAJaqg8rX8hgr9U1Botnyy1DBueEyyA3o1fxRkmwTf6FNnkt1BxWP635tD0lbmUubwaadXjQqPOf3Uw==","url":"https://api.github.com/user/keys/3134358","id":3134358}]'
+        -debfast","key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDn74QR9yHb+hcid8iH3+FTaEwnKtwjttseJDbIA2PaivN2uvESrvHlp8Ss/cRox3fFu34QR5DpdOhlfULjTX7yKVuxhaNrAJaqg8rX8hgr9U1Botnyy1DBueEyyA3o1fxRkmwTf6FNnkt1BxWP635tD0lbmUubwaadXjQqPOf3Uw==","url":"https://api.github.com/user/keys/3134850","id":3134850}]'
     http_version: !!null 
-  recorded_at: Mon, 03 Sep 2012 09:21:12 GMT
+  recorded_at: Mon, 03 Sep 2012 10:41:23 GMT
+- request:
+    method: get
+    uri: https://aTestGitAccount:plzdon%27thackthetestaccount1@api.github.com/user/keys
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - ! '*/*'
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.0.13
+      Date:
+      - Tue, 04 Sep 2012 18:10:57 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Connection:
+      - keep-alive
+      Status:
+      - 200 OK
+      Last-Modified:
+      - Tue, 04 Sep 2012 16:31:49 GMT
+      X-Ratelimit-Limit:
+      - '5000'
+      Etag:
+      - ! '"c40df4dbd1875b6234fbe1e625fbc6cd"'
+      X-Ratelimit-Remaining:
+      - '4977'
+      Vary:
+      - Accept, Authorization, Cookie
+      Content-Length:
+      - '362'
+      X-Content-Type-Options:
+      - nosniff
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+    body:
+      encoding: US-ASCII
+      string: ! '[{"verified":true,"title":"GAS: thisaccountmaybedeletedmysteriously
+        -debfast","key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDn74QR9yHb+hcid8iH3+FTaEwnKtwjttseJDbIA2PaivN2uvESrvHlp8Ss/cRox3fFu34QR5DpdOhlfULjTX7yKVuxhaNrAJaqg8rX8hgr9U1Botnyy1DBueEyyA3o1fxRkmwTf6FNnkt1BxWP635tD0lbmUubwaadXjQqPOf3Uw==","url":"https://api.github.com/user/keys/3134850","id":3134850}]'
+    http_version: !!null 
+  recorded_at: Mon, 03 Sep 2012 10:41:23 GMT
 - request:
     method: delete
-    uri: https://aTestGitAccount:plzdon%27thackthetestaccount1@api.github.com/user/keys/3134358
+    uri: https://aTestGitAccount:plzdon%27thackthetestaccount1@api.github.com/user/keys/3134850
     body:
       encoding: US-ASCII
       string: ''
@@ -304,24 +257,24 @@ http_interactions:
       Server:
       - nginx/1.0.13
       Date:
-      - Tue, 04 Sep 2012 16:50:46 GMT
+      - Tue, 04 Sep 2012 18:10:57 GMT
       Connection:
       - keep-alive
       Status:
       - 204 No Content
       Cache-Control:
       - ''
-      X-Ratelimit-Limit:
-      - '5000'
+      X-Ratelimit-Remaining:
+      - '4976'
       X-Content-Type-Options:
       - nosniff
-      X-Ratelimit-Remaining:
-      - '4963'
+      X-Ratelimit-Limit:
+      - '5000'
     body:
       encoding: US-ASCII
       string: ''
     http_version: !!null 
-  recorded_at: Mon, 03 Sep 2012 09:21:12 GMT
+  recorded_at: Mon, 03 Sep 2012 10:41:24 GMT
 - request:
     method: get
     uri: https://aTestGitAccount:plzdon%27thackthetestaccount1@api.github.com/user/keys
@@ -341,32 +294,79 @@ http_interactions:
       Server:
       - nginx/1.0.13
       Date:
-      - Tue, 04 Sep 2012 16:50:46 GMT
+      - Tue, 04 Sep 2012 18:10:58 GMT
       Content-Type:
       - application/json; charset=utf-8
       Connection:
       - keep-alive
       Status:
       - 200 OK
-      Etag:
-      - ! '"c40df4dbd1875b6234fbe1e625fbc6cd"'
       Content-Length:
       - '2'
-      Cache-Control:
-      - private, max-age=60, s-maxage=60
-      X-Ratelimit-Remaining:
-      - '4962'
-      X-Ratelimit-Limit:
-      - '5000'
-      X-Content-Type-Options:
-      - nosniff
       Last-Modified:
       - Tue, 04 Sep 2012 16:31:49 GMT
+      X-Content-Type-Options:
+      - nosniff
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4975'
       Vary:
       - Accept, Authorization, Cookie
+      Etag:
+      - ! '"c40df4dbd1875b6234fbe1e625fbc6cd"'
+      Cache-Control:
+      - private, s-maxage=60, max-age=60
     body:
       encoding: US-ASCII
       string: ! '[]'
     http_version: !!null 
-  recorded_at: Mon, 03 Sep 2012 09:21:13 GMT
+  recorded_at: Mon, 03 Sep 2012 10:41:24 GMT
+- request:
+    method: get
+    uri: https://aTestGitAccount:plzdon%27thackthetestaccount1@api.github.com/user/keys
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - ! '*/*'
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.0.13
+      Date:
+      - Tue, 04 Sep 2012 18:11:44 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Connection:
+      - keep-alive
+      Status:
+      - 200 OK
+      Last-Modified:
+      - Tue, 04 Sep 2012 16:31:49 GMT
+      Cache-Control:
+      - private, s-maxage=60, max-age=60
+      Vary:
+      - Accept, Authorization, Cookie
+      Etag:
+      - ! '"c40df4dbd1875b6234fbe1e625fbc6cd"'
+      Content-Length:
+      - '2'
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Content-Type-Options:
+      - nosniff
+      X-Ratelimit-Remaining:
+      - '4974'
+    body:
+      encoding: US-ASCII
+      string: ! '[]'
+    http_version: !!null 
+  recorded_at: Mon, 03 Sep 2012 10:42:11 GMT
 recorded_with: VCR 2.2.4

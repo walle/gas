@@ -219,22 +219,26 @@ describe Gas::Ssh do
       #Gas::GithubSpeaker.unstub!(:get_username_and_password_and_authenticate)
     end
 
-  # bundle exec rspec spec/integration/ssh_spec.rb -e 'UTILITY:  should be able to insert a new key into github and conversly remove that key'
-    it 'UTILITY:  should be able to insert a new key into github and conversly remove that key', :current => true do
+    describe "Should remove and insert keys into github" do
       
-      VCR.use_cassette('install-delete-a-key') do # this test has been saved under fixtures/install-delete-a-key.yml
-        lambda do
-          Gas::Ssh.key_installation_routine!(@user, @sample_rsa, @github_speaker)
-        end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(1)
-  
-        lambda do
-          Gas::Ssh.remove_key!(@username, @password, @sample_rsa)
-        end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(-1)
+      it 'UTILITY:  should insert a new key into github and conversly remove that key', :current => false do
+        
+        VCR.use_cassette('install-delete-a-key', :record => :new_episodes) do # this test has been saved under fixtures/install-delete-a-key.yml
+          lambda do
+            @github_speaker.post_key! @sample_rsa
+            #Gas::Ssh.key_installation_routine!(@user, @sample_rsa, @github_speaker)
+          end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(1)
+      
+          lambda do
+            @github_speaker.remove_key! @sample_rsa
+          end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(-1)
+        end
+        
       end
       
     end
 
-    it "should add ssh keys to github when user is created, and delete them when destroyed", :current => true do
+    it "should add ssh keys to github when user is created, and delete them when destroyed" do
       # yes, delete all
       Gas::Ssh.stub!(:user_wants_to_delete_all_ssh_data?).and_return("a")  # all keys, local and github
       # create new user and use ssh handling
@@ -242,7 +246,7 @@ describe Gas::Ssh do
       Gas::Ssh.stub!(:user_wants_to_use_key_already_in_ssh?).and_return(false)
       Gas::Ssh.stub!(:user_wants_to_install_key_to_github?).and_return(true)
 
-      VCR.use_cassette('add-on-crteation-delete-on-deletion') do 
+      VCR.use_cassette('add-on-crteation-delete-on-deletion', :record => :new_episodes) do 
         lambda do
           Gas.add(@nickname,@name,@email, @github_speaker)
         end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(1)
@@ -263,7 +267,7 @@ describe Gas::Ssh do
 
 
 
-    it "Gas.Delete should be able to remove the id_rsa from .gas", :current => true do
+    it "Gas.Delete should be able to remove the id_rsa from .gas" do
       Gas::Ssh.stub!(:user_wants_to_delete_all_ssh_data?).and_return("a")
       Gas::Ssh.stub!(:user_wants_gas_to_handle_rsa_keys?).and_return(true)
       Gas::Ssh.stub!(:user_wants_to_use_key_already_in_ssh?).and_return(false)
@@ -286,7 +290,7 @@ describe Gas::Ssh do
     end
 
     # bundle exec rspec spec/gas/ssh_spec.rb -e 'Gas.ssh(nickname) should be able to add ssh support to a legacy user or an opt-out'
-    it 'Gas.ssh(nickname) should be able to add ssh support to a legacy user or an opt-out', :current => true do
+    it 'Gas.ssh(nickname) should be able to add ssh support to a legacy user or an opt-out' do
 
       Gas::Ssh.stub!(:user_wants_gas_to_handle_rsa_keys?).and_return(false)
       Gas.add(@nickname,@name,@email)

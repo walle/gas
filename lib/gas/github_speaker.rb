@@ -72,7 +72,7 @@ module Gas
     
     # Cycles through github, looking to see if rsa exists as a public key, then deletes it if it does
     def remove_key!(rsa)
-      refresh_keys if @keys.nil?
+      refresh_keys
       
       # loop through arrays checking against 'key'
       @keys.each do |key|
