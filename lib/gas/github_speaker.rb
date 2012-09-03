@@ -179,7 +179,7 @@ module Gas
         puts "The key you are trying to use already exists in another github user's account.  You need to use another key." if the_code == "already_exists"
         
         # currently.. I think it always returns "already_exists" even if successful.  API bug.  
-        puts "Something may have gone wrong.  Either github fixed their API, or your key couldn't be installed." if the_code != "already_exists"
+        puts "Something may have gone wrong.  Either github changed their API, or your key couldn't be installed." if the_code != "already_exists"
         
         #return true if my_hash.key?("errors")   # this doesn't work due to it being a buggy API atm  # false  change me to false when they fix their API
         puts "Server Response: #{response.body}"

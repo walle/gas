@@ -6,12 +6,14 @@ GITHUB_SERVER = 'api.github.com'
 require 'sshkey' #external
 
 require 'gas/version'
+require 'gas/prompter'
 require 'gas/ssh'
 require 'gas/user'
 require 'gas/config'
 require 'gas/gitconfig'
 require 'gas/settings'
 require 'gas/github_speaker'
+
 
 module Gas
 

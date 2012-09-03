@@ -90,15 +90,15 @@ end
 
 
 def create_user_no_git(nickname, name, email)
-    Gas::Ssh.stub!(:user_wants_gas_to_handle_rsa_keys?).and_return(true)
+    Gas::Prompter.stub!(:user_wants_gas_to_handle_rsa_keys?).and_return(true)
     #Gas::Ssh.stub!(:user_wants_to_use_key_already_in_ssh?).and_return(false)
-    Gas::Ssh.stub!(:user_wants_to_install_key_to_github?).and_return(false)
+    Gas::Prompter.stub!(:user_wants_to_install_key_to_github?).and_return(false)
     
     Gas.add(nickname,name,email)
     
-    Gas::Ssh.unstub!(:user_wants_gas_to_handle_rsa_keys?)
+    Gas::Prompter.unstub!(:user_wants_gas_to_handle_rsa_keys?)
     #Gas::Ssh.unstub!(:user_wants_to_use_key_already_in_ssh?)
-    Gas::Ssh.unstub!(:user_wants_to_install_key_to_github?)
+    Gas::Prompter.unstub!(:user_wants_to_install_key_to_github?)
 end
 
 # toasts ssh keys for a given nickname and removal from gas.authors

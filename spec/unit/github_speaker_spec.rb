@@ -21,7 +21,7 @@ describe Gas::GithubSpeaker do
   
   it "should work"
   
-  it 'The post_key! and remove_key! methods should work', :current => true do
+  it 'The post_key! and remove_key! methods should work' do
         
     VCR.use_cassette('githubspeaker-post_key-remove_key', :record => :new_episodes) do # this test has been saved under fixtures/install-delete-a-key.yml
       lambda do
