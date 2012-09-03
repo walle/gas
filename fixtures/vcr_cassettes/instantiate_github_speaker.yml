@@ -1,0 +1,50 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://aTestGitAccount:plzdon%27thackthetestaccount1@api.github.com/user
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - ! '*/*'
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.0.13
+      Date:
+      - Tue, 04 Sep 2012 15:35:48 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Connection:
+      - keep-alive
+      Status:
+      - 200 OK
+      Vary:
+      - Accept, Authorization, Cookie
+      Last-Modified:
+      - Thu, 26 Jul 2012 01:33:51 GMT
+      Etag:
+      - ! '"fde4cb502e23bd6ad6a9c6b64a6f4170"'
+      Content-Length:
+      - '649'
+      Cache-Control:
+      - private, s-maxage=60, max-age=60
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Ratelimit-Remaining:
+      - '4978'
+      X-Content-Type-Options:
+      - nosniff
+    body:
+      encoding: US-ASCII
+      string: ! '{"html_url":"https://github.com/aTestGitAccount","type":"User","public_gists":0,"followers":0,"total_private_repos":0,"private_gists":0,"owned_private_repos":0,"disk_usage":0,"plan":{"space":307200,"private_repos":0,"collaborators":0,"name":"free"},"following":0,"created_at":"2011-10-12T06:43:44Z","login":"aTestGitAccount","avatar_url":"https://secure.gravatar.com/avatar/eefd07e4a36269652dd094b038020dd3?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png","collaborators":0,"public_repos":0,"url":"https://api.github.com/users/aTestGitAccount","gravatar_id":"eefd07e4a36269652dd094b038020dd3","id":1121572}'
+    http_version: !!null 
+  recorded_at: Mon, 03 Sep 2012 08:06:14 GMT
+recorded_with: VCR 2.2.4

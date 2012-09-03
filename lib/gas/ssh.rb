@@ -1,11 +1,8 @@
 module Gas
-
   class Ssh
     require 'highline/import'
     require 'net/https'
     require 'json'
-    #require 'gas/GithubSpeaker'
-
 
     # If the user says 'f', the system will
     #   report that there isn't an id_rsa already in gas.  This causes a new key to overwrite automatically down the road.
@@ -331,7 +328,7 @@ module Gas
     end
 
     
-    def self.key_installation_routine_oo!(user = nil, rsa_test = nil)
+    def self.key_installation_routine_oo!(user = nil, rsa_test = nil, github_speaker = nil)
       @uid = user.nickname unless user.nil?      # allows for easy testing
 
       rsa_key = get_associated_rsa_key(@uid)
@@ -340,18 +337,18 @@ module Gas
 
       #  TODO:  Impliment a key ring system where you store your key on your github in a repository, only it's encrypted.  And to decrypt it, there is
       #    A file in your .gas folder!!!  That sounds SO fun!
-      gs = GithubSpeaker.new(user)
+      github_speaker = GithubSpeaker.new(user) if github_speaker.nil?
       
-      puts gs.status
+      puts github_speaker.status
       
 
-      if gs.status == :bad_credentials
+      if github_speaker.status == :bad_credentials
         puts "Invalid credentials.  Skipping upload of keys to github.  "
         puts "To try again, type  $  gas ssh #{@uid}"
         return false
       end
       
-      result = gs.post_key!(rsa_key)
+      result = github_speaker.post_key!(rsa_key)
       
       if result
         puts "Key uploaded successfully!"
@@ -370,7 +367,7 @@ module Gas
       #  TODO:  Impliment a key ring system where you store your key on your github in a repository, only it's encrypted.  And to decrypt it, there is
       #    A file in your .gas folder!!!  That sounds SO fun!
       credentials = get_username_and_password_diligently
-
+      
       if !credentials or credentials.nil?
         puts "Invalid credentials.  Skipping upload of keys to github.  "
         puts "To try again, type  $  gas ssh #{@uid}"

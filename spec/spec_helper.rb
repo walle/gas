@@ -20,7 +20,7 @@ end
 require 'vcr'
 
 VCR.configure do |c|
-  #c.allow_http_connections_when_no_cassette = true
+  #c.allow_http_connections_when_no_cassette = true    # set to true if you're refreshing the cassets in fixtures
   c.cassette_library_dir = 'fixtures/vcr_cassettes'
   c.hook_into :webmock # or :fakeweb
 end
@@ -103,9 +103,7 @@ end
 
 # toasts ssh keys for a given nickname and removal from gas.authors
 def delete_user_no_git(nickname)
-  
   Gas.delete(nickname)
-  
 end
 
 

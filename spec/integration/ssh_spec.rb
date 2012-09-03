@@ -207,8 +207,10 @@ describe Gas::Ssh do
 
       Gas.delete(@nickname)
       Gas::Ssh.stub!(:get_username_and_password_and_authenticate).and_return(@credentials)
-      #Gas::GithubSpeaker.stub!(:get_username_and_password_and_authenticate).and_return({:account_name => @username, :password => @password})
-      #Gas::Ssh::GithubSpeaker.stub!(:get_username_and_password_and_authenticate).and_return({:account_name => @username, :password => @password})
+      
+      VCR.use_cassette('instantiate_github_speaker') do
+        @github_speaker = Gas::GithubSpeaker.new(@user, @username, @password)
+      end
     end
 
     after :all do
@@ -231,17 +233,6 @@ describe Gas::Ssh do
       end
       
     end
-
-
-    # bundle exec rspec spec/gas/ssh_spec.rb SPEC_OPTS="-e \"should add ssh keys to github when user is created, and delete them when destroyed\""
-=begin
-rake spec SPEC=spec/gas/ssh_spec.rb \
-          SPEC_OPTS="-e \"should add ssh keys to github when user is created, and delete them when destroyed\""
-
-    bundle exec rspec spec/integration/ssh_spec.rb -e 'should add ssh keys to github when user is created, and delete them when destroyed'
-
-bundle exec rspec spec/gas/ssh_spec.rb -e 'UTILITY:  should be able to insert a new key into github and conversly remove that key'
-=end
 
     it "should add ssh keys to github when user is created, and delete them when destroyed" do
       
@@ -326,12 +317,26 @@ bundle exec rspec spec/gas/ssh_spec.rb -e 'UTILITY:  should be able to insert a 
 
     it 'Should have the ability to link up with non-github git-daemons'
     
-    # bundle exec rspec spec/gas/ssh_spec.rb -e 'gitspeaker test'
-    it 'gitspeaker test' do
+    describe "test the GithubSpeaker algo" do
+      before :each do
+        
+      end
       
-      Gas::Ssh.key_installation_routine_oo!()
+      # bundle exec rspec spec/gas/ssh_spec.rb -e 'gitspeaker test'
+      it 'gitspeaker test', :current => true do
+        
+        VCR.use_cassette('install-delete-a-github-speaker-key') do
+          lambda do
+            Gas::Ssh.key_installation_routine_oo!(@user, @sample_rsa, @github_speaker)
+          end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(1)
+          
+          lambda do
+            Gas::Ssh.remove_key!(@username, @password, @sample_rsa)
+          end.should change{Gas::Ssh.get_keys(@username, @password).length}.by(-1)
+        end
+      end
+      
     end
-    
   end
 
 
