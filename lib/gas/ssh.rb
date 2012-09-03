@@ -4,7 +4,7 @@ module Gas
     require 'highline/import'
     require 'net/https'
     require 'json'
-    require 'gas/GithubSpeaker'
+    #require 'gas/GithubSpeaker'
 
 
     # If the user says 'f', the system will
