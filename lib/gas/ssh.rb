@@ -320,15 +320,14 @@ module Gas
     end
 
 
-    def self.upload_public_key_to_github(user)
-
+    def self.upload_public_key_to_github(user, github_speaker = nil)
       if user_wants_to_install_key_to_github?
-        key_installation_routine!(user)
+        key_installation_routine!(user, nil, github_speaker)
       end
     end
 
     
-    def self.key_installation_routine_oo!(user = nil, rsa_test = nil, github_speaker = nil)
+    def self.key_installation_routine!(user = nil, rsa_test = nil, github_speaker = nil)
       @uid = user.nickname unless user.nil?      # allows for easy testing
 
       rsa_key = get_associated_rsa_key(@uid)
@@ -357,6 +356,7 @@ module Gas
     end
     
 
+=begin
     def self.key_installation_routine!(user = nil, rsa_test = nil)
       @uid = user.nickname unless user.nil?      # allows for easy testing
 
@@ -380,7 +380,7 @@ module Gas
         return true
       end
     end
-
+=end
 
     # Get's the ~/.gas/user_id_rsa associated with the specified user and returns it as a string
     def self.get_associated_rsa_key(nickname)

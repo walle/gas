@@ -56,15 +56,15 @@ module Gas
   # @param [String] nickname The nickname of the author
   # @param [String] name The name of the author
   # @param [String] email The email of the author
-  def self.add(nickname, name, email)
+  def self.add(nickname, name, email, github_speaker = nil)
     return false if self.has_user?(nickname)
     user = User.new name, email, nickname
     @config.add user
     @config.save!
 
     using_ssh = Ssh.setup_ssh_keys user
-
-    Ssh.upload_public_key_to_github(user) if using_ssh
+    
+    Ssh.upload_public_key_to_github(user, github_speaker) if using_ssh
 
     puts 'Added new author'
     puts user
