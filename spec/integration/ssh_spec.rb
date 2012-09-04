@@ -6,7 +6,12 @@ require 'rspec/mocks'
 require 'rspec/mocks/standalone'
 
 describe Gas::Ssh do
-
+  before :all do
+    @nickname = "thisaccountmaybedeletedmysteriously"
+    @name = "tim T"
+    @email = "tim@timmy.com"
+  end
+  
   before :each do
     @uid = "teddy"
   end
@@ -36,17 +41,13 @@ describe Gas::Ssh do
         delete_user_no_git @uid
       end
 
-      it 'should detect when an id_rsa is already in the .gas directory', :current => true do
+      it 'should detect when an id_rsa is already in the .gas directory', :current => false do
         Gas::Ssh.corresponding_rsa_files_exist?(@uid).should be_true
       end
     end
 
     describe "File System Changes..." do
-      before :all do
-        @nickname = "thisaccountmaybedeletedmysteriously"
-        @name = "tim T"
-        @email = "tim@timmy.com"
-      end
+      
 
       it 'should create ssh keys in .gas && Gas.remove should be able to remove those files' do
         STDIN.stub!(:gets).and_return("y\n")          # forces the dialogs to
@@ -101,7 +102,7 @@ describe Gas::Ssh do
           File.open(SSH_DIRECTORY + "/id_rsa", "r").read.strip.should eq id_rsa
           File.open(SSH_DIRECTORY + "/id_rsa.pub", "r").read.strip.should eq id_rsa_pub
         end
-        
+
         it "should overwrite an existing, unbacked-up key in ~/.ssh if user wants" do
           #  2)  Create a bogus id_rsa in the .ssh directory
           id_rsa, id_rsa_pub = plant_bogus_rsa_keys_in_ssh_directory
@@ -167,11 +168,7 @@ describe Gas::Ssh do
 
   describe "Networking stuff..." do
     before :all do
-      @name = 'Fredrik Wallgren'
-      @email = 'fredrik.wallgren@gmail.com'
-      @nickname = "thisaccountmaybedeletedmysteriously"
-
-      # make sure sample key is deleted
+      # make sure sample key is deleted in the github web client if you incur issues
       @username = "aTestGitAccount"
       @password = "plzdon'thackthetestaccount1"
 
@@ -203,7 +200,7 @@ describe Gas::Ssh do
           lambda do
             Gas::Ssh.key_installation_routine!(@user, @sample_rsa, @github_speaker)
           end.should change{get_keys(@username, @password).length}.by(1)
-      
+
           lambda do
             @github_speaker.remove_key! @sample_rsa
           end.should change{get_keys(@username, @password).length}.by(-1)
@@ -223,7 +220,7 @@ describe Gas::Ssh do
         lambda do
           Gas.add(@nickname,@name,@email, @github_speaker)
         end.should change{get_keys(@username, @password).length}.by(1)
-  
+
         lambda do
           Gas.delete(@nickname)
         end.should change{get_keys(@username, @password).length}.by(-1)
@@ -240,7 +237,7 @@ describe Gas::Ssh do
       Gas::Prompter.stub!(:user_wants_gas_to_handle_rsa_keys?).and_return(true)
       Gas::Prompter.stub!(:user_wants_to_use_key_already_in_ssh?).and_return(false)
       Gas::Prompter.stub!(:user_wants_to_install_key_to_github?).and_return(true)
-      
+
       VCR.use_cassette('add-on-crteation-delete-on-deletion') do 
         lambda do
           Gas.add(@nickname,@name,@email, @github_speaker)
@@ -257,7 +254,7 @@ describe Gas::Ssh do
       Gas::Prompter.unstub!(:user_wants_to_install_key_to_github?)
     end
 
-    it 'Gas.ssh(nickname) should be able to add ssh support to a legacy user or an opt-out' do
+    it 'Gas.ssh(nickname) should be able to add ssh support to a legacy user or an opt-out', :current => true do
       Gas::Prompter.stub!(:user_wants_gas_to_handle_rsa_keys?).and_return(false)
       Gas.add(@nickname,@name,@email)
       Gas::Prompter.unstub!(:user_wants_gas_to_handle_rsa_keys?)
@@ -283,7 +280,7 @@ describe Gas::Ssh do
     it 'Should have the ability to show if the author is associated with a specific github account NAME, stored in gas.accouts file'
 
     it 'Should have the ability to link up with non-github git-daemons'
-    
+
   end
 
 
