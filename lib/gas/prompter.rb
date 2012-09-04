@@ -9,8 +9,8 @@ module Gas
     #
     # Returns true to indicate that the user would like to use the rsa file already in .gas ()
     # Returns false when there are no naming conflicts.
-    def self.user_wants_to_use_key_already_in_gas?
-      puts "Gas has detected a key in its archive directory ~/.gas/#{@uid}_id_rsa.  Should gas use this key or overwrite this key with a brand new one?"
+    def self.user_wants_to_use_key_already_in_gas?(uid = '')
+      puts "Gas has detected a key in its archive directory ~/.gas/#{uid}_id_rsa.  Should gas use this key or overwrite this key with a brand new one?"
       puts "Keep current key? [y/n]"
 
       while true
@@ -52,6 +52,7 @@ module Gas
     
     
     def self.user_wants_gas_to_handle_rsa_keys?
+      puts
       puts "Do you want gas to handle switching rsa keys for this user?"
       puts "[Y/n]"
 
@@ -62,32 +63,29 @@ module Gas
         when "y", ""
           return true
         when "n"
-          puts
-          # check if ~/.gas/rsa exists, if it does, promt the user
-          if Gas::Ssh.corresponding_rsa_files_exist? #in ~/.gas/
-
-            puts "Well... there's already a ~/.gas/#{@uid}_id_rsa configured and ready to go.  Are you sure you don't want gas to handle rsa switching?  (Clicking no will delete the key from the gas directory)"
-            puts "Just let gas handle ssh key for this user? [y/n]"
-
-            while true
-              keep_file = clean_gets
-
-              case keep_file
-              when "n"
-                delete "#{GAS_DIRECTORY}/#{@uid}_id_rsa", "#{GAS_DIRECTORY}/#{@uid}_id_rsa.pub"
-                return false
-              when "y"
-                puts "Excelent!  Gas will handle rsa keys for this user."
-                return nil
-              else
-                puts @invalid_input_response_with_default
-              end
-            end
-          end
           return false
-
         else
           puts "Please use 'y' or 'n'"
+        end
+      end
+    end
+    
+    def self.user_wants_to_remove_the_keys_that_already_exist_for_this_user?(uid)
+      puts
+      puts "Well... there's already a ~/.gas/#{uid}_id_rsa configured and ready to go.  Are you sure you don't want gas to handle rsa switching?  (Clicking no will delete the key from the gas directory)"
+      puts "Just let gas handle ssh key for this user? [y/n]"
+
+      while true
+        keep_file = clean_gets
+
+        case keep_file
+        when "n"
+          return true
+        when "y"
+          puts "Excelent!  Gas will handle rsa keys for this user."
+          return false
+        else
+          puts @invalid_input_response_with_default
         end
       end
     end
