@@ -134,14 +134,12 @@ module Gas
     return false unless self.no_user? nickname        # I re-engineered this section so I could use Gas.delete in a test even when that author didn't exist
                                                       # TODO: The name no_user? is now very confusing.  It should be changed to something like "is_user?" now maybe?
 
-    Ssh.delete nickname  # XXX: there are 2 calls to this in the method!
+    Ssh.delete nickname
 
 
     # exit
     @config.delete nickname
     @config.save!
-
-    #Ssh.delete nickname   # TODO: delete this duplicate after...
 
     puts "Deleted author #{nickname}"
     return true

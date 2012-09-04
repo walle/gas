@@ -321,14 +321,18 @@ module Gas
 
     def self.delete_associated_github_keys!(nickname)
       rsa = get_associated_rsa_key(nickname).first
-      credentials = get_username_and_password_diligently
-      if !credentials
-        return false
-      end
+      
+      credentials = get_nils
+      
       github_speaker = GithubSpeaker.new(nickname, credentials[:username], credentials[:password])
+      
       result = github_speaker.remove_key! rsa
       puts "The key for this user was not in the specified github account's public keys section." if !result
     end
+    
+    # this is just for testing... it gets stubbed... otherwise, the nils are normal and allow for
+    # normal prompting for username and password from within the GithubSpeaker class
+    def self.get_nils; { :username => nil, :password => nil };end
 
     def self.delete_associated_local_keys!(nickname)
       puts "Removing associated keys from local machine..."

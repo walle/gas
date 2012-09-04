@@ -208,7 +208,7 @@ describe Gas::Ssh do
       end
     end
 
-    it "should add ssh keys to github when user is created, and delete them when destroyed" do
+    it "should add ssh keys to github when user is created, and delete them when destroyed", :current => false do
       # yes, delete all
       Gas::Prompter.stub!(:user_wants_to_delete_all_ssh_data?).and_return("a")  # all keys, local and github
       # create new user and use ssh handling
@@ -222,7 +222,10 @@ describe Gas::Ssh do
         end.should change{get_keys(@username, @password).length}.by(1)
 
         lambda do
+          Gas::Ssh.stub!(:get_nils).and_return({ :username => @username, :password => @password })
           Gas.delete(@nickname)
+          Gas::Ssh.unstub!(:get_nils)
+          #require 'pry';binding.pry
         end.should change{get_keys(@username, @password).length}.by(-1)
       end
 
@@ -232,7 +235,7 @@ describe Gas::Ssh do
       Gas::Prompter.unstub!(:user_wants_to_install_key_to_github?)
     end
 
-    it "Gas.Delete should be able to remove the id_rsa from .gas" do
+    it "Gas.Delete should be able to remove the id_rsa from .gas", :current => true do
       Gas::Prompter.stub!(:user_wants_to_delete_all_ssh_data?).and_return("a")
       Gas::Prompter.stub!(:user_wants_gas_to_handle_rsa_keys?).and_return(true)
       Gas::Prompter.stub!(:user_wants_to_use_key_already_in_ssh?).and_return(false)
@@ -244,7 +247,9 @@ describe Gas::Ssh do
         end.should change{`ls ~/.gas -1 | wc -l`.to_i}.by(2)
   
         lambda do
+          Gas::Ssh.stub!(:get_nils).and_return({:username => @username, :password => @password })
           Gas.delete(@nickname)
+          Gas::Ssh.unstub!(:get_nils)
         end.should change{`ls ~/.gas -1 | wc -l`.to_i}.by(-2)
       end
 
@@ -254,7 +259,7 @@ describe Gas::Ssh do
       Gas::Prompter.unstub!(:user_wants_to_install_key_to_github?)
     end
 
-    it 'Gas.ssh(nickname) should be able to add ssh support to a legacy user or an opt-out', :current => true do
+    it 'Gas.ssh(nickname) should be able to add ssh support to a legacy user or an opt-out', :current => false do
       Gas::Prompter.stub!(:user_wants_gas_to_handle_rsa_keys?).and_return(false)
       Gas.add(@nickname,@name,@email)
       Gas::Prompter.unstub!(:user_wants_gas_to_handle_rsa_keys?)
