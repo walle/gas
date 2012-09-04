@@ -43,18 +43,10 @@ describe Gas::Ssh do
 
     describe "File System Changes..." do
       before :all do
-        # @gas_dir = File.expand_path('~/.gas')
-        # @ssh_dir = File.expand_path('~/.ssh')
-
         @nickname = "thisaccountmaybedeletedmysteriously"
         @name = "tim T"
         @email = "tim@timmy.com"
-
-        #`rm #{@gas_dir}/#{@nickname}_id_rsa`
-        #`rm #{@gas_dir}/#{@nickname}_id_rsa.pub`
-        # Gas.delete(@nickname)
       end
-
 
       it 'should create ssh keys in .gas && Gas.remove should be able to remove those files' do
         STDIN.stub!(:gets).and_return("y\n")          # forces the dialogs to
@@ -74,17 +66,11 @@ describe Gas::Ssh do
 
 
       describe 'For the ssh directory...' do
-
         before :each do
-          # A user for creating
-          @nickname = "thisaccountmaybedeletedmysteriously"
-          @name = "tim T"
-          @email = "tim@timmy.com"
-
           clean_out_ssh_directory
           clean_out_gas_directory(@nickname)
 
-          # a user for deleting
+          # a second user for deleting
           @nickname2 = "thisaccountmaybedeletedmysteriously2"
           @name2 = "tim T2"
           @email2 = "tim@timmy.com2"
@@ -168,23 +154,18 @@ describe Gas::Ssh do
           File.delete(GAS_DIRECTORY + "/#{@nickname}_id_rsa.pub")
         end
 
-
         it "should have a UTILITY for deleting rsa files of user" do
           lambda do
             Gas::Ssh.delete_associated_local_keys!(@nickname2)
           end.should change{`ls ~/.gas -1 | wc -l`.to_i}.by(-2)
         end
-
       end
 
     end
 
-
-
   end
 
   describe "Networking stuff..." do
-
     before :all do
       @name = 'Fredrik Wallgren'
       @email = 'fredrik.wallgren@gmail.com'
@@ -214,7 +195,6 @@ describe Gas::Ssh do
     after :all do
       Gas.delete(@nickname)
       Gas::Ssh.unstub!(:get_username_and_password_and_authenticate)
-      #Gas::GithubSpeaker.unstub!(:get_username_and_password_and_authenticate)
     end
 
     describe "Should remove and insert keys into github" do
