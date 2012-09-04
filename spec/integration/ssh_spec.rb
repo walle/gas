@@ -39,25 +39,20 @@ describe Gas::Ssh do
       it 'should detect when an id_rsa is already in the .gas directory', :current => true do
         Gas::Ssh.corresponding_rsa_files_exist?(@uid).should be_true
       end
-
     end
 
     describe "File System Changes..." do
-
       before :all do
-        @gas_dir = File.expand_path('~/.gas')
-        @ssh_dir = File.expand_path('~/.ssh')
-
+        # @gas_dir = File.expand_path('~/.gas')
+        # @ssh_dir = File.expand_path('~/.ssh')
 
         @nickname = "thisaccountmaybedeletedmysteriously"
         @name = "tim T"
         @email = "tim@timmy.com"
 
-        `rm #{@gas_dir}/#{@nickname}_id_rsa`
-        `rm #{@gas_dir}/#{@nickname}_id_rsa.pub`
+        #`rm #{@gas_dir}/#{@nickname}_id_rsa`
+        #`rm #{@gas_dir}/#{@nickname}_id_rsa.pub`
         Gas.delete(@nickname)
-
-        # make sure that nickname isn't in use
       end
 
 
