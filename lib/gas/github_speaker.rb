@@ -106,7 +106,6 @@ module Gas
         end
       end
       
-      
       def get_username_and_password_and_authenticate
         puts "Type your github.com user name:"
         print "User: "
@@ -127,7 +126,6 @@ module Gas
           return false
         end
       end
-      
       
       # Get's the username and password from the user, then authenticates.  If it fails, it asks them if they'd like to try again.  
       # Returns false if aborted
@@ -150,9 +148,6 @@ module Gas
         end
       end
       
-      
-      
-    
       def install_key(rsa)
         require "socket"
         host_name = Socket.gethostname
@@ -185,7 +180,6 @@ module Gas
         return false
       end
       
-      
       # Cycles through github, looking to see if rsa exists as a public key, then deletes it if it does
       def has_key(rsa)
         refresh_keys if @keys.nil?
@@ -193,18 +187,14 @@ module Gas
         
         # loop through arrays checking against 'key'
         @keys.each do |key|
-            if key["key"] == rsa
-              return true
-            end
+          return true if key["key"] == rsa
         end
   
         return false   # key not found      
       end
       
-      
       def remove_key_by_id!(id)
         path = "/user/keys/#{id}"
-        
         
         http = Net::HTTP.new(@server,443)
         http.use_ssl = true
@@ -212,7 +202,6 @@ module Gas
         req.basic_auth @account_name, @password
         
         response = http.request(req)
-        
         
         if response.body.nil?
           # TODO:  remove the key from the keys attribute

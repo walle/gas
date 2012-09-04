@@ -1,7 +1,5 @@
 module Gas
   module Prompter
-    def hi;puts "hello";end
-    
     @invalid_input_response_with_default = "Please use 'y' or 'n' or enter for default."
     # If the user says 'f', the system will
     #   report that there isn't an id_rsa already in gas.  This causes a new key to overwrite automatically down the road.
@@ -29,7 +27,6 @@ module Gas
       end
     end
     
-    
     #  Checks if the ~/.ssh directroy contains id_rsa and id_rsa.pub
     #  if it does, it asks the user if they would like to use that as their ssh key, instead of generating a new key pair.
     #
@@ -50,7 +47,6 @@ module Gas
         end
       end
     end
-    
     
     def self.user_wants_gas_to_handle_rsa_keys?
       puts
@@ -91,7 +87,6 @@ module Gas
       end
     end
     
-    
     # This is another prompt function, but it returns a more complicated lexicon
     #
     # returns "a", "l", "g", or "n"
@@ -123,7 +118,6 @@ module Gas
       end
     end
     
-    
     def self.user_wants_to_install_key_to_github?
       puts "Gas can automatically install this ssh key into the github account of your choice.  Would you like gas to do this for you?  (Requires inputting github username and password)"
       puts "[Y/n]"
@@ -141,7 +135,6 @@ module Gas
       end
     end
     
-    
     def self.user_wants_to_overwrite_existing_rsa_key?
       puts "~/.ssh/id_rsa already exists.  Overwrite?"
       puts "[y/n]"
@@ -158,7 +151,6 @@ module Gas
         end
       end
     end
-    
     
     # If the user hits ctrl+c with this, it will exit cleanly
     def self.clean_gets

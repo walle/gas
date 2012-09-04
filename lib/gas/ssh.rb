@@ -293,8 +293,6 @@ module Gas
       File.delete("#{GAS_DIRECTORY}/#{nickname}_id_rsa.pub")
     end
     
-    
-    
   end
 end
 
