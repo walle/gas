@@ -52,7 +52,6 @@ module Gas
     end
     
     
-    
     def refresh_keys
       raise "Attempted to update keys when unable to authenticate credentials with github" if @status != :authenticated
       

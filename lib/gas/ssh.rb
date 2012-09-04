@@ -25,8 +25,6 @@ module Gas
       return false
     end
 
-
-
     # Generates a new sshkey putting it in ~/.gas/nickname_id_rsa
     # This function can get a little tricky.  It's best to strip off the comment here,
     # because github API doesn't retain the comment...
@@ -60,17 +58,12 @@ module Gas
       end
     end
 
-
-
-
     # This function creates the ssh keys if needed and puts them in ~/.gas/NICKNAME_id_rsa and ...rsa.pub
-    #
-    #
     def self.setup_ssh_keys(user)
       @uid = user.nickname
       @email = user.email
 
-      if Gas::Prompter.user_wants_gas_to_handle_rsa_keys? 
+      if Gas::Prompter.user_wants_gas_to_handle_rsa_keys?
         if corresponding_rsa_files_exist?(@uid) and Gas::Prompter.user_wants_to_use_key_already_in_gas?(@uid)
           return true  # We don't need to do anything because the .gas directory is already setup
         elsif !corresponding_rsa_files_exist?(@uid) and ssh_dir_contains_rsa? and Gas::Prompter.user_wants_to_use_key_already_in_ssh?   #  Check ~/.ssh for a current id_rsa file, if yes, "Do you want to use the current id_rsa file to be used as your key?"
@@ -90,15 +83,13 @@ module Gas
 
     end
 
-
     # This huge method handles the swapping of id_rsa files on the hdd
-    #
     def self.swap_in_rsa(nickname)
       @uid = nickname  # woah, this is extremely sloppy I think... in order to use any other class methods,
                        #  I need to write to @uid or it will
                        #  Have the dumb information from the last time it registered a new git author?
 
-      if Ssh.corresponding_rsa_files_exist?
+      if corresponding_rsa_files_exist?
         if ssh_dir_contains_rsa?
           if current_key_already_backed_up?
             write_to_ssh_dir!
@@ -115,7 +106,7 @@ module Gas
       end
     end
 
-
+    
     def self.write_to_ssh_dir!
       # remove the current key from the ssh-agent session (key will no longer be used with github)
       system('ssh-add -d #{SSH_DIRECTORY}/id_rsa > /dev/null 2>&1') if is_ssh_agent_there?
@@ -140,7 +131,6 @@ module Gas
       
     end
 
-
     # This function scans each file in a directory to check to see if it is the same file which it's being compared against
     # dir_to_scan        The target directory you'd like to scan
     # file_to_compare    The file's path that you're expecting to find
@@ -155,7 +145,6 @@ module Gas
 
       return false
     end
-
 
     def self.current_key_already_backed_up?
       if scan_for_file_match(SSH_DIRECTORY + "/id_rsa", GAS_DIRECTORY) and scan_for_file_match(SSH_DIRECTORY + "/id_rsa.pub", GAS_DIRECTORY)
@@ -172,7 +161,7 @@ module Gas
       return nil
     end
 
-    
+
     def self.upload_public_key_to_github(user, github_speaker = nil)
       if Gas::Prompter.user_wants_to_install_key_to_github?
         key_installation_routine!(user, nil, github_speaker)
@@ -192,7 +181,6 @@ module Gas
       github_speaker = GithubSpeaker.new(user) if github_speaker.nil?
       
       puts github_speaker.status
-      
 
       if github_speaker.status == :bad_credentials
         puts "Invalid credentials.  Skipping upload of keys to github.  "
@@ -208,7 +196,9 @@ module Gas
       end
     end
 
-    # Get's the ~/.gas/user_id_rsa associated with the specified user and returns it as a string
+    # Get's the ~/.gas/user_id_rsa and ~/.gas/user_id_rsa.pub strings associated with 
+    # the specified user and returns it as an array.  Returns array with two nils if there's no keys
+    # [pub_rsa, priv_rsa]
     def self.get_associated_rsa_key(nickname)
       pub_path = "#{GAS_DIRECTORY}/#{nickname}_id_rsa.pub"
       priv_path = "#{GAS_DIRECTORY}/#{nickname}_id_rsa"
@@ -226,7 +216,6 @@ module Gas
       end
       return [nil, nil]
     end
-    
     
 
     def self.get_username_and_password_and_authenticate
@@ -330,7 +319,6 @@ module Gas
       return true
     end
 
-
     def self.delete_associated_github_keys!(nickname)
       rsa = get_associated_rsa_key(nickname).first
       credentials = get_username_and_password_diligently
@@ -341,7 +329,6 @@ module Gas
       result = github_speaker.remove_key! rsa
       puts "The key for this user was not in the specified github account's public keys section." if !result
     end
-
 
     def self.delete_associated_local_keys!(nickname)
       puts "Removing associated keys from local machine..."
