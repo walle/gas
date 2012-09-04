@@ -108,34 +108,19 @@ module Gas
                        #  Have the dumb information from the last time it registered a new git author?
 
       if Ssh.corresponding_rsa_files_exist?
-
         if ssh_dir_contains_rsa?
           if current_key_already_backed_up?
             write_to_ssh_dir!
           else
-            puts "~/.ssh/id_rsa already exists.  Overwrite?"
-            puts "[y/n]"
-
-            while true
-              overwrite = clean_gets
-              case overwrite
-                when "y"
-                  write_to_ssh_dir!
-                  break
-                when "n"
-                  puts "Proceeding without swapping rsa keys."
-                  break
-                else
-                  puts "please respond 'y' or 'n'"
-              end
+            if Gas::Prompter.user_wants_to_overwrite_existing_rsa_key?
+              write_to_ssh_dir!
+            else
+              puts "Proceeding without swapping rsa keys (aborting)."
             end
-
           end
-
-        else # if no ~/.ssh/id_rsa exists... no overwrite potential
+        else # if no ~/.ssh/id_rsa exists... no overwrite potential... so just write away
           write_to_ssh_dir!
         end
-
       end
     end
 

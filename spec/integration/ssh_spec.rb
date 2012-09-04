@@ -125,21 +125,20 @@ describe Gas::Ssh do
 
         it "if there's no key in .ssh" do
           #  1)  Create a User
-
           #  2)  Switch to that user
-
+          Gas.use @nickname2
           #  3)  The .ssh directory should now contain that file
-          true.should be_true
-
+          File.exist?(SSH_DIRECTORY + "/id_rsa.pub").should be_true
         end
 
-        it "if there's a key in ~/.ssh that isn't backed up in .gas" do
+        it "shouldn't overwrite an existing key in ~/.ssh that isn't backed up in .gas and the user aborts", :current => true do
           #  1)  Create a User
-
-          #  2)  Switch to that user
-
-          #  3)  The .ssh directory should now contain that file
-
+          
+          #  2)  Create a bogus id_rsa in the .ssh directory
+          create_bogus_rsa_keys_in_ssh_directory
+          #  3)  Switch to that user
+          Gas.use @nickname2
+          #  4)  The .ssh directory should not be changed
         end
 
         it "If there's a key in ~/.ssh that's backed up in .gas"

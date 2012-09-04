@@ -80,12 +80,22 @@ end
 
 def clean_out_gas_directory(nickname)
   if File.exists?(GAS_DIRECTORY + "/#{nickname}_id_rsa") 
-      File.delete(GAS_DIRECTORY + "/#{nickname}_id_rsa")
-    end
-    
-    if File.exists?(SSH_DIRECTORY + "/#{nickname}_id_rsa.pub")
-      File.delete(@ssh_dir + "/#{nickname}_id_rsa.pub")      
-    end
+    File.delete(GAS_DIRECTORY + "/#{nickname}_id_rsa")
+  end
+  
+  if File.exists?(SSH_DIRECTORY + "/#{nickname}_id_rsa.pub")
+    File.delete(@ssh_dir + "/#{nickname}_id_rsa.pub")      
+  end
+end
+
+def create_bogus_rsa_keys_in_ssh_directory
+  unless File.exists?(SSH_DIRECTORY + "/id_rsa") 
+    File.open(SSH_DIRECTORY + "/id_rsa","w+").puts "this rsa file is bogus and not backed up by .gas yet"
+  end
+  
+  unless File.exists?(SSH_DIRECTORY + "/id_rsa.pub")
+    File.open(SSH_DIRECTORY + "/id_rsa.pub","w+").puts "this pub rsa file is bogus and not backed up by .gas yet"
+  end
 end
 
 

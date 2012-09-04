@@ -1,6 +1,7 @@
 module Gas
   module Prompter
     
+    @invalid_input_response_with_default = "Please use 'y' or 'n' or enter for default."
     # If the user says 'f', the system will
     #   report that there isn't an id_rsa already in gas.  This causes a new key to overwrite automatically down the road.
     # This is for checking if a .gas/rsa file already exists for a nickname which is being registered
@@ -52,7 +53,7 @@ module Gas
           when "n"
             return true # return true if we aren't generating a new key
           else
-            puts "plz answer 'y' or 'n'"
+            puts @invalid_input_response_with_default
         end
       end
     end
@@ -87,7 +88,7 @@ module Gas
                 puts "Excelent!  Gas will handle rsa keys for this user."
                 return nil
               else
-                puts "Please use 'y' or 'n' or enter to choose default."
+                puts @invalid_input_response_with_default
               end
             end
           end
@@ -144,7 +145,25 @@ module Gas
         when "n"
           return false
         else
-          puts "Plz respond 'y' or 'n'"
+          puts @invalid_input_response_with_default
+        end
+      end
+    end
+    
+    
+    def self.user_wants_to_overwrite_existing_rsa_key?
+      puts "~/.ssh/id_rsa already exists.  Overwrite?"
+      puts "[y/n]"
+
+      while true
+        overwrite = clean_gets
+        case overwrite
+          when "y"
+            return true
+          when "n"
+            return false
+          else
+            puts "please respond 'y' or 'n'"
         end
       end
     end
