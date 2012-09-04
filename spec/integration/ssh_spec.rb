@@ -52,7 +52,7 @@ describe Gas::Ssh do
 
         #`rm #{@gas_dir}/#{@nickname}_id_rsa`
         #`rm #{@gas_dir}/#{@nickname}_id_rsa.pub`
-        Gas.delete(@nickname)
+        # Gas.delete(@nickname)
       end
 
 
