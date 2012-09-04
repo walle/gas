@@ -196,7 +196,7 @@ describe Gas::Ssh do
 
     describe "Should remove and insert keys into github" do
       it 'UTILITY:  should insert a new key into github and conversly remove that key', :current => true do
-        VCR.use_cassette('install-delete-a-key', :record => :new_episodes) do # this test has been saved under fixtures/install-delete-a-key.yml
+        VCR.use_cassette('install-delete-a-key', :record => :all) do # this test has been saved under fixtures/install-delete-a-key.yml
           lambda do
             Gas::Ssh.key_installation_routine!(@user, @sample_rsa, @github_speaker)
           end.should change{get_keys(@username, @password).length}.by(1)

@@ -199,8 +199,8 @@ module Gas
         response = http.request(req)
         
         if response.body.nil?
-          @keys = nil  # lame hack! sooo lazy of me.  I should learn how to remove the proper key from the @keys hash...
-          # remove_key_from_keys id
+          #@keys = nil  # lame hack! sooo lazy of me.  I should learn how to remove the proper key from the @keys hash...
+          remove_key_from_keys id
           return true
         end
       end
