@@ -10,26 +10,21 @@ module Gas
     # Returns true to indicate that the user would like to use the rsa file already in .gas ()
     # Returns false when there is no naming conflicts.
     def self.user_wants_to_use_key_already_in_gas?
-      if Gas::Ssh.corresponding_rsa_files_exist?
-        puts "Gas has detected a key in its archive directory ~/.gas/#{@uid}_id_rsa.  Should gas use this key or overwrite this key with a brand new one?"
-        puts "Keep current key? [y/n]"
+      puts "Gas has detected a key in its archive directory ~/.gas/#{@uid}_id_rsa.  Should gas use this key or overwrite this key with a brand new one?"
+      puts "Keep current key? [y/n]"
 
-        while true
-          keep_current_file = clean_gets
+      while true
+        keep_current_file = clean_gets
 
-          case keep_current_file
+        case keep_current_file
 
-          when "y"
-            return true # keep the files already in .gas, skip making key.
-          when "n"
-            return false
-          else
-            puts "please respond 'y' or 'n'"
-          end
+        when "y"
+          return true # keep the files already in .gas, skip making key.
+        when "n"
+          return false
+        else
+          puts "please respond 'y' or 'n'"
         end
-
-      else # no need to do anything if files don't exist
-        return false
       end
     end
     

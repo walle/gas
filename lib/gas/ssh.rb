@@ -81,8 +81,8 @@ module Gas
 
       if wants_gas_handling_keys
         puts
-
-        if Gas::Prompter.user_wants_to_use_key_already_in_gas?
+        
+        if Gas::Ssh.corresponding_rsa_files_exist? and Gas::Prompter.user_wants_to_use_key_already_in_gas?
           return true  # We don't need to do anything because the .gas directory is already setup
         elsif Gas::Prompter.user_wants_to_use_key_already_in_ssh?   #  Check ~/.ssh for a current id_rsa file, if yes, "Do you want to use the current id_rsa file to be used as your key?"
           use_current_rsa_files_for_this_user    # copies the keys from ~/.ssh instead of generating new keys if desired/possible

@@ -7,14 +7,6 @@ require 'rspec/mocks/standalone'
 
 describe Gas::Ssh do
 
-  before :all do
-    #move_the_testers_personal_ssh_key_out_of_way # this isn't needed anymore, we don't need to write to the users home directory anymore, only to /tmp
-  end
-
-  after :all do
-    #restore_the_testers_ssh_key
-  end
-
   before :each do
     @uid = "teddy"
   end
@@ -30,34 +22,22 @@ describe Gas::Ssh do
     end
 
     describe "Detecting when files are missing..." do
-
-      before :all do
-        File.stub!(:exists?).and_return(false)             # make it so File.exists? always return true
-      end
-
-      after :all do
-        File.unstub!(:exists?)                             # undoes the hook
-      end
-
       it "should detect when an id_rsa isn't in the .gas directory" do
-        Gas::Prompter.user_wants_to_use_key_already_in_gas?.should be_false
+        Gas::Ssh.corresponding_rsa_files_exist?(@uid).should be_false
       end
-
     end
 
-    describe "Detecting when files exist.@email..." do
-      before :all do
-        File.stub!(:exists?).and_return(true)             # make it so File.exists? always return true
+    describe "Detecting when files exist..." do
+      before :each do
+        create_user_no_git @uid, @uid, "a@b.com"
       end
 
-      after :all do
-        File.unstub!(:exists?)                             # undoes the hook
+      after :each do
+        delete_user_no_git @uid
       end
 
-      it 'should detect when an id_rsa is already in the .gas directory' do
-        STDIN.stub!(:gets).and_return("y\n")   # fix stdin to recieve a 'y' command...
-        Gas::Prompter.user_wants_to_use_key_already_in_gas?.should be_true
-        STDIN.unstub!(:gets)
+      it 'should detect when an id_rsa is already in the .gas directory', :current => true do
+        Gas::Ssh.corresponding_rsa_files_exist?(@uid).should be_true
       end
 
     end
@@ -129,7 +109,7 @@ describe Gas::Ssh do
           File.exist?(SSH_DIRECTORY + "/id_rsa.pub").should be_true
         end
 
-        it "shouldn't overwrite an existing key in ~/.ssh that isn't backed up in .gas and the user aborts", :current => true do
+        it "shouldn't overwrite an existing key in ~/.ssh that isn't backed up in .gas and the user aborts" do
           #  2)  Create a bogus id_rsa in the .ssh directory
           id_rsa, id_rsa_pub = plant_bogus_rsa_keys_in_ssh_directory
           #  3)  Switch to that user
@@ -164,7 +144,7 @@ describe Gas::Ssh do
           File.open(SSH_DIRECTORY + "/id_rsa.pub", "r").read.strip.should eq rsa
         end
 
-        it "should delete the key in .ssh when the user is deleted", :current => true do
+        it "should delete the key in .ssh when the user is deleted" do
           create_user_no_git(@nickname, @name, @email)
           File.exists?(GAS_DIRECTORY + "/#{@nickname}_id_rsa").should be_true
           Gas.delete @nickname
