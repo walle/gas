@@ -295,5 +295,3 @@ module Gas
     
   end
 end
-
-
