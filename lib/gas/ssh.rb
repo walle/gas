@@ -30,12 +30,7 @@ module Gas
     # because github API doesn't retain the comment...
     def self.generate_new_rsa_keys_in_gas_dir
       puts "Generating new ssh key..."
-      # TODO: Prompt user if they'd like to use a more secure password if physical security to their computer is not possible (dumb imo)... Unless we do that thing where we store keys on github!
 
-      # Old ssh key method (relies on unix environment)
-      # puts `ssh-keygen -f ~/.gas/#{@uid}_id_rsa -t rsa -C "#{@email}" -N ""`    # ssh-keygen style key creation
-
-      # new sshkey gem method...
       begin
         k = SSHKey.generate()         #   (:comment => "#{@email}")
 
