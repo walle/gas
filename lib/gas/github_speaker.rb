@@ -60,8 +60,6 @@ module Gas
       req.basic_auth @account_name, @password
       response = http.request(req)
       
-      # TODO: If body contains no keys or some kind of error, return nil???  I gotta learn the API more
-      
       @keys = JSON.parse(response.body)
     end
     
@@ -201,11 +199,16 @@ module Gas
         response = http.request(req)
         
         if response.body.nil?
-          # TODO:  remove the key from the keys attribute
           @keys = nil  # lame hack! sooo lazy of me.  I should learn how to remove the proper key from the @keys hash...
-          # @keys.delete()
-          
+          # remove_key_from_keys id
           return true
+        end
+      end
+      
+      # not used due to testing complexities...
+      def remove_key_from_keys(id_to_delete)
+        @keys.each.with_index do |key, i|
+          @keys.delete_at(i) if key['id'].to_i == id_to_delete.to_i
         end
       end
     

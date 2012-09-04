@@ -41,7 +41,7 @@ describe Gas::Ssh do
         delete_user_no_git @uid
       end
 
-      it 'should detect when an id_rsa is already in the .gas directory', :current => false do
+      it 'should detect when an id_rsa is already in the .gas directory' do
         Gas::Ssh.corresponding_rsa_files_exist?(@uid).should be_true
       end
     end
@@ -184,7 +184,7 @@ describe Gas::Ssh do
       Gas.delete(@nickname)
       Gas::Ssh.stub!(:get_username_and_password_and_authenticate).and_return(@credentials)
       
-      VCR.use_cassette('instantiate_github_speaker') do
+      VCR.use_cassette('instantiate_github_speaker', :record => :new_episodes) do
         @github_speaker = Gas::GithubSpeaker.new(@user, @username, @password)
       end
     end
@@ -195,7 +195,7 @@ describe Gas::Ssh do
     end
 
     describe "Should remove and insert keys into github" do
-      it 'UTILITY:  should insert a new key into github and conversly remove that key' do
+      it 'UTILITY:  should insert a new key into github and conversly remove that key', :current => true do
         VCR.use_cassette('install-delete-a-key', :record => :new_episodes) do # this test has been saved under fixtures/install-delete-a-key.yml
           lambda do
             Gas::Ssh.key_installation_routine!(@user, @sample_rsa, @github_speaker)
@@ -208,7 +208,7 @@ describe Gas::Ssh do
       end
     end
 
-    it "should add ssh keys to github when user is created, and delete them when destroyed", :current => false do
+    it "should add ssh keys to github when user is created, and delete them when destroyed" do
       # yes, delete all
       Gas::Prompter.stub!(:user_wants_to_delete_all_ssh_data?).and_return("a")  # all keys, local and github
       # create new user and use ssh handling
@@ -235,7 +235,7 @@ describe Gas::Ssh do
       Gas::Prompter.unstub!(:user_wants_to_install_key_to_github?)
     end
 
-    it "Gas.Delete should be able to remove the id_rsa from .gas", :current => true do
+    it "Gas.Delete should be able to remove the id_rsa from .gas" do
       Gas::Prompter.stub!(:user_wants_to_delete_all_ssh_data?).and_return("a")
       Gas::Prompter.stub!(:user_wants_gas_to_handle_rsa_keys?).and_return(true)
       Gas::Prompter.stub!(:user_wants_to_use_key_already_in_ssh?).and_return(false)
@@ -259,7 +259,7 @@ describe Gas::Ssh do
       Gas::Prompter.unstub!(:user_wants_to_install_key_to_github?)
     end
 
-    it 'Gas.ssh(nickname) should be able to add ssh support to a legacy user or an opt-out', :current => false do
+    it 'Gas.ssh(nickname) should be able to add ssh support to a legacy user or an opt-out' do
       Gas::Prompter.stub!(:user_wants_gas_to_handle_rsa_keys?).and_return(false)
       Gas.add(@nickname,@name,@email)
       Gas::Prompter.unstub!(:user_wants_gas_to_handle_rsa_keys?)
