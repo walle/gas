@@ -219,19 +219,24 @@ module Gas
 
     # Get's the ~/.gas/user_id_rsa associated with the specified user and returns it as a string
     def self.get_associated_rsa_key(nickname)
-      file_path = "#{GAS_DIRECTORY}/#{nickname}_id_rsa.pub"
+      pub_path = "#{GAS_DIRECTORY}/#{nickname}_id_rsa.pub"
+      priv_path = "#{GAS_DIRECTORY}/#{nickname}_id_rsa"
 
-      if File.exists? file_path
-        rsa = File.open(file_path, "rb").read.strip
-        if rsa.count(' ') == 2             # special trick to split off the trailing comment text because github API won't store it.
-          rsa = rsa.split(" ")
-          rsa = "#{rsa[0]} #{rsa[1]}"
+      if File.exists? pub_path and File.exists? priv_path
+        pub_rsa = File.open(pub_path, "rb").read.strip
+        if pub_rsa.count(' ') == 2             # special trick to split off the trailing comment text because github API won't store it.
+          pub_rsa = pub_rsa.split(" ")
+          pub_rsa = "#{rsa[0]} #{rsa[1]}"
         end
-
-        return [rsa]
+        
+        priv_rsa = File.open(priv_path, "rb").read.strip
+        
+        return [pub_rsa, priv_rsa]
       end
       return [nil, nil]
     end
+    
+    
 
     def self.get_username_and_password_and_authenticate
       puts "Type your github.com user name:"
