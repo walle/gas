@@ -27,8 +27,6 @@ module Gas
     puts
     puts @config
     puts
-
-    # self.show  # XXX: get rid of
   end
 
   # Shows the current user
@@ -132,12 +130,9 @@ module Gas
   def self.delete(nickname)
 
     return false unless self.no_user? nickname        # I re-engineered this section so I could use Gas.delete in a test even when that author didn't exist
-                                                      # TODO: The name no_user? is now very confusing.  It should be changed to something like "is_user?" now maybe?
-
+                                                      # TODO: The name no_user? is now very confusing.  It should be changed to something like "user_exists?" now maybe?
     Ssh.delete nickname
 
-
-    # exit
     @config.delete nickname
     @config.save!
 
