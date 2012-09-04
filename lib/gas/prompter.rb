@@ -8,7 +8,7 @@ module Gas
     # If the rsa exists, then we're goona need to ask if we should use it, or if we should delete it
     #
     # Returns true to indicate that the user would like to use the rsa file already in .gas ()
-    # Returns false when there is no naming conflicts.
+    # Returns false when there are no naming conflicts.
     def self.user_wants_to_use_key_already_in_gas?
       puts "Gas has detected a key in its archive directory ~/.gas/#{@uid}_id_rsa.  Should gas use this key or overwrite this key with a brand new one?"
       puts "Keep current key? [y/n]"
@@ -33,9 +33,6 @@ module Gas
     #  if it does, it asks the user if they would like to use that as their ssh key, instead of generating a new key pair.
     #
     def self.user_wants_to_use_key_already_in_ssh?
-      return false unless Gas::Ssh.ssh_dir_contains_rsa?
-
-      #puts "Gas has detected that an ~/.ssh/id_rsa file already exists.  Would you like to use this as your ssh key to connect with github?  Otherwise a new key will be generated and stored in ~/.gas (no overwrite concerns until you 'gas use nickname')"
       puts "Generate a brand new ssh key pair?  (Choose 'n' to use key in ~/.ssh/id_rsa)"
       puts "Default: 'y'"
       puts "[Y/n]"

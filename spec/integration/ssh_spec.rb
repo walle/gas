@@ -266,7 +266,6 @@ describe Gas::Ssh do
         Gas.ssh(@nickname)
       end.should change{`ls ~/.gas -1 | wc -l`.to_i}.by(2)
 
-
       Gas::Ssh.delete_associated_local_keys!(@nickname)
 
       Gas::Prompter.unstub!(:user_wants_gas_to_handle_rsa_keys?)
