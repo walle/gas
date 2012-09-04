@@ -216,65 +216,6 @@ module Gas
       end
       return [nil, nil]
     end
-    
-
-    def self.get_username_and_password_and_authenticate
-      puts "Type your github.com user name:"
-      print "User: "
-      username = clean_gets
-      
-
-      puts "Type your github password:"
-      password = ask("Password: ") { |q| q.echo = false }
-      puts
-
-      credentials = {:username => username, :password => password}
-
-      if valid_github_username_and_pass?(credentials[:username], credentials[:password])
-        return credentials
-      else
-        return false
-      end
-    end
-
-    # Get's the username and password from the user, then authenticates.  If it fails, it asks them if they'd like to try again.
-    # Returns false if aborted
-    def self.get_username_and_password_diligently
-      while true
-        credentials = get_username_and_password_and_authenticate
-        if credentials == false                                    # don't catch nil, it's special!
-          puts "Could not authenticate, try again?"
-          puts "y/n"
-
-          again = clean_gets
-          case again.downcase
-          when "y"
-          when "n"
-            return false
-          end
-        else
-          return credentials
-        end
-      end
-    end
-
-
-    def self.valid_github_username_and_pass?(username, password)
-      path = '/user'
-
-      http = Net::HTTP.new(GITHUB_SERVER,443)
-      http.use_ssl = true
-
-      req = Net::HTTP::Get.new(path)
-      req.basic_auth username, password
-      response = http.request(req)
-
-      result = JSON.parse(response.body)["message"]
-
-      return false if result == "Bad credentials"
-      return true
-    end
-
 
     # Cross-platform way of finding an executable in the $PATH.
     # returns nil if command not present
@@ -351,10 +292,6 @@ module Gas
       File.delete("#{GAS_DIRECTORY}/#{nickname}_id_rsa")
       File.delete("#{GAS_DIRECTORY}/#{nickname}_id_rsa.pub")
     end
-
-    
-    
-    
     
     
     
