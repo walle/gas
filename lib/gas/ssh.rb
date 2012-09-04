@@ -181,10 +181,7 @@ module Gas
       return nil
     end
 
-
     
-
-
     def self.upload_public_key_to_github(user, github_speaker = nil)
       if Gas::Prompter.user_wants_to_install_key_to_github?
         key_installation_routine!(user, nil, github_speaker)
@@ -195,7 +192,7 @@ module Gas
     def self.key_installation_routine!(user = nil, rsa_test = nil, github_speaker = nil)
       @uid = user.nickname unless user.nil?      # allows for easy testing
 
-      rsa_key = get_associated_rsa_key(@uid)
+      rsa_key = get_associated_rsa_key(@uid).first
       rsa_key = rsa_test unless rsa_test.nil?
       return false if rsa_key.nil?
 
@@ -231,9 +228,9 @@ module Gas
           rsa = "#{rsa[0]} #{rsa[1]}"
         end
 
-        return rsa
+        return [rsa]
       end
-      return nil
+      return [nil, nil]
     end
 
     def self.get_username_and_password_and_authenticate
@@ -333,13 +330,13 @@ module Gas
     end
 
     def self.user_has_ssh_keys?(nickname)
-      return false if get_associated_rsa_key(nickname).nil?
+      return false if get_associated_rsa_key(nickname).first.nil?
       return true
     end
 
 
     def self.delete_associated_github_keys!(nickname)
-      rsa = get_associated_rsa_key(nickname)
+      rsa = get_associated_rsa_key(nickname).first
       credentials = get_username_and_password_diligently
       if !credentials
         return false

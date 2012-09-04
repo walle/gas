@@ -88,14 +88,21 @@ def clean_out_gas_directory(nickname)
   end
 end
 
-def create_bogus_rsa_keys_in_ssh_directory
-  unless File.exists?(SSH_DIRECTORY + "/id_rsa") 
-    File.open(SSH_DIRECTORY + "/id_rsa","w+").puts "this rsa file is bogus and not backed up by .gas yet"
+# this function either mutates an existing file, or creates a new file that won't
+# have been backed up by gas
+def plant_bogus_rsa_keys_in_ssh_directory
+  id_rsa = "this rsa file is bogus and not backed up by .gas yet"
+  id_rsa_pub = "this pub rsa file is bogus and not backed up by .gas yet"
+
+  File.open(SSH_DIRECTORY + "/id_rsa","w+") do |f|
+    f.puts id_rsa
   end
   
-  unless File.exists?(SSH_DIRECTORY + "/id_rsa.pub")
-    File.open(SSH_DIRECTORY + "/id_rsa.pub","w+").puts "this pub rsa file is bogus and not backed up by .gas yet"
+  File.open(SSH_DIRECTORY + "/id_rsa.pub","w+") do |f|
+    f.puts id_rsa_pub
   end
+  
+  return [id_rsa, id_rsa_pub]
 end
 
 

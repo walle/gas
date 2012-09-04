@@ -131,21 +131,45 @@ describe Gas::Ssh do
           File.exist?(SSH_DIRECTORY + "/id_rsa.pub").should be_true
         end
 
-        it "shouldn't overwrite an existing key in ~/.ssh that isn't backed up in .gas and the user aborts", :current => true do
+        it "shouldn't overwrite an existing key in ~/.ssh that isn't backed up in .gas and the user aborts" do
           #  1)  Create a User
           
           #  2)  Create a bogus id_rsa in the .ssh directory
-          create_bogus_rsa_keys_in_ssh_directory
+          id_rsa, id_rsa_pub = plant_bogus_rsa_keys_in_ssh_directory
           #  3)  Switch to that user
+          Gas::Prompter.stub!(:user_wants_to_overwrite_existing_rsa_key?).and_return(false)
           Gas.use @nickname2
+          Gas::Prompter.unstub!(:user_wants_to_overwrite_existing_rsa_key?)
           #  4)  The .ssh directory should not be changed
+          File.open(SSH_DIRECTORY + "/id_rsa", "r").read.strip.should eq id_rsa
+        end
+        
+        it "should overwrite an existing, unbacked-up key in ~/.ssh if user wants" do
+          #  2)  Create a bogus id_rsa in the .ssh directory
+          id_rsa, id_rsa_pub = plant_bogus_rsa_keys_in_ssh_directory
+          #  3)  Switch to that user
+          Gas::Prompter.stub!(:user_wants_to_overwrite_existing_rsa_key?).and_return(true)
+          Gas.use @nickname2
+          Gas::Prompter.unstub!(:user_wants_to_overwrite_existing_rsa_key?)
+          #  4)  The .ssh directory should not be changed
+          File.open(SSH_DIRECTORY + "/id_rsa", "r").read.strip.should_not eq id_rsa
         end
 
-        it "If there's a key in ~/.ssh that's backed up in .gas"
+        it "If there's a key in ~/.ssh that's backed up in .gas", :current => true do
+          # 1) Create an alternate user
+          create_user_no_git(@nickname, @name, @email)
+          rsa, rsa_pub = Gas::Ssh.get_associated_rsa_key(@nickname)
+          rsa2, rsa2_pub = Gas::Ssh.get_associated_rsa_key(@nickname2)
+          # 2) 
+          Gas.use @nickname2
+          File.open(SSH_DIRECTORY + "/id_rsa.pub", "r").read.strip.should eq rsa2
+          Gas.use @nickname
+          File.open(SSH_DIRECTORY + "/id_rsa.pub", "r").read.strip.should eq rsa
+        end
 
         it "should delete the key in .ssh when the user is deleted" do
-          # Gas.add(@nickname,@name,@email)
-
+          create_user_no_git(@nickname, @name, @email)
+          File.open(GAS_DIRECTORY + "/id_rsa", "r").read.strip.should_not eq rsa
         end
 
         #  bundle exec rspec spec/gas/ssh_spec.rb -e 'should be able to copy ssh keys in the ssh'
