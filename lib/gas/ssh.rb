@@ -77,9 +77,7 @@ module Gas
       @uid = user.nickname
       @email = user.email
 
-      wants_gas_handling_keys = Gas::Prompter.user_wants_gas_to_handle_rsa_keys?
-
-      if wants_gas_handling_keys
+      if Gas::Prompter.user_wants_gas_to_handle_rsa_keys?
         if corresponding_rsa_files_exist?(@uid) and Gas::Prompter.user_wants_to_use_key_already_in_gas?(@uid)
           return true  # We don't need to do anything because the .gas directory is already setup
         elsif !corresponding_rsa_files_exist?(@uid) and ssh_dir_contains_rsa? and Gas::Prompter.user_wants_to_use_key_already_in_ssh?   #  Check ~/.ssh for a current id_rsa file, if yes, "Do you want to use the current id_rsa file to be used as your key?"
@@ -89,14 +87,12 @@ module Gas
           return generate_new_rsa_keys_in_gas_dir
         end
 
-      else # !wants_gas_handling_keys
+      else # !Gas::Prompter.user_wants_gas_to_handle_rsa_keys?
         # check if ~/.gas/rsa exists, if it does, promt the user
         # because that key must be destroyed (if the user really doesn't want gas handling keys for this user)
         if corresponding_rsa_files_exist?(@uid) #in ~/.gas/
           delete_associated_local_keys!(@uid) if Gas::Prompter.user_wants_to_remove_the_keys_that_already_exist_for_this_user?(@uid)
         end
-        
-        return false # if user doesn't want gas to use ssh keys, that's fine too.
       end
 
     end
