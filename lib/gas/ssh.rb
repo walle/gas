@@ -70,7 +70,7 @@ module Gas
       @uid = user.nickname
       @email = user.email
 
-      if Gas::Prompter.user_wants_gas_to_handle_rsa_keys?
+      if Gas::Prompter.user_wants_gas_to_handle_rsa_keys? 
         if corresponding_rsa_files_exist?(@uid) and Gas::Prompter.user_wants_to_use_key_already_in_gas?(@uid)
           return true  # We don't need to do anything because the .gas directory is already setup
         elsif !corresponding_rsa_files_exist?(@uid) and ssh_dir_contains_rsa? and Gas::Prompter.user_wants_to_use_key_already_in_ssh?   #  Check ~/.ssh for a current id_rsa file, if yes, "Do you want to use the current id_rsa file to be used as your key?"
