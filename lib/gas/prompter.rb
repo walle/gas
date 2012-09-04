@@ -1,5 +1,6 @@
 module Gas
   module Prompter
+    def hi;puts "hello";end
     
     @invalid_input_response_with_default = "Please use 'y' or 'n' or enter for default."
     # If the user says 'f', the system will

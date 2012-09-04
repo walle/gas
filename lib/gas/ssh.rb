@@ -4,17 +4,13 @@ module Gas
     require 'net/https'
     require 'json'
     require 'digest/md5'
-    include Prompter
-
-
-
+    extend Prompter
 
     def self.corresponding_rsa_files_exist?(nickname = '')
       nickname = @uid if nickname  == ''
       return true if File.exists? "#{GAS_DIRECTORY}/#{nickname}_id_rsa" and File.exists? "#{GAS_DIRECTORY}/#{nickname}_id_rsa.pub"
       false
     end
-
 
     # Copies a key pair from ~/.ssh to .gas/Nickname*
     def self.use_current_rsa_files_for_this_user(test = nil)
@@ -24,13 +20,10 @@ module Gas
       return true
     end
 
-
     def self.ssh_dir_contains_rsa?
       return true if File.exists?(SSH_DIRECTORY + "/id_rsa") or File.exists?(SSH_DIRECTORY + "/id_rsa.pub")
       return false
     end
-
-
 
 
 
