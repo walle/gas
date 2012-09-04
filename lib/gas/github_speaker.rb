@@ -14,8 +14,6 @@ module Gas
       @server = server
       @keys = nil
       
-      
-      
       # sort out username and password...  Make it's own function?
       if account_name.nil? and password.nil?
         # Prompt for username and password
@@ -28,7 +26,6 @@ module Gas
         authenticate
       end
       
-      #@status == :bad_credentials  OR  :authenticated
     end
     
     
@@ -46,7 +43,7 @@ module Gas
       result = install_key(rsa)
       
       if result != false
-        @keys << result        # TODO:  add this key to the @keys attribute
+        @keys << result
         return true
       end
     end
@@ -183,7 +180,7 @@ module Gas
       # Cycles through github, looking to see if rsa exists as a public key, then deletes it if it does
       def has_key(rsa)
         refresh_keys if @keys.nil?
-        return false if @keys.empty?   # XXX: Test me
+        return false if @keys.empty?
         
         # loop through arrays checking against 'key'
         @keys.each do |key|
