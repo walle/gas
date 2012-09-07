@@ -27,8 +27,8 @@ describe Gas::GithubSpeaker do
       end
       
       it "should post_key! all the way up to github" do
-        initial_length = 55
-        final_length = 99
+        initial_length = 'VCR introduces scope =('
+        final_length = ''
         
         VCR.use_cassette('get_keys-find_none') do
           initial_length = get_keys(@username, @password).length
@@ -74,8 +74,8 @@ describe Gas::GithubSpeaker do
       end
       
       it "should remove_key! from github" do
-        initial_length = 55
-        final_length = 99
+        initial_length = ''
+        final_length = ''
         
         VCR.use_cassette('get_keys-find_one') do
           initial_length = get_keys(@username, @password).length
