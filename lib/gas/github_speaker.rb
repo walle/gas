@@ -205,12 +205,15 @@ module Gas
         end
       end
       
-      # not used due to testing complexities...
+      
       def remove_key_from_keys(id_to_delete)
         @keys.each.with_index do |key, i|
           @keys.delete_at(i) if key['id'].to_i == id_to_delete.to_i
         end
       end
+      
+      
+        
     
   end
 end

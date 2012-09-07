@@ -32,6 +32,49 @@ describe Gas::GithubSpeaker do
     end
     
   end
-  
+
+=begin
+  describe "test keys" do
+    
+    describe "with no keys..." do
+      after :each do
+        delete_all_keys_in_github_account!(github_speaker)
+      end
+      
+      it "should expose an empty array when no keys..." do
+        VCR.use_cassette('check_keys-empty') do
+          @github_speaker.keys.empty?.should be_true
+        end
+      end
+      
+      it "should expose a key created..." do
+        VCR.use_cassette('github_speaker-post_key') do
+          @github_speaker.post_key! @sample_rsa
+        end
+      end
+      
+    end
+    
+    describe "with a key" do
+      before :each do
+        VCR.use_cassette('github_speaker-post_key') do
+          @github_speaker.post_key! @sample_rsa
+        end
+        
+        @key_id = @github_speaker.keys.first['id']
+      end
+      
+      it "should remove a key from @keys", :current => true do
+        #require 'pry';binding.pry
+        Gas::GithubSpeaker.publicize_methods do
+          @github_speaker.remove_key_from_keys @key_id
+        end
+        
+        @github_speaker.keys.empty?.should be_true
+      end
+    end
+
+  end
+=end  
   
 end

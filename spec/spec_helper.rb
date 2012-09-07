@@ -20,7 +20,7 @@ end
 require 'vcr'
 
 VCR.configure do |c|
-  #c.allow_http_connections_when_no_cassette = true    # set to true if you're refreshing the cassets in fixtures
+  c.allow_http_connections_when_no_cassette = true    # set to true if you're refreshing the cassets in fixtures
   c.cassette_library_dir = 'fixtures/vcr_cassettes'
   c.hook_into :webmock # or :fakeweb
 end
@@ -138,6 +138,16 @@ def remove_key_from_github_account(username, password, rsa)
   return false   # key not found
 end
 
+def delete_all_keys_in_github_account!(github_speaker)
+  VCR.use_cassette('delete_all_keys_in_github_account', :record => :new_episodes) do
+    github_speaker.keys.each do |key|
+      Gas::GithubSpeaker.publicize_methods do
+        github_speaker.remove_key_by_id! key['id']
+      end
+    end
+  end
+end
+
 def get_keys(username, password)
   server = 'api.github.com'
   path = '/user/keys'
@@ -150,4 +160,15 @@ def get_keys(username, password)
   response = http.request(req)
 
   return JSON.parse(response.body)
+end
+
+
+# This is used for publicizing the methods of a class so you can use TDD for projects, even in RUBY!
+class Class
+  def publicize_methods
+    saved_private_instance_methods = self.private_instance_methods
+    self.class_eval { public *saved_private_instance_methods }
+    yield
+    self.class_eval { private *saved_private_instance_methods }
+  end
 end

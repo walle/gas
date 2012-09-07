@@ -19,32 +19,34 @@ http_interactions:
       Server:
       - nginx/1.0.13
       Date:
-      - Thu, 06 Sep 2012 05:44:33 GMT
+      - Fri, 07 Sep 2012 18:45:12 GMT
       Content-Type:
       - application/json; charset=utf-8
       Connection:
       - keep-alive
       Status:
       - 200 OK
-      Etag:
-      - ! '"c40df4dbd1875b6234fbe1e625fbc6cd"'
-      Last-Modified:
-      - Tue, 04 Sep 2012 16:31:49 GMT
-      X-Ratelimit-Remaining:
-      - '4971'
       Cache-Control:
-      - private, max-age=60, s-maxage=60
+      - private, s-maxage=60, max-age=60
+      X-Ratelimit-Remaining:
+      - '4944'
       Vary:
       - Accept, Authorization, Cookie
-      X-Content-Type-Options:
-      - nosniff
-      X-Ratelimit-Limit:
-      - '5000'
+      X-Github-Media-Type:
+      - github.beta
       Content-Length:
       - '649'
+      X-Content-Type-Options:
+      - nosniff
+      Last-Modified:
+      - Tue, 04 Sep 2012 16:31:49 GMT
+      X-Ratelimit-Limit:
+      - '5000'
+      Etag:
+      - ! '"c40df4dbd1875b6234fbe1e625fbc6cd"'
     body:
       encoding: US-ASCII
-      string: ! '{"plan":{"space":307200,"private_repos":0,"collaborators":0,"name":"free"},"type":"User","owned_private_repos":0,"created_at":"2011-10-12T06:43:44Z","avatar_url":"https://secure.gravatar.com/avatar/eefd07e4a36269652dd094b038020dd3?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png","followers":0,"gravatar_id":"eefd07e4a36269652dd094b038020dd3","url":"https://api.github.com/users/aTestGitAccount","disk_usage":0,"public_repos":0,"public_gists":0,"following":0,"html_url":"https://github.com/aTestGitAccount","collaborators":0,"private_gists":0,"id":1121572,"total_private_repos":0,"login":"aTestGitAccount"}'
+      string: ! '{"owned_private_repos":0,"type":"User","avatar_url":"https://secure.gravatar.com/avatar/eefd07e4a36269652dd094b038020dd3?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png","public_gists":0,"private_gists":0,"plan":{"private_repos":0,"name":"free","collaborators":0,"space":307200},"followers":0,"html_url":"https://github.com/aTestGitAccount","url":"https://api.github.com/users/aTestGitAccount","login":"aTestGitAccount","disk_usage":0,"following":0,"total_private_repos":0,"collaborators":0,"public_repos":0,"created_at":"2011-10-12T06:43:44Z","id":1121572,"gravatar_id":"eefd07e4a36269652dd094b038020dd3"}'
     http_version: !!null 
-  recorded_at: Tue, 04 Sep 2012 22:15:01 GMT
+  recorded_at: Fri, 07 Sep 2012 18:45:12 GMT
 recorded_with: VCR 2.2.4
