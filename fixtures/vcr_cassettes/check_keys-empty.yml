@@ -1,0 +1,52 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://aTestGitAccount:plzdon%27thackthetestaccount1@api.github.com/user/keys
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - ! '*/*'
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.0.13
+      Date:
+      - Fri, 07 Sep 2012 19:31:51 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Connection:
+      - keep-alive
+      Status:
+      - 200 OK
+      Content-Length:
+      - '2'
+      Last-Modified:
+      - Tue, 04 Sep 2012 16:31:49 GMT
+      X-Github-Media-Type:
+      - github.beta
+      Vary:
+      - Accept, Authorization, Cookie
+      Etag:
+      - ! '"c40df4dbd1875b6234fbe1e625fbc6cd"'
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      X-Ratelimit-Limit:
+      - '5000'
+      X-Content-Type-Options:
+      - nosniff
+      X-Ratelimit-Remaining:
+      - '4837'
+    body:
+      encoding: US-ASCII
+      string: ! '[]'
+    http_version: !!null 
+  recorded_at: Fri, 07 Sep 2012 19:31:50 GMT
+recorded_with: VCR 2.2.4
