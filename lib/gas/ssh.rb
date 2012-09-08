@@ -114,7 +114,7 @@ module Gas
 
       if is_ssh_agent_there?
         `ssh-add #{SSH_DIRECTORY}/id_rsa > /dev/null 2>&1`  # you need to run this command to get the private key to be set to active on unix based machines.  Not sure what to do for windows yet...
-        
+
         if $?.exitstatus == 1    # exit status 1 means failed
           puts "Looks like there may have been a fatal error in registering the rsa key with ssh-agent.  Might be worth looking into"
           raise "Exit code on ssh-add command line was one meaning: Error!"
