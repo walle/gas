@@ -5,8 +5,6 @@ require './lib/gas'
 require 'rspec/mocks'
 require 'rspec/mocks/standalone'
 
-require 'rbconfig'
-is_windows = (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
 
 describe Gas::Ssh do
   before :all do
@@ -45,11 +43,7 @@ describe Gas::Ssh do
       end
 
       it 'should detect when an id_rsa is already in the .gas directory', :current => true do
-
-        #sleep 5 # if is_windows
-        
         Gas::Ssh.corresponding_rsa_files_exist?(@uid).should be_true
-        # require 'pry';binding.pry
       end
     end
 
@@ -61,11 +55,11 @@ describe Gas::Ssh do
 
         lambda do
           Gas.add(@nickname,@name,@email)
-        end.should change{`ls ~/.gas -1 | wc -l`.to_i}.by(2)   #OMG THIS IS A FUN TEST!!!
+        end.should change{`ls #{GAS_DIRECTORY} -1 | wc -l`.to_i}.by(2)   #OMG THIS IS A FUN TEST!!!
 
         lambda do
           Gas.delete(@nickname)
-        end.should change{`ls ~/.gas -1 | wc -l`.to_i}.by(-2)
+        end.should change{`ls #{GAS_DIRECTORY} -1 | wc -l`.to_i}.by(-2)
 
         STDIN.unstub!(:gets)
         Gas::Ssh.unstub!(:upload_public_key_to_github)
