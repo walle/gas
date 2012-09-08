@@ -151,7 +151,10 @@ module Gas
 
     def self.get_md5_hash(file_path)
       if File.exists? file_path
-        return Digest::MD5.hexdigest(File.open(file_path, "rb").read)
+        file = File.open(file_path, "rb")
+        hash = Digest::MD5.hexdigest(file.read)
+        file.close
+        return hash
       end
       return nil
     end
@@ -199,14 +202,18 @@ module Gas
       priv_path = "#{GAS_DIRECTORY}/#{nickname}_id_rsa"
 
       if File.exists? pub_path and File.exists? priv_path
-        pub_rsa = File.open(pub_path, "rb").read.strip
+        pub_file = File.open(pub_path, "rb")
+        pub_rsa = pub_file.read.strip
+        pub_file.close
         if pub_rsa.count(' ') == 2             # special trick to split off the trailing comment text because github API won't store it.
           pub_rsa = pub_rsa.split(" ")
           pub_rsa = "#{rsa[0]} #{rsa[1]}"
         end
         
-        priv_rsa = File.open(priv_path, "rb").read.strip
-        
+        priv_file = File.open(priv_path, "rb")
+        priv_rsa = priv_file.read.strip
+        priv_file.close
+
         return [pub_rsa, priv_rsa]
       end
       return [nil, nil]

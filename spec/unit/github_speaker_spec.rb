@@ -92,7 +92,7 @@ describe Gas::GithubSpeaker do
         (final_length - initial_length).should be(-1)
       end
       
-      it "should remove a key from @keys", :current => true do
+      it "should remove a key from @keys" do
         #require 'pry';binding.pry
         Gas::GithubSpeaker.publicize_methods do
           @github_speaker.remove_key_from_keys @key_id

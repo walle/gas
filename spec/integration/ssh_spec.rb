@@ -5,6 +5,9 @@ require './lib/gas'
 require 'rspec/mocks'
 require 'rspec/mocks/standalone'
 
+require 'rbconfig'
+is_windows = (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
+
 describe Gas::Ssh do
   before :all do
     @nickname = "thisaccountmaybedeletedmysteriously"
@@ -41,14 +44,17 @@ describe Gas::Ssh do
         delete_user_no_git @uid
       end
 
-      it 'should detect when an id_rsa is already in the .gas directory' do
+      it 'should detect when an id_rsa is already in the .gas directory', :current => true do
+
+        #sleep 5 # if is_windows
+        
         Gas::Ssh.corresponding_rsa_files_exist?(@uid).should be_true
+        # require 'pry';binding.pry
       end
     end
 
     describe "File System Changes..." do
       
-
       it 'should create ssh keys in .gas && Gas.remove should be able to remove those files' do
         STDIN.stub!(:gets).and_return("y\n")          # forces the dialogs to
         Gas::Ssh.stub!(:upload_public_key_to_github).and_return(false)
