@@ -196,19 +196,49 @@ describe Gas::Ssh do
       Gas::Ssh.unstub!(:get_username_and_password_and_authenticate)
     end
 
-    describe "Should remove and insert keys into github" do
-      it 'UTILITY:  should insert a new key into github and conversly remove that key', :current => true do
-        VCR.use_cassette('install-delete-a-key', :record => :all) do # this test has been saved under fixtures/install-delete-a-key.yml
-          lambda do
-            Gas::Ssh.key_installation_routine!(@user, @sample_rsa, @github_speaker)
-          end.should change{get_keys(@username, @password).length}.by(1)
-
+    describe "Should remove and insert keys into github", :current => true do
+      it 'UTILITY:  should insert a new key into github and conversly remove that key' do
+        initial_request = ''
+        subsequent_request = ''
+        
+        VCR.use_cassette('get_keys-find_none') do
+          initial_request = get_keys(@username, @password).length
+        end
+        
+        VCR.use_cassette('key_installation_routine-Add_key', :record => :new_episodes) do
+          Gas::Ssh.key_installation_routine!(@user, @sample_rsa, @github_speaker)
+        end
+        
+        VCR.use_cassette('get_keys-find_one') do
+          subsequent_request = get_keys(@username, @password).length
+        end
+        
+        (subsequent_request - initial_request).should be(1)
+      end
+      
+      it 'should remove the key that it just inserted, so DONT RUN ALONE' do
+        initial_request = ''
+        subsequent_request = ''
+        
+        VCR.use_cassette('get_keys-find_one') do
+          initial_request = get_keys(@username, @password).length
+        end
+        
+        VCR.use_cassette('key_installation_routine-Remove_key') do
           lambda do
             @github_speaker.remove_key! @sample_rsa
           end.should change{get_keys(@username, @password).length}.by(-1)
         end
+        
+        VCR.use_cassette('get_keys-find_none') do
+          subsequent_request = get_keys(@username, @password).length
+        end
+        
+        (subsequent_request - initial_request).should be(-1)
       end
+      
     end
+
 
     it "should add ssh keys to github when user is created, and delete them when destroyed" do
       # yes, delete all
