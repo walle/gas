@@ -15,8 +15,10 @@ module Gas
     # Copies a key pair from ~/.ssh to .gas/Nickname*
     def self.use_current_rsa_files_for_this_user(test = nil)
       @uid = test unless test.nil?
-      cmd_result = `cp #{SSH_DIRECTORY}/id_rsa #{GAS_DIRECTORY}/#{@uid}_id_rsa`
-      cmd_result = `cp #{SSH_DIRECTORY}/id_rsa.pub #{GAS_DIRECTORY}/#{@uid}_id_rsa.pub`
+      FileUtils.cp("#{SSH_DIRECTORY}/id_rsa", "#{GAS_DIRECTORY}/#{@uid}_id_rsa")
+      FileUtils.cp("#{SSH_DIRECTORY}/id_rsa.pub", "#{GAS_DIRECTORY}/#{@uid}_id_rsa.pub")
+      FileUtils.chmod 0700, "#{GAS_DIRECTORY}/#{@uid}_id_rsa"
+      FileUtils.chmod 0700, "#{GAS_DIRECTORY}/#{@uid}_id_rsa.pub"
       return true
     end
 
@@ -103,8 +105,11 @@ module Gas
 
     
     def self.write_to_ssh_dir!
+      supress_process_output = "> /dev/null 2>&1"
+      supress_process_output = "> NUL" if IS_WINDOWS
+
       # remove the current key from the ssh-agent session (key will no longer be used with github)
-      system('ssh-add -d #{SSH_DIRECTORY}/id_rsa > /dev/null 2>&1') if is_ssh_agent_there?
+      system("ssh-add -d #{SSH_DIRECTORY}/id_rsa #{supress_process_output}") if is_ssh_agent_there?
 
       FileUtils.cp(GAS_DIRECTORY + "/#{@uid}_id_rsa", SSH_DIRECTORY + "/id_rsa")
       FileUtils.cp(GAS_DIRECTORY + "/#{@uid}_id_rsa.pub", SSH_DIRECTORY + "/id_rsa.pub")
@@ -113,7 +118,7 @@ module Gas
       FileUtils.chmod(0700, SSH_DIRECTORY + "/id_rsa.pub")
 
       if is_ssh_agent_there?
-        `ssh-add #{SSH_DIRECTORY}/id_rsa > /dev/null 2>&1`  # you need to run this command to get the private key to be set to active on unix based machines.  Not sure what to do for windows yet...
+        `ssh-add #{SSH_DIRECTORY}/id_rsa #{supress_process_output}`  # you need to run this command to get the private key to be set to active on unix based machines.  Not sure what to do for windows yet...
 
         if $?.exitstatus == 1    # exit status 1 means failed
           puts "Looks like there may have been a fatal error in registering the rsa key with ssh-agent.  Might be worth looking into"
@@ -126,7 +131,8 @@ module Gas
       
     end
 
-    # This function scans each file in a directory to check to see if it is the same file which it's being compared against
+    # This function scans each file in a directory to check 
+    # to see if it is the same file which it's being compared against
     # dir_to_scan        The target directory you'd like to scan
     # file_to_compare    The file's path that you're expecting to find
     def self.scan_for_file_match(file_to_compare, dir_to_scan)

@@ -22,7 +22,7 @@ end
 require 'vcr'
 
 VCR.configure do |c|
-  c.allow_http_connections_when_no_cassette = true    # set to true if you're refreshing the cassets in fixtures
+  #c.allow_http_connections_when_no_cassette = true    # set to true if you're refreshing the cassets in fixtures
   c.cassette_library_dir = 'fixtures/vcr_cassettes'
   c.hook_into :webmock # or :fakeweb
 end
@@ -37,37 +37,6 @@ def mock_cli_call(mock_object, command)
   mock(mock_object).__double_definition_create__.call(:`, command) { yield }
 end
 
-
-# Obsolete, using virtual file directory now
-def move_the_testers_personal_ssh_key_out_of_way
-  if File.exists?(SSH_DIRECTORY + "/id_rsa") 
-    @pattern_to_restore_privl = File.open(SSH_DIRECTORY + "/id_rsa","r").read      # this test requires some juggling of files that may already exist.
-    File.open(GAS_DIRECTORY + "/temp_test","w+").puts @pattern_to_restore_privl
-    File.delete(SSH_DIRECTORY + "/id_rsa")
-  end
-  
-  if File.exists?(SSH_DIRECTORY + "/id_rsa.pub")
-    @pattern_to_restore_publ = File.open(SSH_DIRECTORY + "/id_rsa.pub","r").read   # We don't want to mess things up for the tester, so we will need to save these files and then delete them
-    File.open(GAS_DIRECTORY + "/temp_test.pub","w+").puts @pattern_to_restore_publ
-    File.delete(SSH_DIRECTORY + "/id_rsa.pub")
-  end
-end
-
-
-# Obsolete, using virtual file directory now
-def restore_the_testers_ssh_key
-  if File.exists?(GAS_DIRECTORY + "/temp_test") 
-    @pattern_to_restore_privl = File.open(GAS_DIRECTORY + "/temp_test","r").read      # this test requires some juggling of files that may already exist.
-    File.open(SSH_DIRECTORY + "/id_rsa","w+").puts @pattern_to_restore_privl
-    File.delete(GAS_DIRECTORY + "/temp_test")
-  end
-  
-  if File.exists?(GAS_DIRECTORY + "/temp_test.pub")
-    @pattern_to_restore_publ = File.open(GAS_DIRECTORY + "/temp_test.pub","r").read   # We don't want to mess things up for the tester, so we will need to save these files and then delete them
-    File.open(SSH_DIRECTORY + "/id_rsa.pub","w+").puts @pattern_to_restore_publ
-    File.delete(GAS_DIRECTORY + "/temp_test.pub")
-  end
-end
 
 
 def clean_out_ssh_directory

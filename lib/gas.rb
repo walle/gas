@@ -1,6 +1,9 @@
+require 'rbconfig'
+
 GAS_DIRECTORY = "#{ENV['HOME']}/.gas" # File.expand_path('~/.gas')
 SSH_DIRECTORY = "#{ENV['HOME']}/.ssh" # File.expand_path('~/.ssh')
 GITHUB_SERVER = 'api.github.com'
+IS_WINDOWS = (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
 
 
 require 'sshkey' #external

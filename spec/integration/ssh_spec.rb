@@ -101,8 +101,12 @@ describe Gas::Ssh do
           Gas.use @nickname2
           Gas::Prompter.unstub!(:user_wants_to_overwrite_existing_rsa_key?)
           #  4)  The .ssh directory should not be changed
-          File.open(SSH_DIRECTORY + "/id_rsa", "r").read.strip.should eq id_rsa
-          File.open(SSH_DIRECTORY + "/id_rsa.pub", "r").read.strip.should eq id_rsa_pub
+          File.open(SSH_DIRECTORY + "/id_rsa", "r") do |f|
+            f.read.strip.should eq id_rsa
+          end
+          File.open(SSH_DIRECTORY + "/id_rsa.pub", "r") do |f|
+            f.read.strip.should eq id_rsa_pub
+          end
         end
 
         it "should overwrite an existing, unbacked-up key in ~/.ssh if user wants" do
@@ -113,7 +117,9 @@ describe Gas::Ssh do
           Gas.use @nickname2
           Gas::Prompter.unstub!(:user_wants_to_overwrite_existing_rsa_key?)
           #  4)  The .ssh directory should not be changed
-          File.open(SSH_DIRECTORY + "/id_rsa", "r").read.strip.should_not eq id_rsa
+          File.open(SSH_DIRECTORY + "/id_rsa", "r") do |f|
+            f.read.strip.should_not eq id_rsa
+          end
         end
 
         it "If there's a key in ~/.ssh that's backed up in .gas" do
@@ -123,9 +129,13 @@ describe Gas::Ssh do
           rsa2, rsa2_pub = Gas::Ssh.get_associated_rsa_key(@nickname2)
           # 2) 
           Gas.use @nickname2
-          File.open(SSH_DIRECTORY + "/id_rsa.pub", "r").read.strip.should eq rsa2
+          File.open(SSH_DIRECTORY + "/id_rsa.pub", "r") do |f|
+            f.read.strip.should eq rsa2
+          end
           Gas.use @nickname
-          File.open(SSH_DIRECTORY + "/id_rsa.pub", "r").read.strip.should eq rsa
+          File.open(SSH_DIRECTORY + "/id_rsa.pub", "r") do |f|
+            f.read.strip.should eq rsa
+          end
         end
 
         it "should delete the key in .ssh when the user is deleted" do
@@ -135,12 +145,15 @@ describe Gas::Ssh do
           File.exists?(GAS_DIRECTORY + "/#{@nickname}_id_rsa").should be_false
         end
 
-        #  bundle exec rspec spec/gas/ssh_spec.rb -e 'should be able to copy ssh keys in the ssh'
         it 'should be able to copy ssh keys in the ssh' do
           # put a key pair in the ssh directory
           mock_text = "this is a mock ssh file"
-          File.open(SSH_DIRECTORY + "/id_rsa","w+").write(mock_text)
-          File.open(SSH_DIRECTORY + "/id_rsa.pub","w+").write(mock_text)
+          File.open(SSH_DIRECTORY + "/id_rsa","w+") do |f|
+            f.write(mock_text)
+          end
+          File.open(SSH_DIRECTORY + "/id_rsa.pub","w+") do |f|
+            f.write(mock_text)
+          end
 
           File.exists?(GAS_DIRECTORY + "/#{@nickname}_id_rsa").should be_false
           File.exists?(GAS_DIRECTORY + "/#{@nickname}_id_rsa.pub").should be_false
@@ -150,12 +163,15 @@ describe Gas::Ssh do
           File.exists?(GAS_DIRECTORY + "/#{@nickname}_id_rsa").should be_true
           File.exists?(GAS_DIRECTORY + "/#{@nickname}_id_rsa.pub").should be_true
 
-          ssh_file = File.read(GAS_DIRECTORY + "/#{@nickname}_id_rsa")
-          # ssh_file.should == mock_text # this part doesn't work... hmmm...
+          File.read(GAS_DIRECTORY + "/#{@nickname}_id_rsa") do |f|
+            f.read.should == mock_text # this part doesn't work... hmmm...
+          end
 
           File.delete(GAS_DIRECTORY + "/#{@nickname}_id_rsa")
           File.delete(GAS_DIRECTORY + "/#{@nickname}_id_rsa.pub")
         end
+
+        
 
         it "should have a UTILITY for deleting rsa files of user" do
           lambda do
@@ -196,7 +212,7 @@ describe Gas::Ssh do
       Gas::Ssh.unstub!(:get_username_and_password_and_authenticate)
     end
 
-    describe "Should remove and insert keys into github", :current => true do
+    describe "Should remove and insert keys into github" do
       it 'UTILITY:  should insert a new key into github and conversly remove that key' do
         initial_request = ''
         subsequent_request = ''
