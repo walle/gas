@@ -164,6 +164,9 @@ def get_keys(username, password)
   return JSON.parse(response.body)
 end
 
+def count_of_files_in(directory_path)
+  Dir.glob(File.join(directory_path, '**', '*')).select { |file| File.file?(file) }.count
+end
 
 # This is used for publicizing the methods of a class so you can use TDD for projects, even in RUBY!
 class Class

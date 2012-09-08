@@ -4,6 +4,7 @@ require './lib/gas'
 
 require 'rspec/mocks'
 require 'rspec/mocks/standalone'
+require 'pry'
 
 
 describe Gas::Ssh do
@@ -42,24 +43,24 @@ describe Gas::Ssh do
         delete_user_no_git @uid
       end
 
-      it 'should detect when an id_rsa is already in the .gas directory', :current => true do
+      it 'should detect when an id_rsa is already in the .gas directory' do
         Gas::Ssh.corresponding_rsa_files_exist?(@uid).should be_true
       end
     end
 
     describe "File System Changes..." do
       
-      it 'should create ssh keys in .gas && Gas.remove should be able to remove those files' do
+      it 'should create ssh keys in .gas && Gas.remove should be able to remove those files', :current => true do
         STDIN.stub!(:gets).and_return("y\n")          # forces the dialogs to
         Gas::Ssh.stub!(:upload_public_key_to_github).and_return(false)
 
         lambda do
           Gas.add(@nickname,@name,@email)
-        end.should change{`ls #{GAS_DIRECTORY} -1 | wc -l`.to_i}.by(2)   #OMG THIS IS A FUN TEST!!!
+        end.should change{count_of_files_in(GAS_DIRECTORY)}.by(2)
 
         lambda do
           Gas.delete(@nickname)
-        end.should change{`ls #{GAS_DIRECTORY} -1 | wc -l`.to_i}.by(-2)
+        end.should change{count_of_files_in(GAS_DIRECTORY)}.by(-2)
 
         STDIN.unstub!(:gets)
         Gas::Ssh.unstub!(:upload_public_key_to_github)
@@ -155,10 +156,10 @@ describe Gas::Ssh do
           File.delete(GAS_DIRECTORY + "/#{@nickname}_id_rsa.pub")
         end
 
-        it "should have a UTILITY for deleting rsa files of user" do
+        it "should have a UTILITY for deleting rsa files of user", :current => true do
           lambda do
             Gas::Ssh.delete_associated_local_keys!(@nickname2)
-          end.should change{`ls ~/.gas -1 | wc -l`.to_i}.by(-2)
+          end.should change{count_of_files_in(GAS_DIRECTORY)}.by(-2)
         end
       end
 
@@ -225,7 +226,6 @@ describe Gas::Ssh do
           Gas::Ssh.stub!(:get_nils).and_return({ :username => @username, :password => @password })
           Gas.delete(@nickname)
           Gas::Ssh.unstub!(:get_nils)
-          #require 'pry';binding.pry
         end.should change{get_keys(@username, @password).length}.by(-1)
       end
 
@@ -235,7 +235,7 @@ describe Gas::Ssh do
       Gas::Prompter.unstub!(:user_wants_to_install_key_to_github?)
     end
 
-    it "Gas.Delete should be able to remove the id_rsa from .gas" do
+    it "Gas.Delete should be able to remove the id_rsa from .gas", :current => true do
       Gas::Prompter.stub!(:user_wants_to_delete_all_ssh_data?).and_return("a")
       Gas::Prompter.stub!(:user_wants_gas_to_handle_rsa_keys?).and_return(true)
       Gas::Prompter.stub!(:user_wants_to_use_key_already_in_ssh?).and_return(false)
@@ -244,13 +244,13 @@ describe Gas::Ssh do
       VCR.use_cassette('add-on-crteation-delete-on-deletion') do 
         lambda do
           Gas.add(@nickname,@name,@email, @github_speaker)
-        end.should change{`ls ~/.gas -1 | wc -l`.to_i}.by(2)
+        end.should change{count_of_files_in(GAS_DIRECTORY)}.by(2)
   
         lambda do
           Gas::Ssh.stub!(:get_nils).and_return({:username => @username, :password => @password })
           Gas.delete(@nickname)
           Gas::Ssh.unstub!(:get_nils)
-        end.should change{`ls ~/.gas -1 | wc -l`.to_i}.by(-2)
+        end.should change{count_of_files_in(GAS_DIRECTORY)}.by(-2)
       end
 
       Gas::Prompter.unstub!(:user_wants_to_delete_all_ssh_data?)
@@ -259,7 +259,7 @@ describe Gas::Ssh do
       Gas::Prompter.unstub!(:user_wants_to_install_key_to_github?)
     end
 
-    it 'Gas.ssh(nickname) should be able to add ssh support to a legacy user or an opt-out' do
+    it 'Gas.ssh(nickname) should be able to add ssh support to a legacy user or an opt-out', :current => true do
       Gas::Prompter.stub!(:user_wants_gas_to_handle_rsa_keys?).and_return(false)
       Gas.add(@nickname,@name,@email)
       Gas::Prompter.unstub!(:user_wants_gas_to_handle_rsa_keys?)
@@ -269,7 +269,7 @@ describe Gas::Ssh do
 
       lambda do
         Gas.ssh(@nickname)
-      end.should change{`ls ~/.gas -1 | wc -l`.to_i}.by(2)
+      end.should change{count_of_files_in(GAS_DIRECTORY)}.by(2)
 
       Gas::Ssh.delete_associated_local_keys!(@nickname)
 
