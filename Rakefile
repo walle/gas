@@ -22,6 +22,12 @@ RSpec::Core::RakeTask.new(:spec) do |t|
   t.rspec_opts = %w(-fd -c)
 end
 
+# this is for running tests that you've marked current...  eg:  it 'should work', :current => true do
+RSpec::Core::RakeTask.new(:current) do |spec|
+  spec.pattern = 'spec/*/*_spec.rb'
+  spec.rspec_opts = ['--tag current']
+end
+
 task :default => :unit
 task :test => :unit
 
