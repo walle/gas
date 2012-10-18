@@ -74,10 +74,4 @@ describe Gas::Config do
     config.delete 'user2'
     config.users.count.should be 0
   end
-
-  it 'should remove the ssh keys from .gas appropriately'
-
-  it 'should remove the keys from .ssh if present'
-
 end
-

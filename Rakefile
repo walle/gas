@@ -11,12 +11,6 @@ RSpec::Core::RakeTask.new(:unit) do |t|
   t.pattern = "./spec/unit/**/*_spec.rb"
 end
 
-desc "Run integration specs"
-RSpec::Core::RakeTask.new(:integration) do |t|
-  t.rspec_opts = %w(-fd -c)
-  t.pattern = "./spec/integration/**/*_spec.rb"
-end
-
 desc "Run all specs"
 RSpec::Core::RakeTask.new(:spec) do |t|
   t.rspec_opts = %w(-fd -c)

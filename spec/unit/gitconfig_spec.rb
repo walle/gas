@@ -1,7 +1,6 @@
 require './spec/spec_helper'
 
 require './lib/gas'
-#require './lib/gas/user'
 
 describe Gas::Gitconfig do
 

@@ -1,53 +1,34 @@
 #!/usr/bin/env ruby
 
-require 'thor'
+$LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__)) + '/../lib/')
+
 require 'gas'
 
-class GasRunner < Thor
-
-  default_task :list
-
-  desc "list", "Lists your authors"
-  def list
-    Gas.list
+# Cross-platform way of finding an executable in the $PATH.
+def which(cmd)
+  exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+  ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+    exts.each { |ext|
+      exe = "#{path}/#{cmd}#{ext}"
+      return exe if File.executable? exe
+    }
   end
-
-  desc "show", "Shows your current user"
-  def show
-    Gas.show
-  end
-
-  desc "use AUTHOR", "Uses author"
-  def use(nickname)
-    Gas.use nickname
-  end
-
-  desc "add NICKNAME NAME EMAIL", "Adds author to gasconfig"
-  def add(nickname, name, email)
-    Gas.add nickname, name, email
-  end
-
-  desc "import NICKNAME", "Imports current user to gasconfig"
-  def import(nickname)
-    Gas.import nickname
-  end
-
-  desc "delete AUTHOR", "Deletes author"
-  def delete(nickname)
-    Gas.delete nickname
-  end
-  
-  desc "ssh", "Creates a new ssh key for an existing gas author"
-  def ssh(nickname=nil)
-    Gas.ssh nickname
-  end
-
-  desc "version", "Prints Gas's version"
-  def version
-    Gas.version
-  end
-  map %w(-v --version) => :version
-
+  return nil
 end
 
-GasRunner.start
+arguments = ARGV
+command = arguments.shift
+command = 'list' if command.nil?
+
+if command == 'version' || command == '-v' || command == '--version'
+  Gas.version
+  exit 0
+end
+
+bin = "gas-#{command}"
+
+if which(bin)
+  system "#{bin} #{arguments.join(' ')}"
+else
+  puts 'Usage:'
+end

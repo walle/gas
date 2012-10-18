@@ -36,9 +36,6 @@ module Gas
 
       `git config --global user.name "#{name}"`
       `git config --global user.email "#{email}"`
-
-      # confirm that this user has an ssh and if so, swap it in safely
-      Ssh.swap_in_rsa nickname
     end
 
   end
