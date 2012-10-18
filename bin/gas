@@ -16,6 +16,16 @@ def which(cmd)
   return nil
 end
 
+def plugins
+  plugins = []
+  ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+    Dir.glob("#{path}/gas-*").each do |cmd|
+      plugins << cmd.split('/').last.scan(/gas-([^-]+).*/).flatten.first
+    end
+  end
+  return plugins
+end
+
 arguments = ARGV
 command = arguments.shift
 command = 'list' if command.nil?
@@ -23,12 +33,22 @@ command = 'list' if command.nil?
 if command == 'version' || command == '-v' || command == '--version'
   Gas.version
   exit 0
+elsif command == 'plugins'
+  puts plugins
+  exit 0
 end
 
 bin = "gas-#{command}"
 
 if which(bin)
   system "#{bin} #{arguments.join(' ')}"
+
+  plugins.each do |plugin|
+    plugin_bin = "gas-#{plugin}-#{command}"
+    if which(plugin_bin)
+      system "#{plugin_bin} #{arguments.join(' ')}"
+    end
+  end
 else
   puts 'Usage:'
 end
