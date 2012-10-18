@@ -47,10 +47,10 @@ describe Gas::Settings do
       s.ssh_dir = 'bar'
       s.github_server = 'foobar'
     end
-    @subject.base_dir.should == 'test'
-    @subject.gas_dir.should == "#{@subject.base_dir}/foo"
-    @subject.ssh_dir.should == "#{@subject.base_dir}/bar"
-    @subject.github_server.should == 'foobar'
+    @subject.base_dir.should eq 'test'
+    @subject.gas_dir.should eq "#{@subject.base_dir}/foo"
+    @subject.ssh_dir.should eq "#{@subject.base_dir}/bar"
+    @subject.github_server.should eq 'foobar'
   end
 
 end

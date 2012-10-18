@@ -20,12 +20,15 @@ Gem::Specification.new do |s|
   s.add_dependency 'thor', '~> 0.14.6'
   s.add_dependency 'sshkey', '~> 1.2.2'
   s.add_dependency 'highline'
+  s.add_dependency 'json'
+  s.add_dependency 'jruby-openssl' if RUBY_PLATFORM == "java"
 
   s.add_development_dependency 'rake'
   s.add_development_dependency 'bundler'
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'rr'
   s.add_development_dependency 'vcr'
+  s.add_development_dependency 'pry'
 
   s.files = Dir.glob("{bin,lib,spec,config}/**/*") + ['LICENSE', 'README.textile']
   s.executables = ['gas']

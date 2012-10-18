@@ -5,3 +5,4 @@ coverage/
 Gemfile.lock
 .DS_Store
 .project
+.buildpath

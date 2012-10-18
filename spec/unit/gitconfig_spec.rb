@@ -17,15 +17,15 @@ describe Gas::Gitconfig do
     mock_cli_call(@gitconfig, 'git config --global --get user.email') { @email + "\n" }
 
     user = @gitconfig.current_user
-    user.name.should == @name
-    user.email.should == @email
+    user.name.should eq @name
+    user.email.should eq @email
   end
 
   it 'should return nil if no current user is present in gitconfig' do
     mock_cli_call(@gitconfig, 'git config --global --get user.name') { nil }
     mock_cli_call(@gitconfig, 'git config --global --get user.email') { nil }
 
-    @gitconfig.current_user.should == nil
+    @gitconfig.current_user.should be_nil
   end
 
 
@@ -45,9 +45,9 @@ describe Gas::Gitconfig do
       @gitconfig.change_user @user1
 
       user = @gitconfig.current_user
-      user.name.should == @user1.name
-      user.email.should == @user1.email
-      user.nickname.should == @user1.nickname
+      user.name.should eq @user1.name
+      user.email.should eq @user1.email
+      user.nickname.should eq @user1.nickname
     end
 
     it 'should be able to change the current user' do
@@ -64,8 +64,8 @@ describe Gas::Gitconfig do
       @gitconfig.change_user @user1
 
       user = @gitconfig.current_user
-      user.name.should == @name
-      user.email.should == @email      # test that the user switch worked (paranoid, huh?)
+      user.name.should eq @name
+      user.email.should eq @email      # test that the user switch worked (paranoid, huh?)
 
       # User 2 cli interrupt things...
       mock_cli_call(@gitconfig, "git config --global user.name \"#{name}\"") { nil }
@@ -77,8 +77,8 @@ describe Gas::Gitconfig do
       @gitconfig.change_user @user2
 
       user = @gitconfig.current_user
-      user.name.should == name
-      user.email.should == email       # test that the user changed appropriately
+      user.name.should eq name
+      user.email.should eq email       # test that the user changed appropriately
     end
 
   end

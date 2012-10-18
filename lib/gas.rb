@@ -1,16 +1,22 @@
-GAS_DIRECTORY = File.expand_path('~/.gas')
-SSH_DIRECTORY = File.expand_path('~/.ssh')
+require 'rbconfig'
+
+GAS_DIRECTORY = "#{ENV['HOME']}/.gas" # File.expand_path('~/.gas')
+SSH_DIRECTORY = "#{ENV['HOME']}/.ssh" # File.expand_path('~/.ssh')
 GITHUB_SERVER = 'api.github.com'
+IS_WINDOWS = (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
 
 
 require 'sshkey' #external
 
 require 'gas/version'
+require 'gas/prompter'
 require 'gas/ssh'
 require 'gas/user'
 require 'gas/config'
 require 'gas/gitconfig'
 require 'gas/settings'
+require 'gas/github_speaker'
+
 
 module Gas
 
@@ -24,8 +30,6 @@ module Gas
     puts
     puts @config
     puts
-
-    # self.show  # XXX: get rid of
   end
 
   # Shows the current user
@@ -55,15 +59,15 @@ module Gas
   # @param [String] nickname The nickname of the author
   # @param [String] name The name of the author
   # @param [String] email The email of the author
-  def self.add(nickname, name, email)
+  def self.add(nickname, name, email, github_speaker = nil)
     return false if self.has_user?(nickname)
     user = User.new name, email, nickname
     @config.add user
     @config.save!
 
     using_ssh = Ssh.setup_ssh_keys user
-
-    Ssh.upload_public_key_to_github(user) if using_ssh
+    
+    Ssh.upload_public_key_to_github(user, github_speaker) if using_ssh
 
     puts 'Added new author'
     puts user
@@ -129,16 +133,11 @@ module Gas
   def self.delete(nickname)
 
     return false unless self.no_user? nickname        # I re-engineered this section so I could use Gas.delete in a test even when that author didn't exist
-                                                      # TODO: The name no_user? is now very confusing.  It should be changed to something like "is_user?" now maybe?
+                                                      # TODO: The name no_user? is now very confusing.  It should be changed to something like "user_exists?" now maybe?
+    Ssh.delete nickname
 
-    Ssh.delete nickname  # XXX: there are 2 calls to this in the method!
-
-
-    # exit
     @config.delete nickname
     @config.save!
-
-    #Ssh.delete nickname   # TODO: delete this duplicate after...
 
     puts "Deleted author #{nickname}"
     return true
