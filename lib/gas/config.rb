@@ -10,9 +10,9 @@ module Gas
     # then it creates the ~/.gas FOLDER and saves the old .gas file as ~/git.conf
     #
     def migrate_to_gas_dir!
-      old_config_file = File.expand_path('~/.gas')
-      config_dir = File.expand_path('~/.gas')
-      new_config_file = File.expand_path('~/.gas') + "/gas.authors"
+      old_config_file = GAS_DIRECTORY
+      config_dir = GAS_DIRECTORY
+      new_config_file = GAS_DIRECTORY + "/gas.authors"
 
       if File.file? old_config_file
         file = File.open(old_config_file, "rb")
@@ -35,8 +35,8 @@ module Gas
     # @param [String] config The override config
     def initialize(users = nil, config = nil)
       migrate_to_gas_dir! # Migrates old users to the new configuration file location, how thoughtful of me, I know
-      @config_file = File.expand_path('~/.gas/gas.authors')
-      @gas_dir = File.expand_path('~/.gas')
+      @config_file = "#{GAS_DIRECTORY}/gas.authors"
+      @gas_dir = GAS_DIRECTORY
       @config = ''
 
       if config.nil?
