@@ -1,7 +1,7 @@
 require 'gas/version'
 require 'gas/user'
 require 'gas/config'
-require 'gas/gitconfig'
+require 'gas/git_config'
 
 GAS_DIRECTORY = File.expand_path '~/.gas'
 OLD_GAS_USERS_FILENAME = 'gas.authors'
@@ -10,7 +10,6 @@ GAS_USERS_FILENAME = 'users'
 module Gas
 
   @config = Config.new
-  @gitconfig = Gitconfig.new
 
   def self.print_version
     puts Gas::VERSION
@@ -41,7 +40,7 @@ module Gas
 
   # Shows the current user
   def self.show
-    user = @gitconfig.current_user
+    user = GitConfig.current_user
 
     if user
       puts 'Current user:'
@@ -57,7 +56,7 @@ module Gas
     return false unless self.no_user?(nickname)
     user = @config[nickname]
 
-    @gitconfig.change_user user        # daring change made here!  Heads up Walle
+    GitConfig.change_user user        # daring change made here!  Heads up Walle
 
     self.show
   end
@@ -80,7 +79,7 @@ module Gas
   # @param [String] nickname The nickname to give to the new user
   def self.import(nickname)
     return false if self.has_user?(nickname)
-    user = @gitconfig.current_user
+    user = GitConfig.current_user
 
     if user
       user = User.new user.name, user.email, nickname

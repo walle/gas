@@ -28,6 +28,14 @@ module Gas
       "      [#{use_nickname ? @nickname : 'user'}]\n         name = #{@name}\n         email = #{@email}"
     end
 
+  # Define the equality operator to test if two user objects are the same
+  def ==(user)
+    return false unless user.is_a? User
+    unless nickname.empty? || user.nickname.empty? # Don't test equallity in nickname if any of the nicknames is not used
+      return false unless nickname == user.nickname
+    end
+    return (name == user.name && email == user.email)
+  end
 
   end
 end
