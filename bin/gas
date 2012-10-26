@@ -16,6 +16,7 @@ def which(cmd)
   return nil
 end
 
+# List all gas commands available
 def plugins
   plugins = []
   ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
@@ -31,7 +32,7 @@ command = arguments.shift
 command = 'list' if command.nil?
 
 if command == 'version' || command == '-v' || command == '--version'
-  Gas.version
+  Gas.print_version
   exit 0
 elsif command == 'plugins'
   puts plugins
@@ -50,5 +51,5 @@ if which(bin)
     end
   end
 else
-  puts 'Usage:'
+  Gas.print_usage
 end

@@ -1,16 +1,7 @@
 #!/usr/bin/env ruby
 
 $LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__)) + '/../lib/')
-
 require 'gas'
 
-unless ARGV.length == 3
-  puts 'Usage: gas add NICKNAME NAME EMAIL'
-  exit
-end
-
-nickname = ARGV[0]
-name = ARGV[1]
-email = ARGV[2]
-
-Gas.add nickname, name, email
+Gas.check_parameters 3, 'Usage: gas add NICKNAME NAME EMAIL'
+Gas.add ARGV[0], ARGV[1], ARGV[2]

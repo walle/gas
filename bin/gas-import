@@ -1,14 +1,7 @@
 #!/usr/bin/env ruby
 
 $LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__)) + '/../lib/')
-
 require 'gas'
 
-unless ARGV.length == 1
-  puts 'Usage: gas import NICKNAME'
-  exit
-end
-
-nickname = ARGV[0]
-
-Gas.import nickname
+Gas.check_parameters 1, 'Usage: gas import NICKNAME'
+Gas.import ARGV[0]

@@ -11,6 +11,24 @@ module Gas
   @config = Config.new
   @gitconfig = Gitconfig.new
 
+  def self.print_version
+    puts Gas::VERSION
+  end
+
+  def self.print_usage
+    puts 'Usage: '
+  end
+
+  # Checks the number of parameters and exits with a message if wrong number of parameters is supplied
+  # @param [Integer] number_of_parameters_required
+  # @param [String] message
+  def self.check_parameters(number_of_parameters_required, message)
+    unless ARGV.length == number_of_parameters_required
+      puts message
+      exit
+    end
+  end
+
   # Lists all authors
   def self.list
     puts
@@ -87,11 +105,6 @@ module Gas
 
     puts "Deleted author #{nickname}"
     return true
-  end
-
-  # Prints the current version
-  def self.version
-    puts Gas::VERSION
   end
 
   # Checks if the user exists and gives error and exit if not
