@@ -1,6 +1,6 @@
 module Gas
 
-  # Class that class that interacts with the git config
+  # Module that class that interacts with the git config
   module GitConfig
 
     # Parse out the current user from the gitconfig
@@ -18,12 +18,8 @@ module Gas
     # Changes the user
     # @param [Gas::User] user The new user
     def self.change_user(user)
-      name = user.name
-      email = user.email
-
-      `git config --global user.name "#{name}"`
-      `git config --global user.email "#{email}"`
+      `git config --global user.name "#{user.name}"`
+      `git config --global user.email "#{user.email}"`
     end
-
   end
 end
