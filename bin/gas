@@ -27,6 +27,33 @@ def plugins
   return plugins
 end
 
+# Migrates old files to the new file structure
+# @depricated in version 1.0.0
+def migrate_to_new_file_structure!
+  oldest_config_file = File.expand_path '~/.gas'
+  old_config_file = File.join GAS_DIRECTORY, OLD_GAS_USERS_FILENAME
+  new_config_file = File.join GAS_DIRECTORY, GAS_USERS_FILENAME
+
+  # Check for first structure
+  if File.file? oldest_config_file
+    contents = File.read oldest_config_file
+
+    File.delete oldest_config_file
+    Dir::mkdir(GAS_DIRECTORY)
+
+    file = File.new(old_config_file, "w")
+    file.puts contents
+    file.close
+  end
+
+  # Check for second structure
+  if File.file? old_config_file
+    FileUtils.mv old_config_file, File.join(GAS_DIRECTORY, GAS_USERS_FILENAME)
+  end
+end
+
+migrate_to_new_file_structure! # Run migrate to ensure the latest file structure is used
+
 arguments = ARGV
 command = arguments.shift
 command = 'list' if command.nil?

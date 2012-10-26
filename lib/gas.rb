@@ -1,10 +1,11 @@
-GAS_DIRECTORY = "#{ENV['HOME']}/.gas" # File.expand_path('~/.gas')
-
 require 'gas/version'
 require 'gas/user'
 require 'gas/config'
 require 'gas/gitconfig'
-require 'gas/settings'
+
+GAS_DIRECTORY = File.expand_path '~/.gas'
+OLD_GAS_USERS_FILENAME = 'gas.authors'
+GAS_USERS_FILENAME = 'users'
 
 module Gas
 
