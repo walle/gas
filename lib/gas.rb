@@ -126,5 +126,4 @@ module Gas
     end
     return false
   end
-
 end
