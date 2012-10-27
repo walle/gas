@@ -2,6 +2,39 @@
 
 $LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__)) + '/../lib/')
 
+require 'fileutils'
+
+# Migrates old files to the new file structure
+# @depricated in version 1.0.0
+def migrate_to_new_file_structure!
+  gas_directory = File.expand_path '~/.gas'
+  old_gas_users_filename = 'gas.authors'
+  gas_users_filename = 'users'
+
+  oldest_config_file = File.expand_path '~/.gas'
+  old_config_file = File.join gas_directory, old_gas_users_filename
+  new_config_file = File.join gas_directory, gas_users_filename
+
+  # Check for first structure
+  if File.file? oldest_config_file
+    contents = File.read oldest_config_file
+
+    File.delete oldest_config_file
+    Dir::mkdir(gas_directory)
+
+    file = File.new(old_config_file, "w")
+    file.puts contents
+    file.close
+  end
+
+  # Check for second structure
+  if File.file? old_config_file
+    FileUtils.mv old_config_file, File.join(gas_directory, gas_users_filename)
+  end
+end
+
+migrate_to_new_file_structure! # Run migrate to ensure the latest file structure is used
+
 require 'gas'
 
 # Cross-platform way of finding an executable in the $PATH.
@@ -26,33 +59,6 @@ def plugins
   end
   return plugins
 end
-
-# Migrates old files to the new file structure
-# @depricated in version 1.0.0
-def migrate_to_new_file_structure!
-  oldest_config_file = File.expand_path '~/.gas'
-  old_config_file = File.join GAS_DIRECTORY, OLD_GAS_USERS_FILENAME
-  new_config_file = File.join GAS_DIRECTORY, GAS_USERS_FILENAME
-
-  # Check for first structure
-  if File.file? oldest_config_file
-    contents = File.read oldest_config_file
-
-    File.delete oldest_config_file
-    Dir::mkdir(GAS_DIRECTORY)
-
-    file = File.new(old_config_file, "w")
-    file.puts contents
-    file.close
-  end
-
-  # Check for second structure
-  if File.file? old_config_file
-    FileUtils.mv old_config_file, File.join(GAS_DIRECTORY, GAS_USERS_FILENAME)
-  end
-end
-
-migrate_to_new_file_structure! # Run migrate to ensure the latest file structure is used
 
 arguments = ARGV
 command = arguments.shift
