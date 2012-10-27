@@ -92,7 +92,7 @@ module Gas
     def to_s
       current_user = GitConfig.current_user
       users = @users.map do |user|
-        if is_current_user current_user, user
+        if current_user == user
           "  ==> #{user.to_s[5,user.to_s.length]}"
         else
           user.to_s
@@ -100,10 +100,6 @@ module Gas
       end.join("\n")
 
       return users
-    end
-
-    def is_current_user(current_user, user)
-      current_user == user
     end
   end
 end

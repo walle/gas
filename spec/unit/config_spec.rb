@@ -25,7 +25,7 @@ describe Gas::Config do
     users = [user1, user2]
     config = Gas::Config.new users
 
-    stub(config).is_current_user { false }
+    mock(Gas::GitConfig).current_user { Gas::User.new 'foobar', 'test' }
 
     config.to_s.should == "      [walle]\n         name = Fredrik Wallgren\n         email = fredrik.wallgren@gmail.com\n      [user2]\n         name = foo\n         email = bar"
   end
