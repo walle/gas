@@ -24,4 +24,3 @@ end
 
 task :default => :unit
 task :test => :unit
-
