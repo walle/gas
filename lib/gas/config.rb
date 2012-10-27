@@ -91,15 +91,13 @@ module Gas
     # Override to_s to output correct format
     def to_s
       current_user = GitConfig.current_user
-      users = @users.map do |user|
+      @users.map do |user|
         if current_user == user
           "  ==> #{user.to_s[5,user.to_s.length]}"
         else
           user.to_s
         end
-      end.join("\n")
-
-      return users
+      end.join "\n"
     end
   end
 end
