@@ -4,6 +4,7 @@ module Gas
 
   # Class that keeps track of users
   # TODO: Has code only used to test the class, write integration test instead?
+  # TODO: Make it take a directory and a filename as input and use them. In the integration test, use tmp folder and files
   class Config
     attr_reader :users
 
