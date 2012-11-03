@@ -1,6 +1,6 @@
 require 'gas/version'
 require 'gas/user'
-require 'gas/config'
+require 'gas/users'
 require 'gas/git_config'
 
 GAS_DIRECTORY = File.expand_path '~/.gas'
@@ -9,7 +9,7 @@ GAS_USERS_FILENAME = 'users'
 
 module Gas
 
-  @config = Config.new
+  @users = Users.new
 
   def self.print_version
     puts Gas::VERSION
@@ -34,7 +34,7 @@ module Gas
     puts
     puts 'Available users:'
     puts
-    puts @config
+    puts @users
     puts
   end
 
@@ -54,7 +54,7 @@ module Gas
   # @param [String] nickname The nickname to use
   def self.use(nickname)
     return false unless self.no_user?(nickname)
-    user = @config[nickname]
+    user = @users[nickname]
 
     GitConfig.change_user user        # daring change made here!  Heads up Walle
 
@@ -68,8 +68,8 @@ module Gas
   def self.add(nickname, name, email, github_speaker = nil)
     return false if self.has_user?(nickname)
     user = User.new name, email, nickname
-    @config.add user
-    @config.save!
+    @users.add user
+    @users.save!
 
     puts 'Added new author'
     puts user
@@ -84,8 +84,8 @@ module Gas
     if user
       user = User.new user.name, user.email, nickname
 
-      @config.add user
-      @config.save!
+      @users.add user
+      @users.save!
 
       puts 'Added author'
       puts user
@@ -100,8 +100,8 @@ module Gas
 
     return false unless self.no_user? nickname        # I re-engineered this section so I could use Gas.delete in a test even when that author didn't exist
                                                       # TODO: The name no_user? is now very confusing.  It should be changed to something like "user_exists?" now maybe?
-    @config.delete nickname
-    @config.save!
+    @users.delete nickname
+    @users.save!
 
     puts "Deleted author #{nickname}"
     return true
@@ -110,7 +110,7 @@ module Gas
   # Checks if the user exists and gives error and exit if not
   # @param [String] nickname
   def self.no_user?(nickname)
-    if !@config.exists? nickname
+    if !@users.exists? nickname
       puts "Nickname #{nickname} does not exist"
       return false
     end
@@ -120,7 +120,7 @@ module Gas
   # Checks if the user exists and gives error and exit if so
   # @param [String] nickname
   def self.has_user?(nickname)
-    if @config.exists? nickname
+    if @users.exists? nickname
       puts "Nickname #{nickname} already exists"
       return true
     end
