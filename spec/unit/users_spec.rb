@@ -23,8 +23,12 @@ describe Gas::Users do
 
   it 'should output the users in the correct format' do
     mock(Gas::GitConfig).current_user { Gas::User.new 'foobar', 'test' }
-
     @users.to_s.should == "      [walle]\n         name = Fredrik Wallgren\n         email = fredrik.wallgren@gmail.com\n      [user2]\n         name = foo\n         email = bar"
+  end
+
+  it 'should output the users in the correct format with current user' do
+    mock(Gas::GitConfig).current_user { Gas::User.new 'foo', 'bar' }
+    @users.to_s.should == "      [walle]\n         name = Fredrik Wallgren\n         email = fredrik.wallgren@gmail.com\n  ==>  [user2]\n         name = foo\n         email = bar"
   end
 
   it 'should be able to tell if a nickname exists' do
