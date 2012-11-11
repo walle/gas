@@ -3,43 +3,23 @@ require 'fileutils'
 module Gas
 
   # Class that keeps track of users
-  # TODO: Has code only used to test the class, write integration test instead?
-  # TODO: Make it take a directory and a filename as input and use them. In the integration test, use tmp folder and files
   class Users
     attr_reader :users
 
     # Initializes the object. If no users are supplied we look for a config file, if none then create it, and parse it to load users
-    # @param [Array<User>] users The override users
-    # @param [String] config The override config
-    def initialize(users = nil, config = nil)
-      @config_file = File.join GAS_DIRECTORY, GAS_USERS_FILENAME
+    # @param [String] config_file The path to the file that stores users
+    def initialize(config_file)
+      @config_file = config_file
+      @users = []
 
-      if config.nil?
-        unless File.exists? GAS_DIRECTORY
-          Dir::mkdir GAS_DIRECTORY
-          FileUtils.touch @config_file
-        end
-
-        @config = File.read @config_file
-      else
-        @config = config
-      end
-
-      if users.nil?
-        @users = []
-        @config.scan(/\[(.+)\]\s+name = (.+)\s+email = (.+)/) do |nickname, name, email|
-          @users << User.new(name, email, nickname)
-        end
-      else
-        @users = users
-      end
+      setup!
     end
 
     # Checks if a user with _nickname_ exists
     # @param [String] nickname
     # @return [Boolean]
     def exists?(nickname)
-      @users.each do |user|
+      users.each do |user|
         if user.nickname == nickname
           return true;
         end
@@ -52,7 +32,7 @@ module Gas
     # @param [String|Symbol] nickname
     # @return [User|nil]
     def get(nickname)
-      @users.each do |user|
+      users.each do |user|
         if user.nickname == nickname.to_s
           return user
         end
@@ -92,13 +72,38 @@ module Gas
     # Override to_s to output correct format
     def to_s
       current_user = GitConfig.current_user
-      @users.map do |user|
+      users.map do |user|
         if current_user == user
           "  ==> #{user.to_s[5,user.to_s.length]}"
         else
           user.to_s
         end
       end.join "\n"
+    end
+
+    def setup!
+      ensure_config_directory_exists!
+      load_config
+      load_users
+    end
+
+    private
+
+    def ensure_config_directory_exists!
+      unless File.exists? File.dirname(@config_file)
+        Dir::mkdir File.dirname(@config_file)
+        FileUtils.touch @config_file
+      end
+    end
+
+    def load_config
+      @config = File.read @config_file
+    end
+
+    def load_users
+      @config.scan(/\[(.+)\]\s+name = (.+)\s+email = (.+)/) do |nickname, name, email|
+        @users << User.new(name, email, nickname)
+      end
     end
   end
 end

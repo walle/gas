@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'tempfile'
+
 if ENV['COVERAGE']
   require 'simplecov'
   SimpleCov.start

@@ -9,7 +9,7 @@ GAS_USERS_FILENAME = 'users'
 
 module Gas
 
-  @users = Users.new
+  @users = Users.new(File.join GAS_DIRECTORY, GAS_USERS_FILENAME)
 
   def self.print_version
     puts Gas::VERSION
