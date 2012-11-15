@@ -13,4 +13,9 @@ describe Gas do
     output.should == "#{Gas::VERSION}\n"
   end
 
+  it 'should show correct usage' do
+    output = capture_stdout { Gas.print_usage }
+    output.should == "Usage: \n"
+  end
+
 end
