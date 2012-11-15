@@ -28,4 +28,12 @@ describe Gas do
     lambda { Gas.check_parameters( 4, 'Error message') }.should raise_error SystemExit
   end
 
+  it 'should list users' do
+    any_instance_of(Gas::Users) do |u|
+      stub(u).to_s { 'users' }
+    end
+    output = capture_stdout { Gas.list }
+    output.should == "\nAvailable users:\n\nuses\n\n"
+  end
+
 end
