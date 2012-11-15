@@ -18,4 +18,14 @@ describe Gas do
     output.should == "Usage: \n"
   end
 
+  it 'should return if correct number of params is supplied' do
+    mock(ARGV).length { 3 }
+    lambda { Gas.check_parameters( 3, 'Nope') }.should_not raise_error SystemExit
+  end
+
+  it 'should exit if incorrect number of params is supplied' do
+    mock(ARGV).length { 3 }
+    lambda { Gas.check_parameters( 4, 'Error message') }.should raise_error SystemExit
+  end
+
 end
