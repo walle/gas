@@ -33,7 +33,19 @@ describe Gas do
       stub(u).to_s { 'users' }
     end
     output = capture_stdout { Gas.list }
-    output.should == "\nAvailable users:\n\nuses\n\n"
+    output.should == "\nAvailable users:\n\nusers\n\n"
+  end
+
+  it 'should show current user if any' do
+    mock(Gas::GitConfig).current_user { Gas::User.new('foo', 'bar') }
+    output = capture_stdout { Gas.show }
+    output.should == "Current user:\nfoo <bar>\n"
+  end
+
+  it 'should show current user if any' do
+    mock(Gas::GitConfig).current_user { nil }
+    output = capture_stdout { Gas.show }
+    output.should == "No current user in gitconfig\n"
   end
 
 end
