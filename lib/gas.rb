@@ -29,6 +29,24 @@ module Gas
     end
   end
 
+  # Checks if the user exists and gives error and exit if not
+  # @param [String] nickname
+  def self.check_if_user_does_not_exist(nickname)
+    if !users.exists? nickname
+      puts "Nickname #{nickname} does not exist"
+      exit
+    end
+  end
+
+  # Checks if the user exists and gives error and exit if so
+  # @param [String] nickname
+  def self.check_if_user_already_exists(nickname)
+    if users.exists? nickname
+      puts "Nickname #{nickname} already exists"
+      exit
+    end
+  end
+
   # Lists all authors
   def self.list
     puts
@@ -53,11 +71,10 @@ module Gas
   # Sets _nickname_ as current user
   # @param [String] nickname The nickname to use
   def self.use(nickname)
-    return false unless self.no_user?(nickname)
+    check_if_user_does_not_exist(nickname)
+
     user = users[nickname]
-
-    GitConfig.change_user user        # daring change made here!  Heads up Walle
-
+    GitConfig.change_user user
     self.show
   end
 
@@ -66,7 +83,8 @@ module Gas
   # @param [String] name The name of the author
   # @param [String] email The email of the author
   def self.add(nickname, name, email, github_speaker = nil)
-    return false if self.has_user?(nickname)
+    check_if_user_already_exists(nickname)
+
     user = User.new name, email, nickname
     users.add user
     users.save!
@@ -78,7 +96,8 @@ module Gas
   # Imports current user from .gitconfig to .gas
   # @param [String] nickname The nickname to give to the new user
   def self.import(nickname)
-    return false if self.has_user?(nickname)
+    check_if_user_already_exists(nickname)
+
     user = GitConfig.current_user
 
     if user
@@ -97,34 +116,13 @@ module Gas
   # Deletes an author from the config using nickname
   # @param [String] nickname The nickname of the author
   def self.delete(nickname)
+    check_if_user_does_not_exist(nickname)
 
-    return false unless self.no_user? nickname        # I re-engineered this section so I could use Gas.delete in a test even when that author didn't exist
-                                                      # TODO: The name no_user? is now very confusing.  It should be changed to something like "user_exists?" now maybe?
     users.delete nickname
     users.save!
 
     puts "Deleted author #{nickname}"
     return true
-  end
-
-  # Checks if the user exists and gives error and exit if not
-  # @param [String] nickname
-  def self.no_user?(nickname)
-    if !users.exists? nickname
-      puts "Nickname #{nickname} does not exist"
-      return false
-    end
-    return true
-  end
-
-  # Checks if the user exists and gives error and exit if so
-  # @param [String] nickname
-  def self.has_user?(nickname)
-    if users.exists? nickname
-      puts "Nickname #{nickname} already exists"
-      return true
-    end
-    return false
   end
 
   # Returns the users object so we don't use it directly

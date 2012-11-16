@@ -48,4 +48,11 @@ describe Gas do
     output.should == "No current user in gitconfig\n"
   end
 
+  it 'should exit if no user by nickname exists' do
+    any_instance_of(Gas::Users) do |u|
+      stub(u).exists?('foo') { false }
+    end
+    lambda { Gas.use('foo').should be_false }.should raise_error SystemExit
+  end
+
 end
