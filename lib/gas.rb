@@ -16,7 +16,7 @@ module Gas
   end
 
   def self.print_usage
-    puts 'Usage: '
+    puts "Usage: command [parameters]\n\nBuilt-in commands:\n   add NICKNAME NAME EMAIL - adds a new user to gas\n   delete NICKNAME - deletes a user from gas\n   import NICKNAME - imports the user from .gitconfig into NICKNAME\n   list - lists all users\n   show - shows the current user\n use NICKNAME - sets the user with NICKNAME as the current user"
   end
 
   # Checks the number of parameters and exits with a message if wrong number of parameters is supplied
