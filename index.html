@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Gas by walle</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Gas</h1>
+        <p>Manage your git author accounts</p>
+
+        <p class="view"><a href="https://github.com/walle/gas">View the Project on GitHub <small>walle/gas</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/walle/gas/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/walle/gas/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/walle/gas">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p>h1. gas - manage your git author accounts</p>
+
+<p>"!<a href="http://travis-ci.org/walle/gas.png!%22:http://travis-ci.org/walle/gas">http://travis-ci.org/walle/gas.png!":http://travis-ci.org/walle/gas</a></p>
+
+<p>h2. Description</p>
+
+<p>Gas is a mighty utility that helps you keep track of your multiple git authors.  Add them to gas and switch between them instantly!  Great if you use one author at work and one at home or if you are doing pair programming.  </p>
+
+<p>h2. Installation</p>
+
+<p>The best way to install gas is with RubyGems:</p>
+
+<p>bc. $ [sudo] gem install gas</p>
+
+<p>You can install from source:</p>
+
+<p>bc. $ cd gas/
+$ bundle
+$ rake install</p>
+
+<p>h2. Running</p>
+
+<p>The default task is to list authors</p>
+
+<p>bc. $ gas</p>
+
+<p>bc. $ gas list</p>
+
+<p>This lists the authors that are set up in the ~/.gas/gas.authors file.</p>
+
+<p>You can import your current user by giving it a nickname</p>
+
+<p>bc. $ gas import current_user</p>
+
+<p>To add an author use, add</p>
+
+<p>bc. $ gas add walle "Fredrik Wallgren" <a href="mailto:fredrik.wallgren@gmail.com">fredrik.wallgren@gmail.com</a></p>
+
+<p>And the main usage, use</p>
+
+<p>bc. $ gas use walle</p>
+
+<p>To delete it again use, delete</p>
+
+<p>bc. $ gas delete walle</p>
+
+<p>Gas can also juggle your id_rsa ssh keys, which is helpful for uploading to github between multiple accounts.  Indespensible for teachers who need to instruct their students on how to use github!</p>
+
+<p>bc. $ gas add Njax NotarySojac <a href="mailto:no@mail.com">no@mail.com</a>
+Do you want gas to handle switching rsa keys for this user?
+[y/n]</p>
+
+<p>View <a href="https://github.com/gas" class="user-mention">@gas</a> -h@ to see all options.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/walle">walle</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-10800077-7");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
