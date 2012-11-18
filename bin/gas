@@ -57,7 +57,7 @@ def plugins
       plugins << cmd.split('/').last.scan(/gas-([^-]+).*/).flatten.first
     end
   end
-  return plugins
+  return plugins.uniq
 end
 
 arguments = ARGV
