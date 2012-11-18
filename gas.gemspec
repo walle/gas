@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'rr'
 
-  s.files = Dir.glob("{bin,lib,spec,config}/**/*") + ['LICENSE', 'README.textile']
+  s.files = Dir.glob("{bin,lib,spec,config}/**/*") + ['LICENSE', 'README.md']
   s.executables = Dir.glob("bin/*").map { |file| file.split('/').last }
   s.require_path = ['lib']
 end
