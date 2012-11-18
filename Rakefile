@@ -22,5 +22,5 @@ RSpec::Core::RakeTask.new(:current) do |spec|
   spec.rspec_opts = ['--tag current']
 end
 
-task :default => :unit
-task :test => :unit
+task :default => :spec
+task :test => :spec
