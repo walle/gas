@@ -55,4 +55,64 @@ describe Gas do
     lambda { Gas.use('foo').should be_false }.should raise_error SystemExit
   end
 
+  it 'should use given user' do
+    user = Gas::User.new('foo bar', 'foo@bar.com', 'foo')
+    any_instance_of(Gas::Users) do |u|
+      stub(u).exists?('foo') { true }
+      stub(u).get('foo') { user }
+    end
+    mock(Gas::GitConfig).change_user(user) { }
+    mock(Gas::GitConfig).current_user { user }
+
+    output = capture_stdout { Gas.use('foo') }
+    output.should == "Current user:\nfoo bar <foo@bar.com>\n"
+  end
+
+  it 'should add new user' do
+    any_instance_of(Gas::Users) do |u|
+      stub(u).exists?('foo') { false }
+      stub(u).save! { }
+    end
+    output = capture_stdout { Gas.add('foo', 'foo bar', 'foo@bar.com') }
+    output.should == "Added new author\n      [foo]\n         name = foo bar\n         email = foo@bar.com\n"
+  end
+
+  it 'should not add new user if nickname exists' do
+    any_instance_of(Gas::Users) do |u|
+      stub(u).exists?('foo') { true }
+    end
+    lambda { Gas.add('foo', 'foo bar', 'foo@bar.com') }.should raise_error SystemExit
+  end
+
+  it 'should delete user if nickname exists' do
+    any_instance_of(Gas::Users) do |u|
+      stub(u).save! { }
+    end
+    Gas.add('bar', 'foo bar', 'foo@bar.com')
+    output = capture_stdout { Gas.delete('bar') }
+    output.should == "Deleted author bar\n"
+  end
+
+  it 'should import current_user to gas' do
+    user = Gas::User.new('foo bar', 'foo@bar.com')
+    any_instance_of(Gas::Users) do |u|
+      stub(u).exists?('foo') { false }
+      stub(u).save! { }
+    end
+    mock(Gas::GitConfig).current_user { user }
+
+    output = capture_stdout { Gas.import('foo') }
+    output.should == "Imported author\n      [foo]\n         name = foo bar\n         email = foo@bar.com\n"
+  end
+
+  it 'should not import current_user to gas if no current_user exists' do
+    any_instance_of(Gas::Users) do |u|
+      stub(u).exists?('foo') { false }
+    end
+    mock(Gas::GitConfig).current_user { nil }
+
+    output = capture_stdout { Gas.import('foo') }
+    output.should == "No current user to import\n"
+  end
+
 end

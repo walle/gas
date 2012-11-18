@@ -73,7 +73,7 @@ module Gas
   def self.use(nickname)
     check_if_user_does_not_exist(nickname)
 
-    user = users[nickname]
+    user = users.get nickname
     GitConfig.change_user user
     self.show
   end
@@ -82,7 +82,7 @@ module Gas
   # @param [String] nickname The nickname of the author
   # @param [String] name The name of the author
   # @param [String] email The email of the author
-  def self.add(nickname, name, email, github_speaker = nil)
+  def self.add(nickname, name, email)
     check_if_user_already_exists(nickname)
 
     user = User.new name, email, nickname
@@ -106,7 +106,7 @@ module Gas
       users.add user
       users.save!
 
-      puts 'Added author'
+      puts 'Imported author'
       puts user
     else
       puts 'No current user to import'
