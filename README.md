@@ -75,6 +75,9 @@ View the help using
 Gas is built to be extendable, it uses the same way git does. Any executable in your PATH named gas-yourplugin is useable with gas.
 This means you can write extensions for gas in any language you want, the only thing you need to do is make it accessable by putting it in PATH.
 
+To extend already existing commands make an executable with the name gas-yourplugin-existingcommand eg. gas-stats-use to do something when the original use command is executed.
+This makes it possible to extend plugins too eg. gas-myplugin-stats will extend the stats command, if installed.
+
 An example plugin exists at https://github.com/walle/gas_stats it's written in ruby, and distributed with rubygems. But this is not a requirement.
 It extends gas both with adding functionality to built-in commands(counting statistics) and adding own functionality(gas-stats).
 
