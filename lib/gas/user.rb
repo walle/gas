@@ -4,7 +4,6 @@ module Gas
   class User
     attr_reader :name, :email, :nickname
 
-
     # @param [String] name The name of the user
     # @param [String] email The email of the user
     # @param [String] nickname A nickname for the user, not used when parsing from gitconfig
@@ -12,7 +11,6 @@ module Gas
       @name = name
       @email = email
       @nickname = nickname
-
     end
 
     # Returns the git format of user
@@ -28,14 +26,15 @@ module Gas
       "      [#{use_nickname ? @nickname : 'user'}]\n         name = #{@name}\n         email = #{@email}"
     end
 
-  # Define the equality operator to test if two user objects are the same
-  def ==(user)
-    return false unless user.is_a? User
-    unless nickname.empty? || user.nickname.empty? # Don't test equallity in nickname if any of the nicknames is not used
-      return false unless nickname == user.nickname
+    # Define the equality operator to test if two user objects are the same
+    # @param [Object] the object to test against
+    # @return [boolean]
+    def ==(user)
+      return false unless user.is_a? User
+      unless nickname.empty? || user.nickname.empty? # Don't test equallity in nickname if any of the nicknames is not used
+        return false unless nickname == user.nickname
+      end
+      return (name == user.name && email == user.email)
     end
-    return (name == user.name && email == user.email)
-  end
-
   end
 end

@@ -81,6 +81,7 @@ module Gas
       end.join "\n"
     end
 
+    # Run the setup steps
     def setup!
       ensure_config_directory_exists!
       load_config
