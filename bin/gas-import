@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__)) + '/../lib/')
+require 'gas'
+
+Gas.check_parameters 1, 'Usage: gas import NICKNAME'
+Gas.import ARGV[0]

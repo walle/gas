@@ -25,4 +25,22 @@ describe Gas::User do
     user = Gas::User.new name, email, nickname
     user.nickname.should == nickname
   end
+
+  it 'should be equal if all fields are equal' do
+    user1 = Gas::User.new 'foo', 'bar', 'foobar'
+    user2 = Gas::User.new 'foo', 'bar', 'foobar'
+    user1.should == user2
+  end
+
+  it 'should be equal even with one user missing nickname' do
+    user1 = Gas::User.new 'foo', 'bar', 'foobar'
+    user2 = Gas::User.new 'foo', 'bar', ''
+    user1.should == user2
+  end
+
+  it 'should not be equal if nicknames are set but mismatch' do
+    user1 = Gas::User.new 'foo', 'bar', 'foobar'
+    user2 = Gas::User.new 'foo', 'bar', 'baz'
+    user1.should_not == user2
+  end
 end

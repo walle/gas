@@ -1,53 +1,88 @@
 #!/usr/bin/env ruby
 
-require 'thor'
-require 'gas'
+$LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__)) + '/../lib/')
 
-class GasRunner < Thor
+require 'fileutils'
 
-  default_task :list
+# Migrates old files to the new file structure
+# @depricated in version 2.0.0
+def migrate_to_new_file_structure!
+  gas_directory = File.expand_path '~/.gas'
+  old_gas_users_filename = 'gas.authors'
+  gas_users_filename = 'users'
 
-  desc "list", "Lists your authors"
-  def list
-    Gas.list
+  oldest_config_file = File.expand_path '~/.gas'
+  old_config_file = File.join gas_directory, old_gas_users_filename
+  new_config_file = File.join gas_directory, gas_users_filename
+
+  # Check for first structure
+  if File.file? oldest_config_file
+    contents = File.read oldest_config_file
+
+    File.delete oldest_config_file
+    Dir::mkdir(gas_directory)
+
+    file = File.new(old_config_file, "w")
+    file.puts contents
+    file.close
   end
 
-  desc "show", "Shows your current user"
-  def show
-    Gas.show
+  # Check for second structure
+  if File.file? old_config_file
+    FileUtils.mv old_config_file, File.join(gas_directory, gas_users_filename)
   end
-
-  desc "use AUTHOR", "Uses author"
-  def use(nickname)
-    Gas.use nickname
-  end
-
-  desc "add NICKNAME NAME EMAIL", "Adds author to gasconfig"
-  def add(nickname, name, email)
-    Gas.add nickname, name, email
-  end
-
-  desc "import NICKNAME", "Imports current user to gasconfig"
-  def import(nickname)
-    Gas.import nickname
-  end
-
-  desc "delete AUTHOR", "Deletes author"
-  def delete(nickname)
-    Gas.delete nickname
-  end
-  
-  desc "ssh", "Creates a new ssh key for an existing gas author"
-  def ssh(nickname=nil)
-    Gas.ssh nickname
-  end
-
-  desc "version", "Prints Gas's version"
-  def version
-    Gas.version
-  end
-  map %w(-v --version) => :version
-
 end
 
-GasRunner.start
+migrate_to_new_file_structure! # Run migrate to ensure the latest file structure is used
+
+require 'gas'
+
+# Cross-platform way of finding an executable in the $PATH.
+def which(cmd)
+  exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+  ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+    exts.each { |ext|
+      exe = "#{path}/#{cmd}#{ext}"
+      return exe if File.executable? exe
+    }
+  end
+  return nil
+end
+
+# List all gas commands available
+def plugins
+  plugins = []
+  ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+    Dir.glob("#{path}/gas-*").each do |cmd|
+      plugins << cmd.split('/').last.scan(/gas-([^-]+).*/).flatten.first
+    end
+  end
+  return plugins
+end
+
+arguments = ARGV
+command = arguments.shift
+command = 'list' if command.nil?
+
+if command == 'version' || command == '-v' || command == '--version'
+  Gas.print_version
+  exit 0
+elsif command == 'plugins'
+  puts plugins
+  exit 0
+end
+
+bin = "gas-#{command}"
+
+if which(bin)
+  system "#{bin} #{arguments.join(' ')}"
+
+  plugins.each do |plugin|
+    plugin_bin = "gas-#{plugin}-#{command}"
+    if which(plugin_bin)
+      system "#{plugin_bin} #{arguments.join(' ')}"
+    end
+  end
+else
+  Gas.print_usage
+end

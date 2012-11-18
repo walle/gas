@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__)) + '/../lib/')
+require 'gas'
+
+Gas.check_parameters 3, 'Usage: gas add NICKNAME NAME EMAIL'
+Gas.add ARGV[0], ARGV[1], ARGV[2]
