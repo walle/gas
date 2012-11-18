@@ -28,59 +28,90 @@
         </ul>
       </header>
       <section>
-        <p>h1. gas - manage your git author accounts</p>
+        <p>Get it Use it Extend it Plugins</p>
 
-<p>"!<a href="http://travis-ci.org/walle/gas.png!%22:http://travis-ci.org/walle/gas">http://travis-ci.org/walle/gas.png!":http://travis-ci.org/walle/gas</a></p>
-
-<p>h2. Description</p>
-
-<p>Gas is a mighty utility that helps you keep track of your multiple git authors.  Add them to gas and switch between them instantly!  Great if you use one author at work and one at home or if you are doing pair programming.  </p>
-
-<p>h2. Installation</p>
+<h2>Get it</h2>
 
 <p>The best way to install gas is with RubyGems:</p>
 
-<p>bc. $ [sudo] gem install gas</p>
+<pre><code>$ [sudo] gem install gas
+</code></pre>
 
 <p>You can install from source:</p>
 
-<p>bc. $ cd gas/
+<pre><code>$ cd gas/
 $ bundle
-$ rake install</p>
+$ rake install
+</code></pre>
 
-<p>h2. Running</p>
+<h2>Use it</h2>
 
-<p>The default task is to list authors</p>
+<h3>Built-in commands</h3>
 
-<p>bc. $ gas</p>
+<ul>
+<li>add NICKNAME NAME EMAIL - adds a new user to gas</li>
+<li>delete NICKNAME - deletes a user from gas</li>
+<li>import NICKNAME - imports the user from .gitconfig into NICKNAME</li>
+<li>list - lists all users</li>
+<li>show - shows the current user</li>
+<li>use NICKNAME - sets the user with NICKNAME as the current user</li>
+</ul><p>The default task is to list authors</p>
 
-<p>bc. $ gas list</p>
+<pre><code>$ gas
 
-<p>This lists the authors that are set up in the ~/.gas/gas.authors file.</p>
+$ gas list
+</code></pre>
+
+<p>This lists the authors that are set up in the ~/.gas/gas.users file.</p>
 
 <p>You can import your current user by giving it a nickname</p>
 
-<p>bc. $ gas import current_user</p>
+<pre><code>$ gas import current_user
+</code></pre>
 
 <p>To add an author use, add</p>
 
-<p>bc. $ gas add walle "Fredrik Wallgren" <a href="mailto:fredrik.wallgren@gmail.com">fredrik.wallgren@gmail.com</a></p>
+<pre><code>$ gas add walle "Fredrik Wallgren" fredrik.wallgren@gmail.com
+</code></pre>
 
 <p>And the main usage, use</p>
 
-<p>bc. $ gas use walle</p>
+<pre><code>$ gas use walle
+</code></pre>
 
 <p>To delete it again use, delete</p>
 
-<p>bc. $ gas delete walle</p>
+<pre><code>$ gas delete walle
+</code></pre>
 
-<p>Gas can also juggle your id_rsa ssh keys, which is helpful for uploading to github between multiple accounts.  Indespensible for teachers who need to instruct their students on how to use github!</p>
+<p>View the help using</p>
 
-<p>bc. $ gas add Njax NotarySojac <a href="mailto:no@mail.com">no@mail.com</a>
-Do you want gas to handle switching rsa keys for this user?
-[y/n]</p>
+<pre><code>$ gas -h
+</code></pre>
 
-<p>View <a href="https://github.com/gas" class="user-mention">@gas</a> -h@ to see all options.</p>
+<h2>Extend it</h2>
+
+<p>Gas is built to be extendable.</p>
+
+<h2>Plugins</h2>
+
+<h3>Available plugins</h3>
+
+<h4>gas_stats</h4>
+
+<p>Shows usage statistics for gas. Serves as a reference implementation of a plugin.</p>
+
+<p>Code: <a href="https://github.com/walle/gas_stats">https://github.com/walle/gas_stats</a>
+Installation: $ gem install gas_stats
+Author: <a href="https://github.com/walle">Fredrik Wallgren</a></p>
+
+<h4>gas_ssh</h4>
+
+<p>Adds ssh support for gas</p>
+
+<p>Code: <a href="https://github.com/TheNotary/gas_stats">https://github.com/TheNotary/gas_stats</a>
+Installation: $ gem install gas_ssh
+Author: <a href="https://github.com/TheNotary">TheNotary</a></p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/walle">walle</a></p>
