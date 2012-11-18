@@ -41,7 +41,9 @@
   <li style="display: block; float: left; width: 25%; font-size: 28px;">
     <a href="#plugins">Plugins</a>
   </li>
-</ul><p><br><a name="get_it"></a></p>
+</ul><p><br></p>
+
+<p><a name="get_it"></a></p>
 
 <h2>Get it</h2>
 
@@ -109,10 +111,14 @@ $ gas list
 
 <h2>Extend it</h2>
 
-<p>Gas is built to be extendable, it uses the same way git does. Any executable in your PATH named gas_yourplugin is useable with gas.
+<p>Gas is built to be extendable, it uses the same way git does. Any executable in your PATH named gas-yourplugin is useable with gas.
 This means you can write extensions for gas in any language you want, the only thing you need to do is make it accessable by putting it in PATH.</p>
 
-<p>An example plugin exists at <a href="https://github.com/walle/gas_stats">https://github.com/walle/gas_stats</a> it's written in ruby, and distributed with rubygems. But this is not a requirement.</p>
+<p>To extend already existing commands make an executable with the name gas-yourplugin-existingcommand eg. gas-stats-use to do something when the original use command is executed.
+This makes it possible to extend plugins too eg. gas-myplugin-stats will extend the stats command, if installed.</p>
+
+<p>An example plugin exists at <a href="https://github.com/walle/gas_stats">https://github.com/walle/gas_stats</a> it's written in ruby, and distributed with rubygems. But this is not a requirement.
+It extends gas both with adding functionality to built-in commands(counting statistics) and adding own functionality(gas-stats).</p>
 
 <p><a name="plugins"></a></p>
 
