@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project = s.name
 
   s.rdoc_options = ["--charset=UTF-8"]
-  s.extra_rdoc_files = %w[README.textile LICENSE]
+  s.extra_rdoc_files = %w[README.md LICENSE]
 
   s.add_development_dependency 'rake'
   s.add_development_dependency 'bundler'
