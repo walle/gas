@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__)) + '/../lib/')
 require 'fileutils'
 
 # Migrates old files to the new file structure
-# @depricated in version 1.0.0
+# @depricated in version 2.0.0
 def migrate_to_new_file_structure!
   gas_directory = File.expand_path '~/.gas'
   old_gas_users_filename = 'gas.authors'
