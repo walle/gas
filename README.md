@@ -15,6 +15,11 @@
 
 <br />
 
+Gas helps you manage your git authors. Do you have a personal and a work email and use the same computer to commit. Try gas to help you switch between the two.
+Do you pair program and want to reflect that it's not only you writing the code, try gas to switch between your pair user and your regular.
+
+Gas is extensible and it's easy to extend with any functionality you may want.
+
 <a name="get_it"></a>
 ## Get it
 
