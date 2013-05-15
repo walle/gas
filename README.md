@@ -107,7 +107,7 @@ Adds ssh support for gas.
 
 Work in progress right now.
 
-Code: https://github.com/TheNotary/gas_stats
+Code: https://github.com/TheNotary/gas_ssh
 
 Installation: $ gem install gas_ssh
 
