@@ -32,9 +32,9 @@ describe Gas::Users do
   end
 
   it 'should be able to tell if a nickname exists' do
-    @users.exists?('walle').should be_true
-    @users.exists?('foo').should be_false
-    @users.exists?('user2').should be_true
+    @users.exists?('walle').should be_truthy
+    @users.exists?('foo').should be_falsey
+    @users.exists?('user2').should be_truthy
   end
 
   it 'should be able to get a user from a nickname' do
