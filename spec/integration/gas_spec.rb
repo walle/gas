@@ -20,7 +20,7 @@ describe Gas do
 
   it 'should return if correct number of params is supplied' do
     mock(ARGV).length { 3 }
-    lambda { Gas.check_parameters( 3, 'Nope') }.should_not raise_error SystemExit
+    lambda { Gas.check_parameters( 3, 'Nope') }.should_not raise_error 
   end
 
   it 'should exit if incorrect number of params is supplied' do
