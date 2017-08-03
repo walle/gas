@@ -36,11 +36,11 @@ You can also install it from source:
 
 * `add PROFILE NAME EMAIL` - adds a new user to gas
 * `delete PROFILE` - deletes a user from gas
-* `import PROFILE` - imports the user from .gitconfig into NICKNAME
+* `import PROFILE` - imports the user from .gitconfig into PROFILE
 * `list` - lists all users
 * `plugins` - lists all installed plugins
 * `show` - shows the current user
-* `use PROFILE` - sets the user with NICKNAME as the current user
+* `use PROFILE` - sets the user with PROFILE as the current user
 
 The default task is to list authors
 
@@ -50,7 +50,7 @@ The default task is to list authors
 
 This lists the authors that are set up in the ~/.gas/gas.users file.
 
-You can import your current user by giving it a nickname
+You can import your current user by giving it a PROFILE
 
     $ gas import current_user
 
